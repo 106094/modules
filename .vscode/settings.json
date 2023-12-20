@@ -1,5 +1,6 @@
 {
     "editor.codeActionsOnSave": {},
     "powershell.integratedConsole.focusConsoleOnExecute": false,
-    "files.defaultLanguage": "powershell"
+    "files.defaultLanguage": "powershell",
+    "workbench.tree.enableStickyScroll": true
 }
