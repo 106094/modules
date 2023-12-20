@@ -1,0 +1,5 @@
+{
+    "editor.codeActionsOnSave": {},
+    "powershell.integratedConsole.focusConsoleOnExecute": false,
+    "files.defaultLanguage": "powershell"
+}
