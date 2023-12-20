@@ -2,5 +2,7 @@
     "editor.codeActionsOnSave": {},
     "powershell.integratedConsole.focusConsoleOnExecute": false,
     "files.defaultLanguage": "powershell",
-    "workbench.tree.enableStickyScroll": true
+    "workbench.colorCustomizations":{
+        "activeBackground":"#0000FF"
+    }
 }
