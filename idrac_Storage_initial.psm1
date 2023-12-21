@@ -28,7 +28,9 @@ function idrac_Storage_initial ([string]$para1,[string]$para2){
     $tcstep=((get-content $tcpath).split(","))[1]
     $picpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
     if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-null}
-    
+    $results="OK"
+    $index="check screenshots"
+
     &$actionsln  edge nonlog
            
     $idracinfo=(get-content -path "C:\testing_AI\settings\idrac.txt").split(",")
@@ -1016,23 +1018,65 @@ do{
   $convertapply=  $driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[translate='apply_immediately']"))  ## add to pending ##
   }until( $convertapply)
   $convertapply.Click()
+  
+  
 
   do{
    start-sleep -s 5
    $convertquebt=  $driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[translate='menu_jobqueue']")) ## jobqueue ##
    }until($convertquebt)
+  
    $convertquebt.Click()
 
-   start-sleep -s 10
+   $questart=Get-Date
+   start-sleep -s 30
+   $quegap=(New-TimeSpan -start $questart -End (get-date)).TotalMinutes
    
-  do{
-  $refreshb = $driver.FindElements([OpenQA.Selenium.By]::TagName("b"))
-  $refreshb.Click()
-  start-sleep -s 3
+  #first verify jobqueue value
   $queRows = $driver.FindElements([OpenQA.Selenium.By]::CssSelector("table tr"))
   $questatus=$queRows[1].Text
-  }until( ($questatus -match "Completed" -and "100") -or ($questatus -match "Failed" -and "100"))
+  
+  if( !(($questatus -match "Completed" -and "100") -or ($questatus -match "Failed" -and "100")) ){
+      do{
+      #refresh button
+      $refreshb = $driver.FindElements([OpenQA.Selenium.By]::TagName("b"))
+      $refreshb.Click()
+      start-sleep -s 30
+      ##Click pending_operations
+      $convertquebt=  $driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[translate='pending_operations']")) ## jobqueue ##
+      $convertquebt.Click()
+      ##Click jobqueue
+      $convertquebt=  $driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[translate='menu_jobqueue']")) ## jobqueue ##
+      $convertquebt.Click()
+      start-sleep -s 30
+      $queRows = $driver.FindElements([OpenQA.Selenium.By]::CssSelector("table tr"))
+      $questatus=$queRows[1].Text
+      $quegap=(New-TimeSpan -start $questart -End (get-date)).TotalMinutes
+      #region screenshot
+      $timenow=get-date -format "yyMMdd_HHmmss"
+      $savepic=$picpath+"$($timenow)_step$($tcstep)_Jobqueuewait.jpg"
+      $screenshot = $driver.GetScreenshot()
+      $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
+      #endregion  
+  
+      }until( ($questatus -match "Completed" -and "100") -or ($questatus -match "Failed" -and "100") -or $quegap -gt 10)
+  }
 
+  
+  $timenow=get-date -format "yyMMdd_HHmmss"
+  if($quegap -le 10){
+  #region screenshot
+  $savepic=$picpath+"$($timenow)_step$($tcstep)_JobqueueComplete.jpg"
+   }
+   else{
+    $savepic=$picpath+"$($timenow)_step$($tcstep)_Jobqueuefail.jpg"
+    $results="NG"
+    $index="jobqueue check fail"
+   }
+   
+  $screenshot = $driver.GetScreenshot()
+  $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
+  #endregion   
   
    $storage_overview=  $driver.FindElement([OpenQA.Selenium.By]::id("storage.overview"))
    $storage_overview.Click()
@@ -1054,12 +1098,7 @@ $savepic=$picpath+"$($timenow)_step$($tcstep)_ConvertnonRAID_end.jpg"
 #endregion   
 
  #endregion
- $results="OK"
- $index="check screenshots"
  write-host "all storages initail done"
-
-
-
 }
 
 else{
