@@ -1071,7 +1071,7 @@ do{
    else{
     $savepic=$picpath+"$($timenow)_step$($tcstep)_Jobqueuefail.jpg"
     $results="NG"
-    $index="jobqueue check fail"
+    $index="queue check fail"
    }
    
   $screenshot = $driver.GetScreenshot()
