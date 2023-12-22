@@ -1,5 +1,4 @@
 ﻿
-
 function 3dmark_CompleteCheck ([int]$para1) {
     
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
