@@ -1,6 +1,4 @@
-﻿
-
-function cmd_check ([string]$para1,[string]$para2 ){
+﻿function cmd_check ([string]$para1,[string]$para2 ){
      
      $checkline=$para1
      $action1=$para2
