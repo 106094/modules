@@ -1,5 +1,4 @@
-﻿
-function　check_msinfo32 ([string]$para1){
+﻿function check_msinfo32 ([string]$para1){
       
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     $wshell=New-Object -ComObject wscript.shell
@@ -8,7 +7,7 @@ function　check_msinfo32 ([string]$para1){
       Add-Type -AssemblyName System.Windows.Forms,System.Drawing
       
       
-  $source = @"
+$source = @"
 using System;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
