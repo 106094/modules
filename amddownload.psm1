@@ -1,5 +1,4 @@
-﻿
-function amddownload([string]$para1){
+﻿function amddownload([string]$para1){
     
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     $wshell=New-Object -ComObject wscript.shell
