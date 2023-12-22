@@ -6,7 +6,6 @@
       Add-Type -AssemblyName System.Windows.Forms
       Add-Type -AssemblyName System.Windows.Forms,System.Drawing
       
-      
 $source = @"
 using System;
 using System.Threading.Tasks;
