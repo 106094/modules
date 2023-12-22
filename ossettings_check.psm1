@@ -1,5 +1,5 @@
 ﻿
-function　ossettings_check ([string]$para1,[string]$para2 ){
+function　ossettings_check ([string]$para1,[string]$para2,[string]$para3){
       
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     $wshell=New-Object -ComObject wscript.shell
@@ -79,7 +79,8 @@ if( $paracheck -eq $false -or $para1.length -eq 0 ){
 $para1="start ms-settings:"
 }
     $checkosset=$para1
-    $nonlog_flag=$para2
+    $keyword=$para2
+    $nonlog_flag=$para3
 
 ### OS settings: start ms-settings:
 ### ms-settings:windowsupdate
@@ -134,7 +135,16 @@ $wid=(Get-Process ApplicationFrameHost |sort starttime|select -Last 1 ).Id
 $wshell.AppActivate($wid)
 
  Get-Process -id $wid  | Set-WindowState -State MAXIMIZE
-   
+
+ if($explorerpath -eq "ms-settings:appsfeatures"){
+    [System.Windows.Forms.SendKeys]::Sendwait($keyword)
+    start-sleep -s 5
+    [System.Windows.Forms.SendKeys]::Sendwait("{TAB 3}")
+    start-sleep -s 5
+    [System.Windows.Forms.SendKeys]::Sendwait($keyword)
+ }
+
+
 start-sleep -s 3
 
 ### screenshot""

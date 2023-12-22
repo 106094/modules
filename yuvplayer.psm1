@@ -89,7 +89,7 @@ Add-Type -TypeDefinition $source -ReferencedAssemblies "System.Windows.Forms"
         }
         $screen = [System.Windows.Forms.Screen]::PrimaryScreen
         $bounds = $screen.Bounds
-        Set_Window -para1 "yuv" -para2 $bounds.Width -para3 $bounds.Height -para4 0 -para5 0
+        Set_Window -para1 "yuv" -para2 "$($bounds.Width)," + "$($bounds.Height)"  -para3 "0,0" -para4 "nonlog"
     }
 
     Add-Type -AssemblyName System.Windows.Forms

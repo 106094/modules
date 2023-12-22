@@ -1,4 +1,4 @@
-Function Set_Window ([string]$para1,[int]$para2,[int]$para3,[int]$para4,[int]$para5){
+Function Set_Window ([string]$para1,[string]$para2,[string]$para3,[string]$para4){
 
 Add-Type -AssemblyName System.Windows.Forms
 
@@ -163,30 +163,22 @@ $tbsize = Get-TaskBarDimensions
     $paracheck2=$PSBoundParameters.ContainsKey('para2')
     $paracheck3=$PSBoundParameters.ContainsKey('para3')
     $paracheck4=$PSBoundParameters.ContainsKey('para4')
-    $paracheck5=$PSBoundParameters.ContainsKey('para5')
 
     
     if($paracheck2 -eq $false -or $para2 -eq 0){
         #$para2= $curwidth
-        $para2 = $windowWidth
+        $para2 = $windowWidth.ToString() + "," + $windowHeight.ToString()
     }
     if($paracheck3 -eq $false -or $para3 -eq 0){
         #$para3= $curheight - $tbsize.Height
-        $para3 = $windowHeight
-    }
-    if($paracheck4 -eq $false -or $para4 -eq 0){
-        $para4= 0
-    }
-    if($paracheck5 -eq $false -or $para5 -eq 0){
-        $para5= 0
+        $para3 = "0,0"
     }
 
-
-    
-    $Width = $para2
-    $Height = $para3
-    $X = $para4
-    $Y = $para5
+    $Width = ($para2 -split(","))[0]
+    $Height = ($para2 -split(","))[1]
+    $X = ($para3 -split(","))[0]
+    $Y = ($para3 -split(","))[1]
+    $nonlog_flag = $para4
 
     if($PSScriptRoot.length -eq 0){
         $scriptRoot="C:\testing_AI\modules"
@@ -270,7 +262,7 @@ $tbsize = Get-TaskBarDimensions
     $tcnumber=((get-content $tcpath).split(","))[0]
     $tcstep=((get-content $tcpath).split(","))[1]
     
-    if($para1 -ne "yuv"){
+    if($nonlog_flag.Length -eq 0){
         Get-Module -name "outlog"|remove-module
         $mdpath=(gci -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
         Import-Module $mdpath -WarningAction SilentlyContinue -Global

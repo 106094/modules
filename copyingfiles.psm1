@@ -1,56 +1,58 @@
 ﻿function copyingfiles ([string]$para1,[string]$para2,[string]$para3){
     
+    #import
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     $shell=New-Object -ComObject shell.application
     $wshell=New-Object -ComObject wscript.shell
-      Add-Type -AssemblyName Microsoft.VisualBasic
-      Add-Type -AssemblyName System.Windows.Forms
+    Add-Type -AssemblyName Microsoft.VisualBasic
+    Add-Type -AssemblyName System.Windows.Forms
+
+    
+    $filepath=$para1
+    $copytopath=$para2
+    $nonlog_flag=$para3
  
- $filepath=$para1
- $copytopath=$para2
- $nonlog_flag=$para3
- 
-if($PSScriptRoot.length -eq 0){
-$scriptRoot="C:\testing_AI\modules"
-}
-else{
-$scriptRoot=$PSScriptRoot
-}
+    if($PSScriptRoot.length -eq 0){
+      $scriptRoot="C:\testing_AI\modules"
+    }
+    else{
+      $scriptRoot=$PSScriptRoot
+    }
 
-if($filepath -match "192.168.2.249"){
-do{
-start-sleep -s 2
-$testpin= ping 192.168.2.249 /n 3
-}until( !($testpin -match "unreachable" -or $testpin -match "Request timed out" -or $testpin -match "failed"))
+    if($filepath -match "192.168.2.249"){
+      do{
+      start-sleep -s 2
+      $testpin= ping 192.168.2.249 /n 3
+      }until( !($testpin -match "unreachable" -or $testpin -match "Request timed out" -or $testpin -match "failed"))
 
 
- function netdisk_connect([string]$webpath,[string]$username,[string]$passwd,[string]$diskid){
+      function netdisk_connect([string]$webpath,[string]$username,[string]$passwd,[string]$diskid){
 
-net use $webpath /delete
-net use $webpath /user:$username $passwd /PERSISTENT:yes
- net use $webpath /SAVECRED 
+      net use $webpath /delete
+      net use $webpath /user:$username $passwd /PERSISTENT:yes
+      net use $webpath /SAVECRED 
 
- if($diskid.length -ne 0){
-  $diskpath=$diskid+":"
-  $checkdisk=net use
-   if($checkdisk -match $diskpath){net use $diskpath /delete}
-    net use $diskpath $webpath
-}
+      if($diskid.length -ne 0){
+        $diskpath=$diskid+":"
+        $checkdisk=net use
+        if($checkdisk -match $diskpath){net use $diskpath /delete}
+          net use $diskpath $webpath
+      }
 
-}
+      }
 
-netdisk_connect -webpath \\192.168.2.249\srvprj\Inventec\Dell -username pctest -passwd pctest -diskid Y
+      netdisk_connect -webpath \\192.168.2.249\srvprj\Inventec\Dell -username pctest -passwd pctest -diskid Y
 
- $filepath= $filepath.replace("\\192.168.2.249\srvprj\Inventec\Dell","Y:")
+      $filepath= $filepath.replace("\\192.168.2.249\srvprj\Inventec\Dell","Y:")
 
- }
+    }
 
-$waitc=0
-do{
-start-sleep -s 2
-$checkfilelink=(test-path  $filepath)
-$waitc++
-}until($checkfilelink -or $waitc -gt 30)
+    $waitc=0
+    do{
+    start-sleep -s 2
+    $checkfilelink=(test-path  $filepath)
+    $waitc++
+    }until($checkfilelink -or $waitc -gt 30)
 
 if ($waitc -le 30 -and $checkfilelink){
 
