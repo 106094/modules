@@ -93,9 +93,7 @@ $appname="msinfo32"
           Start-Sleep -s 10
           
 &$actionmd  -para3 nonlog -para5 "2"
-   
-
-       
+    
        [System.Windows.Forms.SendKeys]::SendWait("{PGDN}")
           Start-Sleep -s 10
           
@@ -125,9 +123,9 @@ Import-Module $mdpath -WarningAction SilentlyContinue -Global
 #write-host "Do $action!"
 outlog $action $results $tcnumber $tcstep $index
 
-  }
+}
 
-  }
+}
 
   
     export-modulemember -Function check_msinfo32
