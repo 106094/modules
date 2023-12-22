@@ -1,5 +1,4 @@
-﻿
-function　add_web_credential ([string]$para1,[string]$para2,[string]$para3,[string]$para4){
+﻿function　add_web_credential ([string]$para1,[string]$para2,[string]$para3,[string]$para4){
       
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     $wshell=New-Object -ComObject wscript.shell
