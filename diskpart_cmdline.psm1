@@ -205,13 +205,13 @@ $pardisk=@("select disk #","clean","convert gpt","list disk",`
 "create partition primary size=4096","format fs=fat32 quick","assign letter=F",`
 "create partition primary size=1024","format fs=ntfs quick","assign letter=G","list volume")
 
-$add1v_ext23=@("select disk $($disk1)","create volume simple disk=$($disk1)",`
+$add1v_ext23=@("select disk $($disk1)","create volume simple size=512000 disk=$($disk1) ",`
 "select volume 3","extent disk $($disk2)","extent disk $($disk3)","assign letter=D",`
 "format fs=ntfs quick","list volume")
 
 $stripedisk=@("list volume","select volume $($volno)","format fs=ntfs quick",`
 "delete volume","list disk","select disk $($disk1)",`
-"create volume stripe disk=$($disk1),$($disk2),$($disk3)",`
+"create volume stripe disk=$($disk1),$($disk2),$($disk3) size= 512000",`
 "assign letter=D","format fs=ntfs quick","list volume")
 
 $detdisk=@("list disk","select disk #","det disk")
