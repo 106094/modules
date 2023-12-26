@@ -1,4 +1,5 @@
 ﻿
+
 function diskpart_cmdline ([string]$para1,[string]$para2,[string]$para3,[string]$para4,[string]$para5){
       
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
