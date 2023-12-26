@@ -207,7 +207,7 @@ $pardisk=@("select disk #","clean","convert gpt","list disk",`
 "create partition primary size=1024","format fs=ntfs quick","assign letter=G","list volume")
 
 $add1v_ext23=@("select disk $($disk1)","create volume simple size=512000 disk=$($disk1) ",`
-"select volume 3","extent disk $($disk2)","extend disk $($disk3)","assign letter=D",`
+"select volume 3","extend disk $($disk2)","extend disk $($disk3)","assign letter=D",`
 "format fs=ntfs quick","list volume")
 
 $stripedisk=@("list volume","select volume $($volno)","format fs=ntfs quick",`
