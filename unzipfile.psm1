@@ -49,7 +49,7 @@ $logpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
 if(-not(test-path $logpath)){new-item -ItemType directory -path $logpath -Force|Out-Null}
 if($zipfolder.length -eq 0){$zipfolder=$logpath}
 
-$zipfiles= Get-ChildItem $zipfolder -Recurse |?{$_.name -like "$zipname*.zip"}
+$zipfiles= Get-ChildItem $zipfolder -Recurse |Where-Object {$_.name -like "$zipname*" -and $_.Extension -match "zip"}
 
  
 if (($zipfiles.FullName).count -eq 0){
