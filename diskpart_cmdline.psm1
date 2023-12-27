@@ -332,7 +332,7 @@ diskpcmd "list disk"
 
 if($dpcmdline.length -gt 0){
     if ($dpcmdline -match "add1v_ext23" -or $dpcmdline -match "stripe"){
-        diskpcmd $diskpcmds_new
+        diskpcmd $diskpcmds
     }
     else{
         foreach($disknu in $diskall){
