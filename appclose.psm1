@@ -38,7 +38,7 @@ $appname=$para1
 if($appname -match "^cmd\b"){
 $cmdcount=((Get-Process -Name cmd -ErrorAction SilentlyContinue).id).count
 if($cmdcount -gt 1){
-$appchecks=Get-Process -Name cmd -ErrorAction SilentlyContinue|sort processtime|select -last 1
+$appchecks=Get-Process -Name cmd -ErrorAction SilentlyContinue|Sort-Object StartTime|Select-Object -last 1
 Stop-Process -id $appchecks.Id
 &$actionss -para3 "nolog" -para5 "$($appname)_close"
 $results="OK"
