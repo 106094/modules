@@ -331,12 +331,13 @@ diskpcmd "list disk"
 # diskpart cmd start#
 
 if($dpcmdline.length -gt 0){
+    $diskpcmds_new=$diskpcmds.replace("##",$assingletter)
     if ($dpcmdline -match "add1v_ext23" -or $dpcmdline -match "stripe"){
         diskpcmd $diskpcmds
     }
     else{
         foreach($disknu in $diskall){
-        $diskpcmds_new=$diskpcmds.replace("##",$assingletter)
+        
         $size1 = (((Get-Disk -Number $disknu).Size/1GB)-8)*1024
         $diskpcmds_new=$diskpcmds_new.replace("#size",$size1)
         $diskpcmds_new=$diskpcmds_new.replace("#",$disknu)
