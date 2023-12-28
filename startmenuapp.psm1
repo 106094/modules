@@ -29,8 +29,8 @@ $source = @"
           }
       }
   }
-  "@
-  Add-Type -TypeDefinition $source -ReferencedAssemblies "System.Windows.Forms"
+"@
+Add-Type -TypeDefinition $source -ReferencedAssemblies "System.Windows.Forms"
 
 if($PSScriptRoot.length -eq 0){
 $scriptRoot="C:\testing_AI\modules"
