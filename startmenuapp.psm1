@@ -1,38 +1,36 @@
-﻿
-function　startmenuapp ([string]$para1,[int64]$para2,[string]$para3){
+﻿function startmenuapp ([string]$para1,[int64]$para2,[string]$para3){
       
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     $wshell=New-Object -ComObject wscript.shell
       Add-Type -AssemblyName Microsoft.VisualBasic
       Add-Type -AssemblyName System.Windows.Forms
-      Add-Type -AssemblyName System.Windows.Forms,System.Drawing
+      Add-Type -AssemblyName System.Windows.Forms,System.Drawing     
       
-      
-  $source = @"
-using System;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices;
-using System.Windows.Forms;
-namespace KeySends
-{
-    public class KeySend
-    {
-        [DllImport("user32.dll")]
-        public static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
-        private const int KEYEVENTF_EXTENDEDKEY = 1;
-        private const int KEYEVENTF_KEYUP = 2;
-        public static void KeyDown(Keys vKey)
-        {
-            keybd_event((byte)vKey, 0, KEYEVENTF_EXTENDEDKEY, 0);
-        }
-        public static void KeyUp(Keys vKey)
-        {
-            keybd_event((byte)vKey, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
-        }
-    }
-}
-"@
-Add-Type -TypeDefinition $source -ReferencedAssemblies "System.Windows.Forms"
+$source = @"
+  using System;
+  using System.Threading.Tasks;
+  using System.Runtime.InteropServices;
+  using System.Windows.Forms;
+  namespace KeySends
+  {
+      public class KeySend
+      {
+          [DllImport("user32.dll")]
+          public static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
+          private const int KEYEVENTF_EXTENDEDKEY = 1;
+          private const int KEYEVENTF_KEYUP = 2;
+          public static void KeyDown(Keys vKey)
+          {
+              keybd_event((byte)vKey, 0, KEYEVENTF_EXTENDEDKEY, 0);
+          }
+          public static void KeyUp(Keys vKey)
+          {
+              keybd_event((byte)vKey, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+          }
+      }
+  }
+  "@
+  Add-Type -TypeDefinition $source -ReferencedAssemblies "System.Windows.Forms"
 
 if($PSScriptRoot.length -eq 0){
 $scriptRoot="C:\testing_AI\modules"
@@ -40,7 +38,6 @@ $scriptRoot="C:\testing_AI\modules"
 else{
 $scriptRoot=$PSScriptRoot
 }
-
 
 $paracheck2=$PSBoundParameters.ContainsKey('para2')
 
@@ -70,10 +67,6 @@ Get-Module -name $actionss|remove-module
 $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
-$screen = [System.Windows.Forms.Screen]::PrimaryScreen
-$bounds = $screen.Bounds
-$width=$bounds.Width
-$height=$bounds.Height
 $skipprun=$false
 
 $results="check"
@@ -114,7 +107,7 @@ if($skipprun -eq $true){
 
 $timenow=get-date -format "yyMMdd_HHmmss"
 $logpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\$timenow_step$($tcstep)_premiercolor_skipinfo.txt"
-$messg="The monitor(s) not supprot premiercolor:"+"`n"+($monitors|out-string) 
+$messg=$timenow+"`n"+"The monitor(s) not supprot premiercolor:"+"`n"+($monitors|out-string) 
 set-content -path $logpath -value $messg
 $results="-"
 $index="skip"
@@ -130,7 +123,6 @@ $appid=(Get-StartApps|?{$_.name -match "$appname" -AND $_.APPID -match "!"  }).a
 if(!$appid){$appid=(Get-StartApps|?{$_.name -match "$appname"}).appid}
 
 if($appid.count -eq 1){
-
 
 # Start the application
 #explorer shell:appsfolder\$appid
@@ -231,6 +223,5 @@ outlog $action $results $tcnumber $tcstep $index
   }
 
   }
-
   
     export-modulemember -Function startmenuapp
