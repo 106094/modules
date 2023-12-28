@@ -1,14 +1,12 @@
-﻿
-function　startmenuapp_ossettings ([string]$para1,[int64]$para2,[string]$para3){
-      
+﻿function startmenuapp_ossettings ([string]$para1,[int64]$para2,[string]$para3){
+     
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
-    $wshell=New-Object -ComObject wscript.shell
+     $wshell=New-Object -ComObject wscript.shell
       Add-Type -AssemblyName Microsoft.VisualBasic
       Add-Type -AssemblyName System.Windows.Forms
       Add-Type -AssemblyName System.Windows.Forms,System.Drawing
       
 #region add functions
-
  function Set-WindowState {
 	<#
 	.LINK
@@ -132,21 +130,15 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 
 $actionss ="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-Object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
-
-$screen = [System.Windows.Forms.Screen]::PrimaryScreen
-$bounds = $screen.Bounds
-$width=$bounds.Width
-$height=$bounds.Height
-
 
 #####
 
     [KeySends.KeySend]::KeyDown("LWin")
-        [KeySends.KeySend]::KeyUp("LWin")
+	[KeySends.KeySend]::KeyUp("LWin")
    
-Set-Clipboard $appname
+   Set-Clipboard $appname
 
    Start-Sleep -s 20
 
@@ -164,8 +156,8 @@ Set-Clipboard $appname
    
 ## screen capture ##
 $appname=$appname.replace(":","")
-&$actionss  -para3 nonlog　-para5 $appname
-$picfile=(gci $picpath |?{$_.name -match ".jpg"} |sort lastwritetime|select -Last 1).FullName
+&$actionss  -para3 nonlog -para5 $appname
+$picfile=(Get-ChildItem $picpath |Where-Object{$_.name -match ".jpg"} |Sort-Object lastwritetime|Select-Object -Last 1).FullName
 
 ## iso update ##
 $results="check"
@@ -175,7 +167,7 @@ $index=$picfile
 
 if($nonlog_flag.Length -eq 0){
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"
