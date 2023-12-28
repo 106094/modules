@@ -1,6 +1,6 @@
 
 
-function dcu_updatedriver (){
+function dcu_updatedriver ([string]$para1 , [string]$para2 , [string]$para3 , [string]$para4){
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     Add-Type -AssemblyName System.Windows.Forms
 
@@ -16,8 +16,8 @@ function dcu_updatedriver (){
 
     #Change txt
     #necessary item : XmlPath , DUPPath , releaseID(packageID) , vendorVersion
-    $XmlPath = "C:\Users\andyliao22060\Downloads\102634\Precision_0AAA.xml"
-    $DUPPath = "C:\Users\andyliao22060\Downloads\102634\NVIDIA-Quadro-Pxxxx-RTX-xxxx-RTX-Axxxx-Txxxx-Axxx_V21R9_WIN64_31.0.15.3770_A00.EXE"
+    $XmlPath = $para1
+    $DUPPath = $para2
     
     $firstBackslashIndex = $DUPPath.IndexOf('\')
     $diskPath = $DUPPath.Substring(0, $firstBackslashIndex+1)
@@ -30,10 +30,10 @@ function dcu_updatedriver (){
     $xmlObject.Manifest.baseLocation = $diskPath
     
     #Manifest_SoftwareComponent
-    $xmlObject.Manifest.SoftwareComponent.releaseID = "V21R9"
-    $xmlObject.Manifest.SoftwareComponent.vendorVersion = "31.0.15.3770"
+    $xmlObject.Manifest.SoftwareComponent.releaseID = $para3
+    $xmlObject.Manifest.SoftwareComponent.vendorVersion = $para4
     $xmlObject.Manifest.SoftwareComponent.path = $remainingPath
-    $xmlObject.Manifest.SoftwareComponent.packageID = "V21R9"
+    $xmlObject.Manifest.SoftwareComponent.packageID = $para3
     $xmlObject.Manifest.SoftwareComponent.size = (Get-ChildItem $DUPPath).Length
 
 
@@ -48,16 +48,12 @@ function dcu_updatedriver (){
 
 
     # Save the modified XML content to a new file
-    $ModifiedXmlPath = "C:\Users\andyliao22060\Downloads\102634\Precision_0AAA_2.xml"
-    $xmlObject.Save($ModifiedXmlPath)
-    #$modifiedXmlString = $xmlObject.OuterXml
-    #$modifiedXmlString | Out-File -FilePath "C:\Users\andyliao22060\Downloads\102634\Precision_0AAA_2.xml" -Encoding UTF8 -Append -NoNewline
-
+    $xmlObject.Save($XmlPath)
 
 
     ######### write log #######
     Get-Module -name "outlog"|remove-module
-    $mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-Object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     #write-host "Do $action!"
