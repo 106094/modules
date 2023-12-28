@@ -61,37 +61,37 @@ function dcu_updatedriver ([string]$para1 , [string]$para2 , [string]$para3 , [s
     &$actionsa -para1 "dell command" -para3 "nonlog"
 
     Start-Sleep -s 20
-    [System.Windows.Forms.SendKeys]::Sendwait({"TAB"})
+    [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
     Start-Sleep -s 5
-    [System.Windows.Forms.SendKeys]::Sendwait({"ENTER"})
+    [System.Windows.Forms.SendKeys]::Sendwait("{ENTER}")
     Start-Sleep -s 5
-    [System.Windows.Forms.SendKeys]::Sendwait({"TAB 9"})
+    [System.Windows.Forms.SendKeys]::Sendwait("{TAB 9}")
     Start-Sleep -s 5
-    [System.Windows.Forms.SendKeys]::Sendwait({"+"})
+    [System.Windows.Forms.SendKeys]::Sendwait("{+}")
     Start-Sleep -s 5
-    [System.Windows.Forms.SendKeys]::Sendwait({"TAB 3"})
+    [System.Windows.Forms.SendKeys]::Sendwait("{TAB 3}")
     Start-Sleep -s 5
-    [System.Windows.Forms.SendKeys]::Sendwait({"ENTER"})
+    [System.Windows.Forms.SendKeys]::Sendwait("{ENTER}")
     Start-Sleep -s 5
     [System.Windows.Forms.SendKeys]::Sendwait($XmlPath)
     Start-Sleep -s 5
-    [System.Windows.Forms.SendKeys]::Sendwait({"ENTER"})
+    [System.Windows.Forms.SendKeys]::Sendwait("{ENTER}")
     Start-Sleep -s 5
-    [System.Windows.Forms.SendKeys]::Sendwait({"TAB"})
+    [System.Windows.Forms.SendKeys]::Sendwait("{TAB}")
     Start-Sleep -s 5
-    [System.Windows.Forms.SendKeys]::Sendwait({"ENTER"})
+    [System.Windows.Forms.SendKeys]::Sendwait("{ENTER}")
     Start-Sleep -s 5
-    [System.Windows.Forms.SendKeys]::Sendwait({"TAB 6"})
+    [System.Windows.Forms.SendKeys]::Sendwait("{TAB 6}")
     Start-Sleep -s 5
-    [System.Windows.Forms.SendKeys]::Sendwait({"-"})
+    [System.Windows.Forms.SendKeys]::Sendwait("{-}")
     Start-Sleep -s 5
-    [System.Windows.Forms.SendKeys]::Sendwait({"TAB 10"})
+    [System.Windows.Forms.SendKeys]::Sendwait("{TAB 10}")
     Start-Sleep -s 5
-    [System.Windows.Forms.SendKeys]::Sendwait({"ENTER"})
+    [System.Windows.Forms.SendKeys]::Sendwait("{ENTER}")
     Start-Sleep -s 5
-    [System.Windows.Forms.SendKeys]::Sendwait({"TAB 8"})
+    [System.Windows.Forms.SendKeys]::Sendwait("{TAB 8}")
     Start-Sleep -s 5
-    [System.Windows.Forms.SendKeys]::Sendwait({"ENTER"})
+    [System.Windows.Forms.SendKeys]::Sendwait("{ENTER}")
 
     #4 + 4
     #Get-Process NVMUP + DUP
