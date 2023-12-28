@@ -128,6 +128,13 @@ if($appid.count -eq 1){
 #explorer shell:appsfolder\$appid
 Start-Process "explorer.exe" "shell:appsfolder\$appId"
 
+if($appname -match "dell command"){
+    $apppath = Get-ChildItem "C:\Program Files\WindowsApps\DellInc.DellCommandUpdate*\DCU\DellCommandUpdate.exe"
+    Start-Process $apppath.FullName -Verb RunAs
+}
+
+
+
 # Wait a moment for the app to launch
 Start-Sleep -Seconds 10
 
