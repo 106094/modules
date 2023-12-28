@@ -15,23 +15,24 @@ function dcu_updatedriver (){
     $tcstep=((get-content $tcpath).split(","))[1]
 
     #Change txt
+    #necessary item : XmlPath , DUPPath , releaseID(packageID) , vendorVersion
     $XmlPath = "C:\Users\andyliao22060\Downloads\102634\Precision_0AAA.xml"
     $DUPPath = "C:\Users\andyliao22060\Downloads\102634\NVIDIA-Quadro-Pxxxx-RTX-xxxx-RTX-Axxxx-Txxxx-Axxx_V21R9_WIN64_31.0.15.3770_A00.EXE"
     
-    
-    $diskPath = Split-Path -Path $DUPPath -Qualifier
-    $remainingPath = Split-Path -Path $DUPPath -NoQualifier
-    
+    $firstBackslashIndex = $DUPPath.IndexOf('\')
+    $diskPath = $DUPPath.Substring(0, $firstBackslashIndex+1)
+    $remainingPath = $DUPPath.Substring($firstBackslashIndex+1)
+
     $XmlContent = Get-Content -Path $XmlPath
     $xmlObject = [xml]$XmlContent
 
     #Manifest
-    $xmlObject.Manifest.baseLocation = "C:\"
+    $xmlObject.Manifest.baseLocation = $diskPath
     
     #Manifest_SoftwareComponent
     $xmlObject.Manifest.SoftwareComponent.releaseID = "V21R9"
     $xmlObject.Manifest.SoftwareComponent.vendorVersion = "31.0.15.3770"
-    $xmlObject.Manifest.SoftwareComponent.path = "Users\M16\Desktop\NVIDIA-Quadro-Pxxxx-RTX-xxxx-RTX-Axxxx-Txxxx-Axxx_V21R9_WIN64_31.0.15.3770_A00.EXE"
+    $xmlObject.Manifest.SoftwareComponent.path = $remainingPath
     $xmlObject.Manifest.SoftwareComponent.packageID = "V21R9"
     $xmlObject.Manifest.SoftwareComponent.size = (Get-ChildItem $DUPPath).Length
 
