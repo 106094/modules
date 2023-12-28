@@ -1,5 +1,5 @@
 ﻿
-function　iso_upgrade ([string]$para1,[string]$para2){
+function iso_upgrade ([string]$para1,[string]$para2){
       
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     $wshell=New-Object -ComObject wscript.shell
@@ -49,8 +49,8 @@ if($Version.CurrentBuildNumber -ge 22000){
 $winflag="Win11"
 }
 
-if($isofile.Length -eq 0){ $isopath=(gci　$picpath　-Recurse |?{$_.name -match "\.iso"}|?{$_.fullname -match $winflag}).FullName}
-else{$isopath=(gci　$picpath　-Recurse |?{$_.name -match "\.iso" -and $_.name -match $isofile }).FullName}
+if($isofile.Length -eq 0){ $isopath=(gci $picpath -Recurse |Where-Object{$_.name -match "\.iso"}|Where-Object{$_.fullname -match $winflag}).FullName}
+else{$isopath=(Get-ChildItem $picpath -Recurse |Where-Object{$_.name -match "\.iso" -and $_.name -match $isofile }).FullName}
 if($isopath.length -eq 0 -or $isopath.count -ne 1){
 $results="NG"
 $index=$index+@("no iso file or multi iso file is found")
@@ -80,7 +80,7 @@ $nowtime=Get-Date
 #$installiso= &$osup /auto upgrade /eula accept /quiet /migratedrivers all /DynamicUpdate disable /Finalize
 #https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/windows-setup-command-line-options?view=windows-11
 #$installiso= &$osup /auto upgrade /eula accept /SkipFinalize /quiet /migratedrivers all /DynamicUpdate disable　/ShowOOBE none
-$installiso= &$osup /auto upgrade /eula accept /quiet /migratedrivers all /DynamicUpdate disable　/ShowOOBE none
+$installiso= &$osup /auto upgrade /eula accept /quiet /migratedrivers all /DynamicUpdate disable /ShowOOBE none
 
 do{
 Start-Sleep -s 10
@@ -135,7 +135,7 @@ write-host "$results,$index"
 
 if($nonlog_flag.Length -eq 0){
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-Object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"
