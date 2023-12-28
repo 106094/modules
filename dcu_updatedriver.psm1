@@ -44,7 +44,7 @@ function dcu_updatedriver ([string]$para1 , [string]$para2 , [string]$para3 , [s
     $xmlObject.Manifest.SoftwareComponent.vendorVersion = $para4
     $xmlObject.Manifest.SoftwareComponent.path = $remainingPath
     $xmlObject.Manifest.SoftwareComponent.packageID = $para3
-    $xmlObject.Manifest.SoftwareComponent.size = (Get-ChildItem $DUPPath).Length
+    $xmlObject.Manifest.SoftwareComponent.size = (Get-ChildItem $DUPPath).Length.ToString()
 
     #Get DUP hash
     $hash_MD5 = Get-FileHash -Path $DUPPath -Algorithm MD5
