@@ -52,8 +52,8 @@ function dcu_updatedriver ([string]$para1 , [string]$para2 , [string]$para3 , [s
     $hash_SHA1 = Get-FileHash -Path $DUPPath -Algorithm SHA1
     #Chang Hash code
     $xmlObject.Manifest.SoftwareComponent.Cryptography.Hash[0].'#text' = $hash_MD5.hash
-    $xmlObject.Manifest.SoftwareComponent.Cryptography.Hash[1].'#text' = $hash_SHA256
-    $xmlObject.Manifest.SoftwareComponent.Cryptography.Hash[2].'#text' = $hash_SHA1
+    $xmlObject.Manifest.SoftwareComponent.Cryptography.Hash[1].'#text' = $hash_SHA256.hash
+    $xmlObject.Manifest.SoftwareComponent.Cryptography.Hash[2].'#text' = $hash_SHA1.hash
 
     # Save the modified XML content to a new file
     $xmlObject.Save($XmlPath)
