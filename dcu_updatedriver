@@ -18,6 +18,7 @@ function dcu_updatedriver (){
     $XmlPath = "C:\Users\andyliao22060\Downloads\102634\Precision_0AAA.xml"
     $DUPPath = "C:\Users\andyliao22060\Downloads\102634\NVIDIA-Quadro-Pxxxx-RTX-xxxx-RTX-Axxxx-Txxxx-Axxx_V21R9_WIN64_31.0.15.3770_A00.EXE"
     
+    
     $diskPath = Split-Path -Path $DUPPath -Qualifier
     $remainingPath = Split-Path -Path $DUPPath -NoQualifier
     
