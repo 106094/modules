@@ -212,7 +212,7 @@ $add1v_ext23=@("select disk $($disk1)","create volume simple size=170667 disk=$(
 
 $stripedisk=@("list volume","select volume $($volno)","format fs=ntfs quick",`
 "delete volume","list disk","select disk $($disk1)",`
-"create volume stripe disk=$($disk1),$($disk2),$($disk3) size= 512000",`
+"create volume stripe disk=$($disk1),$($disk2),$($disk3) size= 170667",`
 "assign letter=D","format fs=ntfs quick","list volume")
 
 $detdisk=@("list disk","select disk #","det disk")
