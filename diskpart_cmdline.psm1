@@ -212,7 +212,7 @@ $add1v_ext23=@("select disk $($disk1)","create volume simple size=170667 disk=$(
 
 $stripedisk=@("list volume","select volume $($volno)","format fs=ntfs quick",`
 "delete volume","list disk","select disk $($disk1)",`
-"create volume stripe disk=$($disk1),$($disk2),$($disk3) size= 170667",`
+"create volume stripe disk=$($disk1),$($disk2),$($disk3) size= 512000",`
 "assign letter=D","format fs=ntfs quick","list volume")
 
 $detdisk=@("list disk","select disk #","det disk")
@@ -331,18 +331,17 @@ diskpcmd "list disk"
 # diskpart cmd start#
 
 if($dpcmdline.length -gt 0){
-    $diskpcmds_new=$diskpcmds.replace("##",$assingletter)
     if ($dpcmdline -match "add1v_ext23" -or $dpcmdline -match "stripe"){
-        diskpcmd $diskpcmds_new
+        diskpcmd $diskpcmds
     }
     else{
         foreach($disknu in $diskall){
-        
-        $size1 = (((Get-Disk -Number $disknu).Size/1GB)-8)*1024
-        $diskpcmds_new=$diskpcmds_new.replace("#size",$size1)
-        $diskpcmds_new=$diskpcmds_new.replace("#",$disknu)
-        diskpcmd $diskpcmds_new
-    }
+            $diskpcmds_new=$diskpcmds.replace("##",$assingletter)
+            $size1 = (((Get-Disk -Number $disknu).Size/1GB)-8)*1024
+            $diskpcmds_new=$diskpcmds_new.replace("#size",$size1)
+            $diskpcmds_new=$diskpcmds_new.replace("#",$disknu)
+            diskpcmd $diskpcmds_new
+        }
 }
 
 #get list disk at the end again#
