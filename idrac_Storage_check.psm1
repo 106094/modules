@@ -31,14 +31,20 @@ function idrac_Storage_check ([string]$para1,[string]$para2){
     $idracuser=$idracinfo[1]
     $idracpwd=$idracinfo[2]
 
-    gci  "C:\testing_AI\modules\selenium\WebDriver.dll" |Unblock-File 
+
+    Get-ChildItem "C:\testing_AI\modules\selenium\*.dll" |Unblock-File 
+    
+    Add-Type -Path "C:\testing_AI\modules\selenium\Newtonsoft.Json.dll"
     Add-Type -Path "C:\testing_AI\modules\selenium\WebDriver.dll"
 
-    try{$driver = New-Object OpenQA.Selenium.Edge.EdgeDriver}
-    catch{
-    $results="NG"
-    $index="fail to install web driver"
-    }
+        try{
+            $edgeOptions = New-Object OpenQA.Selenium.Edge.EdgeOptions
+            $driver = New-Object OpenQA.Selenium.Edge.EdgeDriver("C:\testing_AI\modules\selenium\msedgedriver.exe", $edgeOptions)
+        }
+            catch{
+            $results="NG"
+            $index="fail to install web driver"
+            }
 
     if($results -ne "NG"){
     
@@ -46,15 +52,16 @@ function idrac_Storage_check ([string]$para1,[string]$para2){
     $actions = New-Object OpenQA.Selenium.Interactions.Actions($driver)
 
     $driver.Manage().Window.Maximize()
+    $driver.Manage().Window.Maximize()
     $driver.Navigate().GoToUrl("https://$idracip")
 
     start-sleep -s 10
 
-    $detailbt=$driver.FindElement([OpenQA.Selenium.By]:: ID("details-button"))
-    if($detailbt -ne $null){ 
+    $detailbt=$driver.FindElement([OpenQA.Selenium.By]::ID("details-button"))
+    if($detailbt.Text -eq "Advanced"){ 
         $detailbt.click()
         start-sleep -s 2
-        $detailbt2=$driver.FindElement([OpenQA.Selenium.By]:: ID("proceed-link"))
+        $detailbt2=$driver.FindElement([OpenQA.Selenium.By]::ID("proceed-link"))
         $detailbt2.click()
     }
 
