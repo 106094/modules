@@ -5,20 +5,20 @@
       Add-Type -AssemblyName Microsoft.VisualBasic
        Add-Type -AssemblyName System.Windows.Forms
         Add-Type -AssemblyName System.Windows.Forms,System.Drawing
-       
-$paracheck1=$PSBoundParameters.ContainsKey('para1')
+            
+      $paracheck1=$PSBoundParameters.ContainsKey('para1')
 
-if($paracheck1 -eq $false -or $para1.Length -eq 0){
-$para1="enable"
-}else{
-$para1="disable"
-}
+      if($paracheck1 -eq $false -or $para1.Length -eq 0){
+      $para1="enable"
+      }else{
+      $para1="disable"
+      }
 
-if($PSScriptRoot.length -eq 0){
-$scriptRoot="C:\testing_AI\modules"
-}else{
-$scriptRoot=$PSScriptRoot
-}
+      if($PSScriptRoot.length -eq 0){
+      $scriptRoot="C:\testing_AI\modules"
+      }else{
+      $scriptRoot=$PSScriptRoot
+      }
 
  function Set-WindowState {
 	<#
@@ -283,7 +283,6 @@ start-sleep -s 10
 
 start-sleep -s 20
  
-
  $idsetconn=$driver.FindElement([OpenQA.Selenium.By]::Id( "settings.connectivity"))
  $idsetconn.Click()
 
@@ -449,12 +448,14 @@ $index=$index|Out-String
 
 ### write to log ###
 
-Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-Object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
-Import-Module $mdpath -WarningAction SilentlyContinue -Global
+  Get-Module -name "outlog"|remove-module
+  $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-Object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+  Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
-#write-host "Do $action!"
-outlog $action $results  $tcnumber $tcstep $index
-
+  #write-host "Do $action!"
+  outlog $action $results  $tcnumber $tcstep $index
 
   }
+
+  
+  export-modulemember -Function ipmisettings
