@@ -248,22 +248,26 @@ $tbsize = Get-TaskBarDimensions
     $paracheck3=$PSBoundParameters.ContainsKey('para3')
     $paracheck4=$PSBoundParameters.ContainsKey('para4')
     
-    if($paracheck2 -eq $false -or $para2 -eq 0){
+    if($paracheck2 -eq $false -or $para2.Length -eq 0){
         $para2 = $appwindowWidth.ToString() + "," + $appwindowHeight.ToString()
     }
     if($para2 -match "max"){
         $para2 = $windowWidth.ToString() + "," + $windowHeight.ToString()
     }
-    if($paracheck3 -eq $false -or $para3 -eq 0){
+    if($paracheck3 -eq $false -or $para3.Length -eq 0 -or $para2 -match "max"){
         #$para3= $curheight - $tbsize.Height
         $para3 = "0,0"
     }
+
+    if($paracheck4 -eq $false -or $para4.length -eq 0){
+      $para4=""
+    }
+    $nonlog_flag=$para4
 
     $Width = ($para2 -split(","))[0]
     $Height = ($para2 -split(","))[1]
     $X = ($para3 -split(","))[0]
     $Y = ($para3 -split(","))[1]
-    $nonlog_flag = $para4
 
     if($PSScriptRoot.length -eq 0){
         $scriptRoot="C:\testing_AI\modules"
