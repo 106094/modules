@@ -2,6 +2,8 @@ Function Set_Window ([string]$para1,[string]$para2,[string]$para3,[string]$para4
 
 Add-Type -AssemblyName System.Windows.Forms
 
+
+
 $paracheck1=$PSBoundParameters.ContainsKey('para1')
 
 if($paracheck1 -eq $false -or $para1.Length -eq 0){
@@ -9,6 +11,71 @@ if($paracheck1 -eq $false -or $para1.Length -eq 0){
 }
 
 $ProcessName = "*$para1*"
+
+function Set-WindowState {
+	<#
+	.LINK
+	https://gist.github.com/Nora-Ballard/11240204
+	#>
+
+	[CmdletBinding(DefaultParameterSetName = 'InputObject')]
+	param(
+		[Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
+		[Object[]] $InputObject,
+
+		[Parameter(Position = 1)]
+		[ValidateSet('FORCEMINIMIZE', 'HIDE', 'MAXIMIZE', 'MINIMIZE', 'RESTORE',
+					 'SHOW', 'SHOWDEFAULT', 'SHOWMAXIMIZED', 'SHOWMINIMIZED',
+					 'SHOWMINNOACTIVE', 'SHOWNA', 'SHOWNOACTIVATE', 'SHOWNORMAL')]
+		[string] $State = 'SHOW'
+	)
+
+	Begin {
+		$WindowStates = @{
+			'FORCEMINIMIZE'		= 11
+			'HIDE'				= 0
+			'MAXIMIZE'			= 3
+			'MINIMIZE'			= 6
+			'RESTORE'			= 9
+			'SHOW'				= 5
+			'SHOWDEFAULT'		= 10
+			'SHOWMAXIMIZED'		= 3
+			'SHOWMINIMIZED'		= 2
+			'SHOWMINNOACTIVE'	= 7
+			'SHOWNA'			= 8
+			'SHOWNOACTIVATE'	= 4
+			'SHOWNORMAL'		= 1
+		}
+
+		$Win32ShowWindowAsync = Add-Type -MemberDefinition @'
+[DllImport("user32.dll")]
+public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
+'@ -Name "Win32ShowWindowAsync" -Namespace Win32Functions -PassThru
+
+		if (!$global:MainWindowHandles) {
+			$global:MainWindowHandles = @{ }
+		}
+	}
+
+	Process {
+		foreach ($process in $InputObject) {
+			if ($process.MainWindowHandle -eq 0) {
+				if ($global:MainWindowHandles.ContainsKey($process.Id)) {
+					$handle = $global:MainWindowHandles[$process.Id]
+				} else {
+					Write-Error "Main Window handle is '0'"
+					continue
+				}
+			} else {
+				$handle = $process.MainWindowHandle
+				$global:MainWindowHandles[$process.Id] = $handle
+			}
+
+			$Win32ShowWindowAsync::ShowWindowAsync($handle, $WindowStates[$State]) | Out-Null
+			Write-Verbose ("Set Window State '{1} on '{0}'" -f $MainWindowHandle, $State)
+		}
+	}
+}
 
 
 #---get window current size
@@ -35,20 +102,42 @@ $windowHandle = (Get-Process -Name $ProcessName).MainWindowHandle
 $myrect = New-Object myRECT
 [SetWindowHelper]::GetWindowRect($windowHandle, [ref]$myrect)
 
-
-
-$windowWidth = $myrect.Right - $myrect.Left
-$windowHeight = $myrect.Bottom - $myrect.Top
+$appwindowWidth = $myrect.Right - $myrect.Left
+$appwindowHeight = $myrect.Bottom - $myrect.Top
 
 #Write-Output "Window Width: $windowWidth"
 #Write-Output "Window Height: $windowHeight"
 
+Add-Type @"
+using System;
+using System.Runtime.InteropServices;
+public class PInvoke {
+    [DllImport("user32.dll")] public static extern IntPtr GetDC(IntPtr hwnd);
+    [DllImport("gdi32.dll")] public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+}
+"@
+$hdc = [PInvoke]::GetDC([IntPtr]::Zero)
+$curwidth = [PInvoke]::GetDeviceCaps($hdc, 118) # width
+$curheight = [PInvoke]::GetDeviceCaps($hdc, 117) # height
+
+$screen = [System.Windows.Forms.Screen]::PrimaryScreen
+$bounds = $screen.Bounds
+
+$currentDPI = (Get-ItemProperty -Path "HKCU:\Control Panel\Desktop\WindowMetrics" -Name AppliedDPI).AppliedDPI
+
+$dpisets=@(96,120,144,168)
+$sclsets=@(100,125,150,175)
+
+$index = $dpisets.IndexOf($currentDPI)
+$calcu = $sclsets[$index] /100
+
+$bounds.Width = $curwidth * $calcu
+$bounds.Height = $curheight * $calcu
+
+$windowwidth=$bounds.Width
+$windowheight=$bounds.Height
 
 #-------------------------------------------------------------------------------
-
-
-
-
 
 #---full screen size
     Add-Type @"
@@ -63,7 +152,6 @@ $hdc = [PInvoke]::GetDC([IntPtr]::Zero)
 $curwidth = [PInvoke]::GetDeviceCaps($hdc, 118) # width
 $curheight = [PInvoke]::GetDeviceCaps($hdc, 117) # height
 #-------------------------------------------------------------------------------
-
 
 #https://stackoverflow.com/questions/59953946/powershell-calculate-pixel-height-of-start-bar
 #---taskbar size
@@ -167,7 +255,7 @@ $tbsize = Get-TaskBarDimensions
     
     if($paracheck2 -eq $false -or $para2 -eq 0){
         #$para2= $curwidth
-        $para2 = $windowWidth.ToString() + "," + $windowHeight.ToString()
+        $para2 = $windowwidth.ToString() + "," + $windowHeight.ToString()
     }
     if($paracheck3 -eq $false -or $para3 -eq 0){
         #$para3= $curheight - $tbsize.Height
