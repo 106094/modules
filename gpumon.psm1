@@ -1,12 +1,12 @@
 ﻿
 function gpumon ([string]$para1){
       
-    Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
-    $wshell=New-Object -ComObject wscript.shell
-      Add-Type -AssemblyName Microsoft.VisualBasic
-       Add-Type -AssemblyName System.Windows.Forms
-        Add-Type -AssemblyName System.Windows.Forms,System.Drawing
-    
+  Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
+  #$wshell=New-Object -ComObject wscript.shell
+    Add-Type -AssemblyName Microsoft.VisualBasic
+     Add-Type -AssemblyName System.Windows.Forms
+      Add-Type -AssemblyName System.Windows.Forms,System.Drawing
+  
 
 $cSource = @'
 using System;
@@ -19,22 +19,22 @@ public class Clicker
 [StructLayout(LayoutKind.Sequential)]
 struct INPUT
 { 
-    public int        type; // 0 = INPUT_MOUSE,
-                            // 1 = INPUT_KEYBOARD
-                            // 2 = INPUT_HARDWARE
-    public MOUSEINPUT mi;
+  public int        type; // 0 = INPUT_MOUSE,
+                          // 1 = INPUT_KEYBOARD
+                          // 2 = INPUT_HARDWARE
+  public MOUSEINPUT mi;
 }
 
 //https://msdn.microsoft.com/en-us/library/windows/desktop/ms646273(v=vs.85).aspx
 [StructLayout(LayoutKind.Sequential)]
 struct MOUSEINPUT
 {
-    public int    dx ;
-    public int    dy ;
-    public int    mouseData ;
-    public int    dwFlags;
-    public int    time;
-    public IntPtr dwExtraInfo;
+  public int    dx ;
+  public int    dy ;
+  public int    mouseData ;
+  public int    dwFlags;
+  public int    time;
+  public IntPtr dwExtraInfo;
 }
 
 //This covers most use cases although complex mice may have additional buttons
@@ -59,21 +59,21 @@ extern static uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
 
 public static void LeftClickAtPoint(int x, int y)
 {
-    //Move the mouse
-    INPUT[] input = new INPUT[3];
-    input[0].mi.dx = x*(65535/System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width);
-    input[0].mi.dy = y*(65535/System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height);
-    input[0].mi.dwFlags = MOUSEEVENTF_MOVED | MOUSEEVENTF_ABSOLUTE;
-    //Left mouse button down
-    input[1].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
-    //Left mouse button up
-    input[2].mi.dwFlags = MOUSEEVENTF_LEFTUP;
-    SendInput(3, input, Marshal.SizeOf(input[0]));
+  //Move the mouse
+  INPUT[] input = new INPUT[3];
+  input[0].mi.dx = x*(65535/System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width);
+  input[0].mi.dy = y*(65535/System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height);
+  input[0].mi.dwFlags = MOUSEEVENTF_MOVED | MOUSEEVENTF_ABSOLUTE;
+  //Left mouse button down
+  input[1].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+  //Left mouse button up
+  input[2].mi.dwFlags = MOUSEEVENTF_LEFTUP;
+  SendInput(3, input, Marshal.SizeOf(input[0]));
 }
 }
 '@
 Add-Type -TypeDefinition $cSource -ReferencedAssemblies System.Windows.Forms,System.Drawing
-     
+   
 if($PSScriptRoot.length -eq 0){
 $scriptRoot="C:\testing_AI\modules"
 }
@@ -93,20 +93,14 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 
 $actionmd ="screenshot"
 Get-Module -name $actionmd|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(get-childitem -path $scriptRoot -r -file |where-object{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
-
-$screen = [System.Windows.Forms.Screen]::PrimaryScreen
-$bounds = $screen.Bounds
-$width  = $bounds.Width
-$height = $bounds.Height
-
 
 $checkgfx=(Get-WmiObject -Class Win32_VideoController | Select-Object Name,AdapterCompatibility).name
 if($checkgfx -match "amd"){
 $results="na"
- $index="AMD Gfx Driver, by pass"+"`n" `
-  +"Refer to https://developer.nvidia.com/rtx/path-tracing/nvapi/get-started, NVAPI is NVIDIA's core software development kit, that supported on NVIDIA graphics card."
+$index="AMD Gfx Driver, by pass"+"`n" `
++"Refer to https://developer.nvidia.com/rtx/path-tracing/nvapi/get-started, NVAPI is NVIDIA's core software development kit, that supported on NVIDIA graphics card."
 }
 
 else{
@@ -114,96 +108,94 @@ else{
 
 if($actiontype -match "start"){    
 
- &"$scriptRoot\GPUMon\GPUMon.exe"
- start-sleep -s 10
- $gpumid=(get-process -name GPUMon).Id
-  [Microsoft.VisualBasic.Interaction]::AppActivate($gpumid)
-    Start-Sleep -s 1
-  [System.Windows.Forms.SendKeys]::SendWait("{tab 14}")
-   Start-Sleep -s 2
-   
- ## screenshot ##
+&"$scriptRoot\GPUMon\GPUMon.exe"
+start-sleep -s 10
+$gpumid=(get-process -name GPUMon).Id
+[Microsoft.VisualBasic.Interaction]::AppActivate($gpumid)
+  Start-Sleep -s 1
+[System.Windows.Forms.SendKeys]::SendWait("{tab 14}")
+ Start-Sleep -s 2
+ 
+## screenshot ##
 
 &$actionmd  -para3 nonlog -para5 "$actiontype_tab14"
 
-$picfile1=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "$actiontype_tab14" }|sort lastwritetime|select -last1).FullName
+$picfile1=(get-childitem $picpath |where-object{$_.name -match ".jpg" -and $_.name -match "$actiontype_tab14" }|sort-object lastwritetime|select-object -last1).FullName
 
-   [System.Windows.Forms.SendKeys]::SendWait("~")
-    Start-Sleep -s 2
+ [System.Windows.Forms.SendKeys]::SendWait("~")
+  Start-Sleep -s 2
 
- $gpumid=(get-process -name GPUMon -ErrorAction SilentlyContinue).Id
+$gpumid=(get-process -name GPUMon -ErrorAction SilentlyContinue).Id
 
 if(-not($gpumid)){
- &"$scriptRoot\GPUMon\GPUMon.exe"
- start-sleep -s 10
- $gpumid=(get-process -name GPUMon).Id
-  [Microsoft.VisualBasic.Interaction]::AppActivate($gpumid)
-    Start-Sleep -s 1
-  [System.Windows.Forms.SendKeys]::SendWait("{tab 13}")
-      Start-Sleep -s 2
+&"$scriptRoot\GPUMon\GPUMon.exe"
+start-sleep -s 10
+$gpumid=(get-process -name GPUMon).Id
+[Microsoft.VisualBasic.Interaction]::AppActivate($gpumid)
+  Start-Sleep -s 1
+[System.Windows.Forms.SendKeys]::SendWait("{tab 13}")
+    Start-Sleep -s 2
 
 
 
 &$actionmd  -para3 nonlog -para5 "$actiontype_tab13"
 
-$picfile2=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "$actiontype_tab13" }|sort lastwritetime|select -last1).FullName
-        
-   [System.Windows.Forms.SendKeys]::SendWait("~")
-     Start-Sleep -s 2
-   }
-   
- $gpumid=(get-process -name GPUMon).Id
-
-  if($gpumid){
-
- ## screenshot ##
-
+$picfile2=(get-childitem $picpath |where-object{$_.name -match ".jpg" -and $_.name -match "$actiontype_tab13" }|sort-object lastwritetime|select-object -last1).FullName
+      
+ [System.Windows.Forms.SendKeys]::SendWait("~")
+   Start-Sleep -s 2
+ }
  
+$gpumid=(get-process -name GPUMon).Id
+
+if($gpumid){
+
+## screenshot ##
+
+
 &$actionmd  -para3 nonlog -para5 "clickstart"
 
-$picfile3=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "clickstart" }|sort lastwritetime|select -last1).FullName
-
+#$picfile3=(get-childitem $picpath |where-object{$_.name -match ".jpg" -and $_.name -match "clickstart" }|sort-object lastwritetime|select-object -last1).FullName
 
 start-sleep -s 1
 [System.Windows.Forms.SendKeys]::SendWait("~")
 
 $results= "check screenshot"
- $index="$picfile"
+$index="$picfile"
 }
-  else{
-  $results= "NG"
- $index="fail to start log"
-  }
+else{
+$results= "NG"
+$index="fail to start log"
+}
 
 }
-##
 
 if($actiontype -match "end"){
 
- $gpumid=(get-process -name GPUMon).Id
-   if($gpumid){
+$gpumid=(get-process -name GPUMon).Id
+ if($gpumid){
 
 $tiemcheck1=get-date
 
 do{
 start-sleep -s 2
-$checklogs=gci -path C:\testing_AI\* -Recurse  -File -Filter "GPUMon.log"|sort lastwritetime|select -last 1
+$checklogs=get-childitem -path C:\testing_AI\* -Recurse  -File -Filter "GPUMon.log"|sort-object lastwritetime|select-object -last 1
 $checktime=$checklogs.lastwritetime
 $timespan=(New-TimeSpan -start $tiemcheck1 -end  $checktime).TotalSeconds
 }until($timespan -gt 10)
 
 $newlog=$checklogs.fullname
 
- $gpumid=(get-process -name GPUMon).Id
-  [Microsoft.VisualBasic.Interaction]::AppActivate($gpumid)
-    Start-Sleep -s 1
-  [System.Windows.Forms.SendKeys]::SendWait("~")
-   Start-Sleep -s 2         
+$gpumid=(get-process -name GPUMon).Id
+[Microsoft.VisualBasic.Interaction]::AppActivate($gpumid)
+  Start-Sleep -s 1
+[System.Windows.Forms.SendKeys]::SendWait("~")
+ Start-Sleep -s 2         
 
- 
+
 &$actionmd  -para3 nonlog -para5 $actiontype
 
-$picfile4=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match $actiontype }|sort lastwritetime|select -last1).FullName
+$picfile4=(get-childitem $picpath |where-object{$_.name -match ".jpg" -and $_.name -match $actiontype }|sort-object lastwritetime|select-object -last1).FullName
 
 (get-process -name GPUMon).CloseMainWindow()
 
@@ -214,28 +206,88 @@ Move-Item  $newlog "$picpath\$($timestmp)_GPUMon.log" -Force
 $picfile=[string]::Join("`n",$picfile1,$picfile2,$picfile4)
 
 $results= "check screenshot and log"
- $index=$picfile
+$index=$picfile
 
 }
 
 else{
 $results= "NG"
- $index="no GPUMon is running"
+$index="no GPUMon is running"
 }
 
 }
+
+if($actiontype -match "GPUsettings"){    
+
+&"$scriptRoot\GPUMon\GPUMon.exe"
+start-sleep -s 10
+$gpumid=(get-process -name GPUMon).Id
+[Microsoft.VisualBasic.Interaction]::AppActivate($gpumid)
+  Start-Sleep -s 2
+  
+&$actionmd  -para3 nonlog -para5 "open"
+
+[System.Windows.Forms.SendKeys]::SendWait("{tab 3}")
+ Start-Sleep -s 2
+ 
+[System.Windows.Forms.SendKeys]::SendWait(" ")
+ Start-Sleep -s 2
+ 
+&$actionmd  -para3 nonlog -para5 "$actiontype_L0s_check"
+ Start-Sleep -s 2
+ 
+[System.Windows.Forms.SendKeys]::SendWait(" ")
+ Start-Sleep -s 2
+ 
+&$actionmd  -para3 nonlog -para5 "$actiontype_L0s_uncheck"
+
+[System.Windows.Forms.SendKeys]::SendWait("{tab}")
+ Start-Sleep -s 2
+ 
+[System.Windows.Forms.SendKeys]::SendWait(" ")
+ Start-Sleep -s 2
+ 
+ &$actionmd  -para3 nonlog -para5 "$actiontype_L1_check"
+ Start-Sleep -s 2
+ 
+[System.Windows.Forms.SendKeys]::SendWait(" ")
+
+ &$actionmd  -para3 nonlog -para5 "$actiontype_L1_uncheck"
+ 
+[System.Windows.Forms.SendKeys]::SendWait("{tab 3}")
+## screenshot ##
+
+[System.Windows.Forms.SendKeys]::SendWait("{F4}")
+&$actionmd  -para3 nonlog -para5 "$actiontype_width_expand"
+
+[System.Windows.Forms.SendKeys]::SendWait("{F4}")
+ Start-Sleep -s 2
+   [System.Windows.Forms.SendKeys]::SendWait("{tab}")
+      Start-Sleep -s 2
+     [System.Windows.Forms.SendKeys]::SendWait("{F4}")
+&$actionmd  -para3 nonlog -para5 "$actiontype_gen_expand"
+
+[System.Windows.Forms.SendKeys]::SendWait("{F4}")
+ Start-Sleep -s 2
+
+ (Get-Process -name gpumon).CloseMainWindow()
+
+ $results="OK"
+ $index="check screenshots"
+}
+
 
 }
 ######### write log #######
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(get-childitem -path "C:\testing_AI\modules\"  -r -file |where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"
 outlog $action $results $tcnumber $tcstep $index
 
 
-   }
+ }
 
-    export-modulemember -Function gpumon
+  export-modulemember -Function gpumon
