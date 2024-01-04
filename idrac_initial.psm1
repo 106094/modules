@@ -1,26 +1,24 @@
-﻿function ipmisettings ([string]$para1){
+﻿function idrac_initial ([string]$para1){
 
    Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     $wshell=New-Object -ComObject wscript.shell
       Add-Type -AssemblyName Microsoft.VisualBasic
        Add-Type -AssemblyName System.Windows.Forms
         Add-Type -AssemblyName System.Windows.Forms,System.Drawing
-       
-$paracheck1=$PSBoundParameters.ContainsKey('para1')
+            
+      $paracheck1=$PSBoundParameters.ContainsKey('para1')
 
-if($paracheck1 -eq $false -or $para1.Length -eq 0){
-$para1="enable"
-}
-else{
-$para1="disable"
-}
+      if($paracheck1 -eq $false -or $para1.Length -eq 0){
+      $para1="enable"
+      }else{
+      $para1="disable"
+      }
 
-if($PSScriptRoot.length -eq 0){
-$scriptRoot="C:\testing_AI\modules"
-}
-else{
-$scriptRoot=$PSScriptRoot
-}
+      if($PSScriptRoot.length -eq 0){
+      $scriptRoot="C:\testing_AI\modules"
+      }else{
+      $scriptRoot=$PSScriptRoot
+      }
 
  function Set-WindowState {
 	<#
@@ -158,7 +156,7 @@ Add-Type -TypeDefinition $cSource -ReferencedAssemblies System.Windows.Forms,Sys
 
 $actionss="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(get-childitem -path $scriptRoot -r -file |Where-Object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-Object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $action="ipmisettings - $changeto"
@@ -192,7 +190,7 @@ else{
 $actionmd ="selenium_prepare"
 
 Get-Module -name $actionmd|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-Object{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(get-childitem -path $scriptRoot -r -file |Where-Object {$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 &$actionmd  edge nonlog
@@ -211,8 +209,7 @@ Add-Type -Path "C:\testing_AI\modules\selenium\WebDriver.dll"
   $driver = New-Object OpenQA.Selenium.Edge.EdgeDriver
   [OpenQA.Selenium.Interactions.Actions]$actions = New-Object OpenQA.Selenium.Interactions.Actions ($driver)
 
-   }
-    catch{
+   }catch{
     $results="NG"
     $index="fail to install web driver"
     }
@@ -221,8 +218,7 @@ Add-Type -Path "C:\testing_AI\modules\selenium\WebDriver.dll"
  try{
 $driver.Manage().Window.Maximize()
 $driver.Navigate().GoToUrl("https://$idracip")
-  }
-    catch{
+  } catch{
     $results="NG"
     $index="fail to install web driver"
     }
@@ -236,8 +232,9 @@ start-sleep -s 5
  $detailbt=$driver.FindElement([OpenQA.Selenium.By]:: ID("details-button"))
  }until($detailbt.Text -match "advanced")
 
- if($null -ne $detailbt){ $detailbt.click()
- start-sleep -s 2
+ if($detailbt.text -eq "Advanced"){
+  $detailbt.click()
+  start-sleep -s 2
   $detailbt2=$driver.FindElement([OpenQA.Selenium.By]:: ID("proceed-link"))
    $detailbt2.click()
       }
@@ -262,7 +259,7 @@ start-sleep -s 5
  start-sleep -s 5
 
  $radioButton=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("input[type='radio'][name='pwd_option'][value='1']"))
-  if( $null -ne $radioButton){
+  if(  $null -ne $radioButton ){
   $radioButton.Click()
   
   $checkButton=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("input[type='checkbox'][ng-model='config.disableDCW']"))
@@ -286,7 +283,6 @@ start-sleep -s 10
 
 start-sleep -s 20
  
-
  $idsetconn=$driver.FindElement([OpenQA.Selenium.By]::Id( "settings.connectivity"))
  $idsetconn.Click()
 
@@ -337,22 +333,107 @@ Start-Sleep -s 5
 
 }
 
-&$actionss  -para3 nonlog -para5 "ipmisettings"
+#region screenshot
+$timenow=get-date -format "yyMMdd_HHmmss"
+$savepic=$picpath+"$($timenow)_step$($tcstep)_ipmisettings.jpg"
+$screenshot = $driver.GetScreenshot()
+$screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
+#endregion
 
-$picfile=(Get-ChildItem $picpath |Where-Object{$_.name -match ".jpg" -and $_.name -match "ipmisettings"}).FullName
-
-
-  $setelement = $driver.FindElement([OpenQA.Selenium.By]::Id("settings.connectivity.network.ipmilan.Enable"))
+$setelement = $driver.FindElement([OpenQA.Selenium.By]::Id("settings.connectivity.network.ipmilan.Enable"))
 $selected_option = $setelement.GetAttribute("value")
 
 if($selected_option -match $changeto){
 $results="OK"
-$index=$picfile
+$index="check screenshot"
 }
 else{
 $results="NG"
 $index="fail to change settings"
 }
+
+### revise wait time ###
+$setservice=$driver.FindElement([OpenQA.Selenium.By]::Id("settings.services"))
+$setservice.Click()
+Start-Sleep -s 5
+
+##web service ###
+$setservice2=$driver.FindElement([OpenQA.Selenium.By]::Name("multi_acc_services.webserver"))
+$setservice2.Click()
+Start-Sleep -s 5
+
+$setservice3=$driver.FindElement([OpenQA.Selenium.By]::Name("acc_services.webserver.settings"))
+$setservice3.Click()
+Start-Sleep -s 5
+
+$inputElement=$driver.FindElement([OpenQA.Selenium.By]::Id("services.webserver.settings.Timeout"))
+$inputElement.Clear()
+$inputElement.SendKeys("10800")
+Start-Sleep -s 5
+
+$applyelemet=$driver.FindElement([OpenQA.Selenium.By]::XPath(("//*[@id='services.webserver.settings']/tfoot/tr/td[2]/span[1]/button")))
+$applyelemet.Click()
+Start-Sleep -s 5  
+
+$applyok=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[ng-click='ok();'"))
+$applyok.Click()
+Start-Sleep -s 5  
+
+##doublecheck##
+$inputElement=$driver.FindElement([OpenQA.Selenium.By]::Id("services.webserver.settings.Timeout"))
+$settingvalue=$inputElement.GetAttribute("value")
+if($settingvalue -eq "10800"){
+  $index=$index+@("change web timeout settings done")
+}else{
+  $index=$index+@("change web timeout settings fail")
+  $results="NG"
+}
+
+#region screenshot
+$timenow=get-date -format "yyMMdd_HHmmss"
+$savepic=$picpath+"$($timenow)_step$($tcstep)_webservice_waittimesettings.jpg"
+$screenshot = $driver.GetScreenshot()
+$screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
+#endregion
+
+##ssh service ###
+$setservice4=$driver.FindElement([OpenQA.Selenium.By]::Name("acc_settings.services.ssh"))
+$setservice4.Click()
+Start-Sleep -s 5
+
+$inputElementssh=$driver.FindElement([OpenQA.Selenium.By]::Id("settings.services.ssh.Timeout"))
+$inputElementssh.Clear()
+$inputElementssh.SendKeys("10800")
+Start-Sleep -s 5
+
+$applyelemetssh=$driver.FindElement([OpenQA.Selenium.By]::XPath(("//*[@id='settings.services.ssh']/tfoot/tr/td[2]/span[1]/button")))
+$applyelemetssh.Click()
+Start-Sleep -s 5  
+
+$applyok=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[ng-click='ok();'"))
+$applyok.Click()
+Start-Sleep -s 5
+
+##doublecheck##
+
+$inputElementssh=$driver.FindElement([OpenQA.Selenium.By]::Id("settings.services.ssh.Timeout"))
+
+##doublecheck##
+$inputElementssh=$driver.FindElement([OpenQA.Selenium.By]::Id("services.webserver.settings.Timeout"))
+$settingvalue=$inputElementssh.GetAttribute("value")
+if($settingvalue -eq "10800"){
+  $index=$index+@("change ssh timeout settings done")
+}else{
+  $index=$index+@("change ssh timeout settings fail")
+  $results="NG"
+}
+
+#region screenshot
+$timenow=get-date -format "yyMMdd_HHmmss"
+$savepic=$picpath+"$($timenow)_step$($tcstep)_sshservice_waittimesettings.jpg"
+$screenshot = $driver.GetScreenshot()
+$screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
+#endregion
 
 ### close web ###
 
@@ -363,18 +444,18 @@ if((get-process -Name msedgedriver -ErrorAction SilentlyContinue)){Stop-Process 
 
 }
 
+$index=$index|Out-String
 
 ### write to log ###
 
-Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-Object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
-Import-Module $mdpath -WarningAction SilentlyContinue -Global
+  Get-Module -name "outlog"|remove-module
+  $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-Object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+  Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
-#write-host "Do $action!"
-outlog $action $results  $tcnumber $tcstep $index
-
+  #write-host "Do $action!"
+  outlog $action $results  $tcnumber $tcstep $index
 
   }
 
   
-  export-modulemember -Function ipmisettings
+  export-modulemember -Function idrac_initial
