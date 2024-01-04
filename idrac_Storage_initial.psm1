@@ -14,12 +14,12 @@ function idrac_Storage_initial ([string]$para1,[string]$para2){
 
     $actionsln ="selenium_prepare"
     Get-Module -name $actionsln|remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(get-childitem -path $scriptRoot -r -file |where-object{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     $actionss="screenshot"
     Get-Module -name $actionss |remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(get-childitem -path $scriptRoot -r -file |where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
         
     $action="idrac_Storage_settings"
@@ -42,14 +42,14 @@ function idrac_Storage_initial ([string]$para1,[string]$para2){
 
 $osvd=$true
 $slot0index="0"
-$osdisk=((Get-partition)|?{$_.DriveLetter -eq "C"}).Disknumber
+$osdisk=((Get-partition)|where-object{$_.DriveLetter -eq "C"}).Disknumber
 $osdisktype = (Get-PhysicalDisk | Where-Object { $_.DeviceId -eq $osdisk}).MediaType
 if($osdisktype -match "SSD"){
 $osvd=$false
 $slot0index="na"
 }
 
-    gci  "C:\testing_AI\modules\selenium\WebDriver.dll" |Unblock-File 
+    get-childitem  "C:\testing_AI\modules\selenium\WebDriver.dll" |Unblock-File 
     Add-Type -Path "C:\testing_AI\modules\selenium\WebDriver.dll"
 
     try{$driver = New-Object OpenQA.Selenium.Edge.EdgeDriver}
@@ -127,6 +127,8 @@ if($usenameinp.TagName -eq "input" ) {
     $findjudge.Click()
     start-sleep -s 10
     }
+     
+    #start the settings of storage
 
     $idsetby=$driver.FindElement([OpenQA.Selenium.By]::Id("storage"))
     $idsetby.Click()
@@ -139,6 +141,55 @@ if($usenameinp.TagName -eq "input" ) {
       }
 
 else{      
+
+  ## remove queue job records
+  
+  $taskelement=$driver.FindElement([OpenQA.Selenium.By]::Name("menu_tasks"))
+  $taskelement.Click()  
+  start-sleep -s 10
+  
+  $queueelement=$driver.FindElement([OpenQA.Selenium.By]::id("menu_jobqueue_1"))
+  $queueelement.Click()
+  start-sleep -s 10
+  
+  try{
+    $checkjobalert=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("[translate='RAC0605.Message']"))
+  }
+  catch{
+
+     Write-Output "no job records"
+     
+   $timenow=get-date -format "yyMMdd_HHmmss"
+   $savepic=$picpath+"$($timenow)_step$($tcstep)_nojobqueue.jpg"
+   $screenshot = $driver.GetScreenshot()
+   $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
+  }
+
+  if(!($checkjobalert.text -match "There are no jobs to be displayed")){
+    $checkbox = $driver.FindElement([OpenQA.Selenium.By]::CssSelector("input[type='checkbox'].ng-scope"))
+    if ($checkbox.Enabled -and -not $checkbox.Selected) {
+      $checkbox.Click()
+      start-sleep -s 10
+      $deleteButton = $driver.FindElement([OpenQA.Selenium.By]::XPath("//span[text()='Delete']"))
+      $deleteButton.Click()
+      start-sleep -s 10
+
+      $applyok=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[ng-click='ok();'"))
+      $applyok.Click()
+      start-sleep -s 10
+      
+   $timenow=get-date -format "yyMMdd_HHmmss"
+   $savepic=$picpath+"$($timenow)_step$($tcstep)_deletejobqueue.jpg"
+   $screenshot = $driver.GetScreenshot()
+   $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
+
+  }
+  }
+
+  $storage_overview=  $driver.FindElement([OpenQA.Selenium.By]::id("storage.overview"))
+  $storage_overview.Click()
+  start-sleep -s 10
+  
     $storage_pdisks=  $driver.FindElement([OpenQA.Selenium.By]::id("pdisks_2"))
     $storage_pdisks.Click()
      start-sleep -s 10
@@ -405,7 +456,9 @@ $savepic=$picpath+"$($timenow)_step$($tcstep)_DeleteVD_start.jpg"
 
   do{
 
-  try{ $storage_vdisks_check =  $driver.FindElement([OpenQA.Selenium.By]::CssSelector("span[translate='vdisks']")).Text}
+  try{ 
+  $storage_vdisks_check =  $driver.FindElement([OpenQA.Selenium.By]::CssSelector("span[translate='vdisks']")).Text
+  $storage_vdisks_check}
   catch{
    $storage_overview=  $driver.FindElement([OpenQA.Selenium.By]::id("storage.overview"))
    $storage_overview.Click()
@@ -569,7 +622,7 @@ start-sleep -s 10
 #$switch=$driver.SwitchTo().Window(($driver.WindowHandles)[-1])
 
 ## check VD creatable ##
-$idracalertText2 = ($driver.FindElements([OpenQA.Selenium.By]::TagName("idrac-alert"))|?{($_.text).Length -gt 0}).text
+$idracalertText2 = ($driver.FindElements([OpenQA.Selenium.By]::TagName("idrac-alert"))|where-object{($_.text).Length -gt 0}).text
 
 if(-not($idracalertText2 -match "Unable to create virtual disk")){
 
@@ -943,7 +996,10 @@ $savepic=$picpath+"$($timenow)_step$($tcstep)_ConvertnonRAID_start.jpg"
 
   do{
 
-  try{ $storage_pdisks_check =  $driver.FindElement([OpenQA.Selenium.By]::CssSelector("span[translate='disks']")).Text}
+  try{ 
+    $storage_pdisks_check =  $driver.FindElement([OpenQA.Selenium.By]::CssSelector("span[translate='disks']")).Text
+    $storage_pdisks_check
+  }
   catch{
    $storage_overview=  $driver.FindElement([OpenQA.Selenium.By]::id("storage.overview"))
    $storage_overview.Click()
@@ -953,8 +1009,6 @@ $savepic=$picpath+"$($timenow)_step$($tcstep)_ConvertnonRAID_start.jpg"
      start-sleep -s 10
     }
     
-
-
    $pdiskRows = $driver.FindElements([OpenQA.Selenium.By]::CssSelector("table tr"))
    $a=0
    $waitconvert=$null
@@ -1142,7 +1196,7 @@ else{
     
     if($nonlog_flag.Length -eq 0){
     Get-Module -name "outlog"|remove-module
-    $mdpath=(gci -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+    $mdpath=(get-childitem -path "C:\testing_AI\modules\" -r -file |where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     #write-host "Do $action!"
