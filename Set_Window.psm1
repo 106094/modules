@@ -2,8 +2,6 @@ Function Set_Window ([string]$para1,[string]$para2,[string]$para3,[string]$para4
 
 Add-Type -AssemblyName System.Windows.Forms
 
-
-
 $paracheck1=$PSBoundParameters.ContainsKey('para1')
 
 if($paracheck1 -eq $false -or $para1.Length -eq 0){
@@ -225,7 +223,7 @@ function Get-TaskBarDimensions {
 }
 
 $tbsize = Get-TaskBarDimensions
-
+$tbsize
 #-------------------------------------------------------------------------------
 
 
@@ -353,7 +351,7 @@ $tbsize = Get-TaskBarDimensions
     
     if($nonlog_flag.Length -eq 0){
         Get-Module -name "outlog"|remove-module
-        $mdpath=(gci -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+        $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-Object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
         Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
         #write-host "Do $action!"
