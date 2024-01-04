@@ -134,7 +134,7 @@ $calcu = $sclsets[$index] /100
 $bounds.Width = $curwidth * $calcu
 $bounds.Height = $curheight * $calcu
 
-$windowwidth=$bounds.Width
+$windowWidth=$bounds.Width
 $windowheight=$bounds.Height
 
 #-------------------------------------------------------------------------------
@@ -243,19 +243,16 @@ $tbsize = Get-TaskBarDimensions
     #$X = 0
     #$Y = 0
 
-
-
-
-
-    
+   
     $paracheck2=$PSBoundParameters.ContainsKey('para2')
     $paracheck3=$PSBoundParameters.ContainsKey('para3')
     $paracheck4=$PSBoundParameters.ContainsKey('para4')
-
     
     if($paracheck2 -eq $false -or $para2 -eq 0){
-        #$para2= $curwidth
-        $para2 = $windowwidth.ToString() + "," + $windowHeight.ToString()
+        $para2 = $appwindowWidth.ToString() + "," + $appwindowHeight.ToString()
+    }
+    if($para2 -match "max"){
+        $para2 = $windowWidth.ToString() + "," + $windowHeight.ToString()
     }
     if($paracheck3 -eq $false -or $para3 -eq 0){
         #$para3= $curheight - $tbsize.Height
