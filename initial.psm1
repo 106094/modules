@@ -14,6 +14,7 @@ function initial([string]$para1,[string]$para2,[string]$para3){
 ###########  Windows Update screentshot -> ossettings_check
 ###########  Coreisolation -> ossettings_check
 ###########  copy powersettings to ini folder
+###########  turn off notification
 
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     $wshell=New-Object -ComObject wscript.shell
@@ -590,6 +591,32 @@ if(Test-Path $powerlog2 -ea SilentlyContinue){move-item $powerlog2 -Destination 
 
 }
 
+###########  turn off notification
+#by New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications" -Name "ToastEnabled" -Value 0 -PropertyType DWORD -Force
+# Define the registry path and value name
+$registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\PushNotifications"
+$valueName = "ToastEnabled"
+
+# Check if the registry path exists
+if (-not (Test-Path $registryPath)) {
+    # Create the registry path if it does not exist
+    New-Item -Path $registryPath -Force
+}
+
+# Check if the ToastEnabled property exists
+if (-not (Test-Path "$registryPath\$valueName")) {
+    # Create the ToastEnabled property and set it to 1 (enabled) by default
+    New-ItemProperty -Path $registryPath -Name $valueName -Value 0 -PropertyType DWORD -Force
+}
+
+# Now retrieve the current value of ToastEnabled
+$currentValue = Get-ItemPropertyValue -Path $registryPath -Name $valueName
+
+if ($currentValue -eq 1) {
+    # Notifications are enabled, let's disable them
+    Set-ItemProperty -Path $registryPath -Name $valueName -Value 0
+    Write-Host "Windows notifications have been disabled."
+} 
 
 ###########  record logs ########
 
