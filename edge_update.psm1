@@ -22,7 +22,7 @@ $action=((get-content $tcpath).split(","))[2]
 
  #$testconnect=($ping.Send("www.google.com", 1000)).Status
 
- $testconnect= Invoke-WebRequest -Uri "www.msn.com"
+ $testconnect= Invoke-WebRequest -Uri "www.msn.com" -UseBasicParsing 
 
  #!($testconnect -match "Success")
    if( !($testconnect)){

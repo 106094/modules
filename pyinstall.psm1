@@ -33,7 +33,7 @@ $picpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
 if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-null} 
 
 #$checklink=($ping.Send("www.google.com", 1000)).Status
-$checklink= Invoke-WebRequest -Uri "www.msn.com"
+$checklink= Invoke-WebRequest -Uri "www.msn.com" -UseBasicParsing 
 
 
 #!($checklink.Status -eq "success")

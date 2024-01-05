@@ -33,8 +33,8 @@ $logflag=$para2
 
   #$testping1=($ping.Send("192.168.2.249", 1000)).Status
   #$testping2=($ping.Send("www.google.com", 1000)).Status
-  $testping1= Invoke-WebRequest -Uri "192.168.2.249"
-  $testping2= Invoke-WebRequest -Uri "www.msn.com"
+  $testping1= Invoke-WebRequest -Uri "192.168.2.249" -UseBasicParsing 
+  $testping2= Invoke-WebRequest -Uri "www.msn.com" -UseBasicParsing 
 
   #if($testping1 -match "Success"){$connecting1="local connect ok"}
   #if($testping2 -match "Success"){$connecting2="internet connect ok"}
@@ -75,8 +75,8 @@ $netnames=(Get-NetAdapter|?{$_.status -ne "UP"}).name
   start-sleep -s 10
   #$testping01=($ping.Send("192.168.2.249", 1000)).Status
   #$testping02=($ping.Send("www.google.com", 1000)).Status
-  $testping01= Invoke-WebRequest -Uri "192.168.2.249"
-  $testping02= Invoke-WebRequest -Uri "www.msn.com"
+  $testping01= Invoke-WebRequest -Uri "192.168.2.249" -UseBasicParsing 
+  $testping02= Invoke-WebRequest -Uri "www.msn.com" -UseBasicParsing 
 
     $timepass= (New-TimeSpan -start $nowtime -end (Get-Date)).TotalSeconds
      #}until(($testping01 -match "Success" -and $testping02 -match "Success") -or $timepass -gt 100)
@@ -91,8 +91,8 @@ $netnames=(Get-NetAdapter|?{$_.status -ne "UP"}).name
        start-sleep -s 10
        #$testping01=($ping.Send("192.168.2.249", 1000)).Status
        #$testping02=($ping.Send("www.google.com", 1000)).Status
-       $testping01= Invoke-WebRequest -Uri "192.168.2.249"
-       $testping02= Invoke-WebRequest -Uri "www.msn.com"
+       $testping01= Invoke-WebRequest -Uri "192.168.2.249" -UseBasicParsing 
+       $testping02= Invoke-WebRequest -Uri "www.msn.com" -UseBasicParsing 
 
         $timepass= (New-TimeSpan -start $nowtime -end (Get-Date)).TotalSeconds
       #}until(($testping01 -match "Success" -and $testping02 -match "Success") -or $timepass -gt 100)
@@ -116,8 +116,8 @@ $netnames=(Get-NetAdapter|?{$_.status -ne "UP"}).name
   $connects=[string]::Join("`n", $connects)
   #$testping1=ping 192.168.2.249 /n 3
   #$testping2=ping www.google.com /n 3
-  $testping1= Invoke-WebRequest -Uri "192.168.2.249"
-  $testping2= Invoke-WebRequest -Uri "www.msn.com"
+  $testping1= Invoke-WebRequest -Uri "192.168.2.249" -UseBasicParsing 
+  $testping2= Invoke-WebRequest -Uri "www.msn.com" -UseBasicParsing 
 
   #$checkpin=@($testping1,$testping2,$connects)
   $checkpin=@("IP request:$($testping1.StatusDescription)","IP request:$($testping2.StatusDescription)",$connects)

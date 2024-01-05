@@ -31,7 +31,7 @@ $tcstep=((get-content $tcpath).split(","))[1]
 $ping = New-Object System.Net.NetworkInformation.Ping
 
 #$checklink=$ping.Send("www.google.com", 1000)
-$checklink= Invoke-WebRequest -Uri "www.msn.com"
+$checklink= Invoke-WebRequest -Uri "www.msn.com" -UseBasicParsing 
 
 #!($checklink.Status -eq "success")
 if(!($checklink)){
