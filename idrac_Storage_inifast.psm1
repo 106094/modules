@@ -14,21 +14,23 @@ function idrac_Storage_inifast ([string]$para1,[string]$para2){
 
     $actionsln ="selenium_prepare"
     Get-Module -name $actionsln|remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(get-childitem -path $scriptRoot -r -file |Where-Object{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     $actionss="screenshot"
     Get-Module -name $actionss |remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(get-childitem -path $scriptRoot -r -file |Where-Object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
         
-    $action="idrac_Storage_settings"
+    $action="idrac Storage fast initial -  $vdname "
     $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
     $tcnumber=((get-content $tcpath).split(","))[0]
     $tcstep=((get-content $tcpath).split(","))[1]
     $picpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
     if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-null}
-    
+    $results="OK"
+    $index="check screenshots"
+
     &$actionsln  edge nonlog
            
     $idracinfo=(get-content -path "C:\testing_AI\settings\idrac.txt").split(",")
@@ -40,14 +42,14 @@ function idrac_Storage_inifast ([string]$para1,[string]$para2){
 
 $osvd=$true
 $slot0index="0"
-$osdisk=((Get-partition)|?{$_.DriveLetter -eq "C"}).Disknumber
+$osdisk=((Get-partition)|Where-Object{$_.DriveLetter -eq "C"}).Disknumber
 $osdisktype = (Get-PhysicalDisk | Where-Object { $_.DeviceId -eq $osdisk}).MediaType
 if($osdisktype -match "SSD"){
 $osvd=$false
 $slot0index="na"
 }
 
-    gci  "C:\testing_AI\modules\selenium\WebDriver.dll" |Unblock-File 
+    get-childitem  "C:\testing_AI\modules\selenium\WebDriver.dll" |Unblock-File 
     Add-Type -Path "C:\testing_AI\modules\selenium\WebDriver.dll"
 
     try{$driver = New-Object OpenQA.Selenium.Edge.EdgeDriver}
@@ -257,7 +259,7 @@ if($questatus -match "Completed" -and "100"){  $savepic=$picpath+"$($timenow)_st
     
     if($nonlog_flag.Length -eq 0){
     Get-Module -name "outlog"|remove-module
-    $mdpath=(gci -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+    $mdpath=(get-childitem -path "C:\testing_AI\modules\" -r -file |Where-Object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     #write-host "Do $action!"
