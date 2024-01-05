@@ -32,9 +32,9 @@ else{$netname_out=$netname_out+@($adtname)}
 }
 }
 
-##Get-WmiObject win32_networkadapter | select  NetConnectionID, Description |?{$_.netconnectionid -ne $null}
+##Get-WmiObject win32_networkadapter | select  NetConnectionID, Description |Where-object{$_.netconnectionid -ne $null}
 $netcountall=(Get-NetAdapter).count
-$netnames=(((Get-NetAdapter)|?{$_.status -eq "UP"}).name)
+$netnames=(((Get-NetAdapter)|Where-object{$_.status -eq "UP"}).name)
 
 if($para1 -eq "internet"){$netnames=$netname_out}
 if($para1 -eq "local"){$netnames=$netname_internal}
@@ -43,13 +43,13 @@ $results="OK"
   #Enable-NetAdapter -Name $netname -Confirm:$false
   Disable-NetAdapter -Name $netname -Confirm:$false
   start-sleep -s 10
-  $netstatus=((Get-NetAdapter)|?{$_.Name -eq $netname}).status
+  $netstatus=((Get-NetAdapter)|Where-object{$_.Name -eq $netname}).status
   if($netstatus -eq "Up"){
   $results="NG"
   }
   }
   
-  #$netname=[string]::Join("/",((Get-NetAdapter)|?{$_.status -ne "UP"}).name)
+  #$netname=[string]::Join("/",((Get-NetAdapter)|Where-object{$_.status -ne "UP"}).name)
 
 
 if($logflag.length -eq 0){
@@ -64,7 +64,7 @@ ipconfig|set-content $ipconfigtxt
  $index="ipconfig_result.txt"
  
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

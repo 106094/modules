@@ -98,7 +98,7 @@ $logpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\step$($tcstep)_cmd
 
 $actionss="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 
@@ -130,7 +130,7 @@ Import-Module $mdpath -WarningAction SilentlyContinue -Global
      
      <#### uninstall#####
       $piplist=& invoke-Expression "pip list"
-        $check= $piplist|?{$_ -match "csg"}
+        $check= $piplist|Where-object{$_ -match "csg"}
         if  ($check.count -eq 1){ 
          $cmdline2="pip uninstall  -y $packname"  ### -y force uninstall without Proceed (Y/n)? ###
          &$cmdline2
@@ -282,7 +282,7 @@ Start-Sleep -Seconds 3
 
               ## screenshot ##
               &$actionss  -para3 nonlog -para5 "cmd_End"
-              #$picfile=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match $action }).FullName
+              #$picfile=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match $action }).FullName
               
               taskkill /PID $id2 /F  
       } 
@@ -310,7 +310,7 @@ Start-Sleep -Seconds 3
 
 if($nonlog_flag.Length -eq 0){
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 #write-host "Do $action!"
 outlog $action $results $tcnumber $tcstep $index

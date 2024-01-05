@@ -64,7 +64,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 
 $actionss ="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $skipprun=$false
@@ -79,7 +79,7 @@ if($appname.Length -gt 0){
 if($appname -match "premiercolor"){
 $skipprun=$true
 $listfile=(Split-Path -Parent $scriptRoot)+"\settings\premiercolor_monitor_list.txt"
-$monlist=(get-content $listfile)|?{$_.length -gt 0}
+$monlist=(get-content $listfile)|Where-object{$_.length -gt 0}
 $monitors = (Get-WmiObject -Namespace "root\CIMv2" -Query "SELECT * FROM Win32_PnPEntity WHERE PNPClass='Monitor'").name
 $monitors2  =Get-WmiObject -Namespace "root/WMI" -Class WmiMonitorID | ForEach-Object {
     $edidBytes = $_.UserFriendlyName
@@ -119,8 +119,8 @@ $index="skip"
 
 if($skipprun -eq $false){
  
-$appid=(Get-StartApps|?{$_.name -match "$appname" -AND $_.APPID -match "!"  }).appid
-if(!$appid){$appid=(Get-StartApps|?{$_.name -match "$appname"}).appid}
+$appid=(Get-StartApps|Where-object{$_.name -match "$appname" -AND $_.APPID -match "!"  }).appid
+if(!$appid){$appid=(Get-StartApps|Where-object{$_.name -match "$appname"}).appid}
 
 if($appid.count -eq 1){
 
@@ -221,7 +221,7 @@ else{
 
 if($nonlog_flag.Length -eq 0){
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

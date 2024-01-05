@@ -43,7 +43,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
     do{
     $cc++
     start-sleep -s 5
-    $checkfilefull=(Get-ChildItem $picpath|?{$_.name -match $checkfile}).FullName
+    $checkfilefull=(Get-ChildItem $picpath|Where-object{$_.name -match $checkfile}).FullName
     }until($checkfilefull.lenth -ne 0 -or $cc -gt 20)
 
     if( $cc -gt 20){
@@ -96,7 +96,7 @@ set-content -path $outtextpath -value $index
 ######### write log  #######
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

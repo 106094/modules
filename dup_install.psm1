@@ -162,12 +162,12 @@ $scriptRoot=$PSScriptRoot
 
 $actionexp="filexplorer"
 Get-Module -name $actionexp|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionexp\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionexp\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $actionss ="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $actiontype=$extractorinstall
@@ -185,7 +185,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 
   
  $inidrv=(Get-ChildItem "C:\testing_AI\logs\ini*\*" -r -Filter "*DriverVersion.csv"|Sort-Object lastwritetime|select -last 1).FullName
-$checktype=(import-csv $inidrv|?{$_.DeviceClass -match "DISPLAY"}).devicename
+$checktype=(import-csv $inidrv|Where-object{$_.DeviceClass -match "DISPLAY"}).devicename
 
 if($inidrv -and $checktype){
 if($checktype -match "NVIDIA"){
@@ -194,7 +194,7 @@ if($checktype -match "ada"){
 $drvtype2="NV_A6000ada"
 }
 
-$installfile=(Get-ChildItem ($scriptRoot+"\driver\GFX\$($drvtype2)\N\driver\") -File |?{$_.name -match "NVIDIA" -and $_.name -match "\.exe"} |sort lastwritetime|select -first 1).fullname
+$installfile=(Get-ChildItem ($scriptRoot+"\driver\GFX\$($drvtype2)\N\driver\") -File |Where-object{$_.name -match "NVIDIA" -and $_.name -match "\.exe"} |sort lastwritetime|select -first 1).fullname
  $installfilebn=(split-path -Leaf $installfile) -replace "\.exe",""
 
  write-host "The Display Type is $($drvtype2)"
@@ -205,7 +205,7 @@ if($checktype -match "AMD"){
     $chekdrv=$checktype -match "[a-zA-Z]\d{4}"
     if(!$chekdrv){$checktype -match "\d{4}"}
     $drvtype2="AMD_"+$matches[0]
- $installfile=(Get-ChildItem ($scriptRoot+"\driver\GFX\$($drvtype2)\N\") -File |?{$_.name -match "AMD" -and $_.name -match "\.exe" }|sort lastwritetime|select -first 1 ).fullname
+ $installfile=(Get-ChildItem ($scriptRoot+"\driver\GFX\$($drvtype2)\N\") -File |Where-object{$_.name -match "AMD" -and $_.name -match "\.exe" }|sort lastwritetime|select -first 1 ).fullname
  $installfilebn=(split-path -Leaf $installfile) -replace "\.exe",""
 
 write-host "The Display Driver is $($drvtype2)"
@@ -308,7 +308,7 @@ $windowRect = New-Object RECT
 
    do{
      start-sleep -s 5
-     $checkextract=(get-process -name "$dupname10*"|?{$_.mainwindowtitle.length -gt 0}).mainwindowtitle
+     $checkextract=(get-process -name "$dupname10*"|Where-object{$_.mainwindowtitle.length -gt 0}).mainwindowtitle
        }until($checkextract.count -gt 0)
  
     start-sleep -s 5
@@ -394,7 +394,7 @@ $windowRect = New-Object RECT
    if($dupname10 -match "NVIDIA"){
 
      Start-Sleep -s 10
-      $cmdaf=(get-process -name cmd -ea SilentlyContinue).Id|?{$_ -notin $cmdbf}
+      $cmdaf=(get-process -name cmd -ea SilentlyContinue).Id|Where-object{$_ -notin $cmdbf}
         if($cmdaf.count -gt 0){
         &$actionss -para3 nonlog -para5 "DUP_cmdwindow"
         stop-process -Id $cmdaf -Force
@@ -452,7 +452,7 @@ $windowRect2 = New-Object RECT
 
    do{
      start-sleep -s 5
-     $checkextract=(get-process -name "$dupname10*"|?{$_.mainwindowtitle.length -gt 0}).mainwindowtitle
+     $checkextract=(get-process -name "$dupname10*"|Where-object{$_.mainwindowtitle.length -gt 0}).mainwindowtitle
        }until($checkextract.count -gt 0)
  
     start-sleep -s 5
@@ -585,7 +585,7 @@ $index="no DUP filename is found"
 
 if($nonlog_flag.Length -eq 0 -or $timespanmin -gt 30){
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

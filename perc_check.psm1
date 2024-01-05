@@ -27,7 +27,7 @@ $tcstep=((get-content $tcpath).split(","))[1]
  percelog= $picpath+"$($timenow)_step$($tcstep)_percinfo.txt"
 
 $inidrv=(Get-ChildItem "C:\testing_AI\logs\ini*" -r -Filter "*DriverVersion.csv"|Sort-Object lastwritetime|select -last 1).FullName
-$percname=(import-csv $inidrv|?{$_.DeviceName -match "^PERC"}).devicename
+$percname=(import-csv $inidrv|Where-object{$_.DeviceName -match "^PERC"}).devicename
 
 $results="OK"
 $index="$percname"
@@ -41,7 +41,7 @@ Write-Host "$results, $index"
 if($nonlogflag.length -eq 0){
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

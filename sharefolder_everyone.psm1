@@ -8,7 +8,7 @@ function sharefolder_everyone() {
  
 $actionss ="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
        
       
@@ -72,7 +72,7 @@ Grant-SmbShareAccess -Name $netname -AccountName 'Everyone'　-AccessRight Full 
 
 control /name Microsoft.NetworkAndSharingCenter
 Start-Sleep -s 30
- $id=((Get-Process *)|?{$_.MainWindowTitle -match "Network"}).Id
+ $id=((Get-Process *)|Where-object{$_.MainWindowTitle -match "Network"}).Id
 
  [Microsoft.VisualBasic.interaction]::AppActivate($id)|out-null
 
@@ -168,7 +168,7 @@ $tcnumber=((get-content $tcpath).split(","))[0]
 $tcstep=((get-content $tcpath).split(","))[1]
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

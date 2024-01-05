@@ -28,7 +28,7 @@ function iometer_initial ([string]$para1,[string]$para2){
 
     $actionss="screenshot"
     Get-Module -name $actionss|remove-module
-    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
@@ -41,7 +41,7 @@ function iometer_initial ([string]$para1,[string]$para2){
 
     ## firewell open for auto tool ##
 
-    #$checkrule=(Show-NetFirewallRule |select DisplayName |?{$_.displayname -eq "AutoTool"}).count
+    #$checkrule=(Show-NetFirewallRule |select DisplayName |Where-object{$_.displayname -eq "AutoTool"}).count
 
     if (Get-NetFirewallRule -displayname "Iometer"){
         Remove-NetFirewallRule -DisplayName "Iometer"
@@ -81,7 +81,7 @@ function iometer_initial ([string]$para1,[string]$para2){
 
     if($nolog_flag.length -eq 0){
         Get-Module -name "outlog"|remove-module
-        $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+        $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
         Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
         #write-host "Do $action!"

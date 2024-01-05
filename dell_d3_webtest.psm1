@@ -126,7 +126,7 @@ $appname="Dell Digital Delivery"
 
 $actionmdI="driverinstall"
 Get-Module -name $actionmdI|remove-module
-$mdpathI=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionmdI\b" -and $_.name -match "psm1"}).fullname
+$mdpathI=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionmdI\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpathI -WarningAction SilentlyContinue -Global
 
 driverinstall -para1 "D3" -para2 "Dell-Alienware-Digital-Delivery-Application_CX6KY_WIN_5.0.62.0_A22.EXE" -para3 "Dell-Alienware-Digital-Delivery-Application_CX6KY_WIN_5.0.62.0_A22.EXE -s" -para4 "cmd" -para5 "nonlog"
@@ -166,7 +166,7 @@ if($checkd3){
 
 $actionmd="screenshot"
 Get-Module -name $actionmd|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $screen = [System.Windows.Forms.Screen]::PrimaryScreen
@@ -175,7 +175,7 @@ $width  = $bounds.Width
 $height = $bounds.Height
 
 
-(get-process msedge -ea SilentlyContinue|?{$_.MainWindowHandle -ne 0}|stop-process)
+(get-process msedge -ea SilentlyContinue|Where-object{$_.MainWindowHandle -ne 0}|stop-process)
 
 #####
 
@@ -208,7 +208,7 @@ $height = $bounds.Height
     
   do{
    Start-Sleep -s 2
-   $edgeid=(get-process msedge -ea SilentlyContinue|?{($_.MainWindowTitle).length -gt 0}).Id
+   $edgeid=(get-process msedge -ea SilentlyContinue|Where-object{($_.MainWindowTitle).length -gt 0}).Id
   }until($edgeid)
   
    Start-Sleep -s 10
@@ -242,12 +242,12 @@ $height = $bounds.Height
 
 &$actionmd  -para3 nonlog -para5 "4"
 
-get-process msedge -ea SilentlyContinue|?{$_.MainWindowHandle -ne 0}|stop-process -Force
+get-process msedge -ea SilentlyContinue|Where-object{$_.MainWindowHandle -ne 0}|stop-process -Force
 
 get-process dell.d3.uwp -ea SilentlyContinue|stop-process  -Force
 
 
-$picfiles=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action" }).FullName
+$picfiles=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "$action" }).FullName
 $picfile=[string]::join("`n",$picfiles)
 
 
@@ -263,7 +263,7 @@ $index="No D3 installed"
 ######### write log  #######
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

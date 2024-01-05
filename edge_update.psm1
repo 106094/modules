@@ -187,7 +187,7 @@ start-sleep -s 10
 function openedge{
 Start-Process msedge.exe 
  start-sleep -s 20
- $id=(Get-Process msedge |?{($_.MainWindowTitle).length -gt 0}).Id
+ $id=(Get-Process msedge |Where-object{($_.MainWindowTitle).length -gt 0}).Id
   start-sleep -s 2
   Get-Process -id $id | Set-WindowState -State MAXIMIZE
 
@@ -248,9 +248,9 @@ Start-Process msedge.exe
 
   do{   
 
-    $id=(Get-Process msedge |?{($_.MainWindowTitle).length -gt 0}).Id
+    $id=(Get-Process msedge |Where-object{($_.MainWindowTitle).length -gt 0}).Id
     if(!$id){openedge}
-     $id=(Get-Process msedge |?{($_.MainWindowTitle).length -gt 0}).Id
+     $id=(Get-Process msedge |Where-object{($_.MainWindowTitle).length -gt 0}).Id
    [Microsoft.VisualBasic.interaction]::AppActivate($id)|out-null
    start-sleep -s 2
 
@@ -344,9 +344,9 @@ if(!($content -like "*Microsoft Edge is up to date*" -and $reconnect_time -le 1)
 
  ###### check version ###
   
-    $id=(Get-Process msedge |?{($_.MainWindowTitle).length -gt 0}).Id
+    $id=(Get-Process msedge |Where-object{($_.MainWindowTitle).length -gt 0}).Id
     if(!$id){openedge}
-     $id=(Get-Process msedge |?{($_.MainWindowTitle).length -gt 0}).Id
+     $id=(Get-Process msedge |Where-object{($_.MainWindowTitle).length -gt 0}).Id
 
    Set-Clipboard -Value "about"
    start-sleep -s 5
@@ -404,7 +404,7 @@ $index="fail to update and check edge; current version is $ver"
 
 $actionsln ="selenium_prepare"
 Get-Module -name $actionsln|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 &$actionsln -para1 edge -para2 nonlog
 
@@ -416,7 +416,7 @@ Import-Module $mdpath -WarningAction SilentlyContinue -Global
 ######### write log #######
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

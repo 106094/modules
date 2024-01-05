@@ -14,12 +14,12 @@ function idrac_Storage_nonraid ([string]$para1,[string]$para2){
 
     $actionsln ="selenium_prepare"
     Get-Module -name $actionsln|remove-module
-    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     $actionss="screenshot"
     Get-Module -name $actionss |remove-module
-    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
         
     $action="idrac_Storage_settings"
@@ -42,7 +42,7 @@ function idrac_Storage_nonraid ([string]$para1,[string]$para2){
 
 $osvd=$true
 $slot0index="0"
-$osdisk=((Get-partition)|?{$_.DriveLetter -eq "C"}).Disknumber
+$osdisk=((Get-partition)|Where-object{$_.DriveLetter -eq "C"}).Disknumber
 $osdisktype = (Get-PhysicalDisk | Where-Object { $_.DeviceId -eq $osdisk}).MediaType
 if($osdisktype -match "SSD"){
 $osvd=$false
@@ -307,7 +307,7 @@ try{
     
     if($nonlog_flag.Length -eq 0){
     Get-Module -name "outlog"|remove-module
-    $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     #write-host "Do $action!"

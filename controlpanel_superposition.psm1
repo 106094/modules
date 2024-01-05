@@ -81,7 +81,7 @@ $scriptRoot=$PSScriptRoot
 
 $pcaimd="pcai"
 Get-Module -name $pcaimd|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$pcaimd\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$pcaimd\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
@@ -93,7 +93,7 @@ $path_setting2=(Get-ChildItem "$env:userprofile\AppData\Local\Packages\NVIDIACor
 $path_run=(Get-ChildItem "C:\Program Files\WindowsApps\NVIDIACorp.NVIDIAControlPane*\" -directory).fullname
  
 ### find the system gfx model ##
- $drvname=((Get-WmiObject Win32_VideoController | Select-Object name|?{$_.name -match "NVIDIA"} ).name)[0]
+ $drvname=((Get-WmiObject Win32_VideoController | Select-Object name|Where-object{$_.name -match "NVIDIA"} ).name)[0]
 
  if( $drvname){
  
@@ -123,7 +123,7 @@ $action="AMDControlpanelSettings"
 
 $startmenuappmd="startmenuapp"
 Get-Module -name $startmenuappmd|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$startmenuappmd\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$startmenuappmd\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 &$startmenuappmd -para1 "AMD software" -para3 nonlog
@@ -143,7 +143,7 @@ $index="check pcai steps"
 ######### write log #######
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

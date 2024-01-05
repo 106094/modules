@@ -120,18 +120,18 @@ else{
 
  ### open the last loop result
 
- $lastloop=(Get-ChildItem $picpath -filter "*Custom*.3dmark-result" |?{$_.Name -notmatch "FAIL"}|sort creationtime|select -last 1).fullname
+ $lastloop=(Get-ChildItem $picpath -filter "*Custom*.3dmark-result" |Where-object{$_.Name -notmatch "FAIL"}|sort creationtime|select -last 1).fullname
  start-process  $lastloop -WindowStyle Maximized
 
  start-sleep -s 180
  
- $id3=(Get-Process -name 3DMark|?{($_.MainWindowTitle).Length -ne 0}).id
+ $id3=(Get-Process -name 3DMark|Where-object{($_.MainWindowTitle).Length -ne 0}).id
  Get-Process -id $id3 | Set-WindowState -State MAXIMIZE
 ######### write log #######
 
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

@@ -29,7 +29,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 
 $actionmd="screenshot"
 Get-Module -name $actionmd|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $screen = [System.Windows.Forms.Screen]::PrimaryScreen
@@ -105,7 +105,7 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
 start-process msedge
 
   start-sleep -s 5
-$id2= (Get-Process msedge |?{($_.MainWindowTitle).Length -gt 0}).id 
+$id2= (Get-Process msedge |Where-object{($_.MainWindowTitle).Length -gt 0}).id 
 
   [Microsoft.VisualBasic.interaction]::AppActivate($id2)|out-null
    Get-Process -id $id2 | Set-WindowState -State MAXIMIZE
@@ -126,7 +126,7 @@ $index=$picfile
 ### record logs ##
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

@@ -93,7 +93,7 @@ $results="wait"
 
 $content_log=import-csv "C:\testing_AI\logs\logs_timemap.csv"
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"
@@ -120,8 +120,8 @@ remove-item C:\testing_AI\logs\wait.txt -force
 $results="OK"
 $Index= "reboot passed for $timegap minutes ($countx cycles)"
 $content_log=import-csv "C:\testing_AI\logs\logs_timemap.csv"
-($content_log |?{$_.Actions -eq $action -and $_.TC -eq $tcnumber -and $_.Step_No -eq $tcstep}).Index=$Index
-($content_log |?{$_.Actions -eq $action -and $_.TC -eq $tcnumber -and $_.Step_No -eq $tcstep}).results=$results
+($content_log |Where-object{$_.Actions -eq $action -and $_.TC -eq $tcnumber -and $_.Step_No -eq $tcstep}).Index=$Index
+($content_log |Where-object{$_.Actions -eq $action -and $_.TC -eq $tcnumber -and $_.Step_No -eq $tcstep}).results=$results
 $content_log|export-csv  "C:\testing_AI\logs\logs_timemap.csv" -NoTypeInformation
 }
 
@@ -130,8 +130,8 @@ if($checkstop -eq $false){
 $results="wait"
 $Index= "reboot passed for $timegap minutes  ($countx cycles)"
 $content_log=import-csv "C:\testing_AI\logs\logs_timemap.csv"
-($content_log |?{$_.Actions -eq $action -and $_.TC -eq $tcnumber -and $_.Step_No -eq $tcstep}).Index=$Index
-($content_log |?{$_.Actions -eq $action -and $_.TC -eq $tcnumber -and $_.Step_No -eq $tcstep}).results=$results
+($content_log |Where-object{$_.Actions -eq $action -and $_.TC -eq $tcnumber -and $_.Step_No -eq $tcstep}).Index=$Index
+($content_log |Where-object{$_.Actions -eq $action -and $_.TC -eq $tcnumber -and $_.Step_No -eq $tcstep}).results=$results
 $content_log|export-csv  "C:\testing_AI\logs\logs_timemap.csv" -NoTypeInformation
   
   Start-Sleep -s  $waittime

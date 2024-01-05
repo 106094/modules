@@ -113,52 +113,52 @@ Add-Type -TypeDefinition $source -ReferencedAssemblies "System.Windows.Forms"
     #-------------------------import module
     $actionss ="screenshot"
     Get-Module -name $actionss|remove-module
-    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     $actioncmd ="cmdline"
     Get-Module -name $actioncmd|remove-module
-    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actioncmd\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actioncmd\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     $actionsdw ="Set_Window"
     Get-Module -name $actionsdw|remove-module
-    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionsdw\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionsdw\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
     #-------------------------
     $actiontar ="taskschedule_attime_repeat"
     Get-Module -name $actiontar|remove-module
-    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actiontar\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actiontar\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     $actionS4 ="hibernaten"
     Get-Module -name $actionS4|remove-module
-    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionS4\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionS4\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     $actiontd ="taskschedule_delete"
     Get-Module -name $actiontd|remove-module
-    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actiontd\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actiontd\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
     #-------------------------
     $actionrn ="rebootn"
     Get-Module -name $actionrn|remove-module
-    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionrn\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionrn\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     #$actionsma ="startmenuapp"
     #Get-Module -name $actionsma|remove-module
-    #$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionsma\b" -and $_.name -match "psm1"}).fullname
+    #$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionsma\b" -and $_.name -match "psm1"}).fullname
     #Import-Module $mdpath -WarningAction SilentlyContinue -Global
     #-------------------------
     $actionatlog ="taskschedule_atlogin"
     Get-Module -name $actionatlog|remove-module
-    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionatlog\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionatlog\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     $actionS5 ="ipmitool_shutdown"
     Get-Module -name $actionS5|remove-module
-    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionS5\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionS5\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
     #-------------------------
 
@@ -472,7 +472,7 @@ if ($hWnd -ne [IntPtr]::Zero) {
     $results = "check-screenshot"
     #output log
     Get-Module -name "outlog"|remove-module
-    $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
     #write-host "Do $action!"
     outlog $action $results $tcnumber $tcstep $index

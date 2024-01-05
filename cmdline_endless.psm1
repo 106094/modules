@@ -98,7 +98,7 @@ $logpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\step-$($tcstep)-cm
 
 $actionss="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 
@@ -148,7 +148,7 @@ Start-Sleep -Seconds 2
 
   &$actionss  -para3 nonlog -para5 "cmd_input"
 
-  $picfile= $picfile+@((Get-ChildItem $picpath |?{$_.name -match ".jpg"}|sort creationtime|select -last 1).FullName)
+  $picfile= $picfile+@((Get-ChildItem $picpath |Where-object{$_.name -match ".jpg"}|sort creationtime|select -last 1).FullName)
 
 $wshell.SendKeys("~")
 
@@ -157,7 +157,7 @@ $wshell.SendKeys("~")
  do{  
   start-sleep -s 2
    $checkrun2=get-process -name  $calltool
-    if($checkrun1.count -ne 0){ $checkrun2=get-process -name  $calltool|?{$_.id -notin $checkrun1}}
+    if($checkrun1.count -ne 0){ $checkrun2=get-process -name  $calltool|Where-object{$_.id -notin $checkrun1}}
 
     }until($checkrun2 )
          
@@ -171,7 +171,7 @@ Start-Sleep -s 10
 
   &$actionss  -para3 nonlog -para5 "$calltool"
 
-  $picfile= $picfile+@((Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match $action }|sort creationtime|select -last 1).FullName)
+  $picfile= $picfile+@((Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match $action }|sort creationtime|select -last 1).FullName)
     
 echo %errorlevel%
 
@@ -232,7 +232,7 @@ echo %errorlevel%
   &$actionss  -para3 nonlog -para5 "cmd_end"
 
     
-   $picfile= $picfile+@((Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match $action }|sort creationtime|select -last 1).FullName)
+   $picfile= $picfile+@((Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match $action }|sort creationtime|select -last 1).FullName)
 
 $datenow=get-date -format "yyMMdd_HHmmss"
 $logpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\$($datenow)_step$($tcstep)_cmdresult.txt"
@@ -254,7 +254,7 @@ $logpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\$($datenow)_step$(
 
 if($nonlog_flag.Length -eq 0){
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

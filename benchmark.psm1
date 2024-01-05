@@ -265,7 +265,7 @@ $scriptRoot=$PSScriptRoot
 
 $actionss="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
@@ -293,9 +293,9 @@ if($bitype -match "passmark"){
  $action="passmark burnin"
 
 $bifolder= "C:\Program Files\BurnInTest\bit.exe"
-$bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match "bit" -and $_.name -match "exe"}).FullName
-$keypath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match "key"}).FullName
-$cfgpath=(Get-ChildItem "$scriptRoot\BITools\config\" -r -file |?{$_.name -match $bitconfig}).FullName
+$bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |Where-object{$_.name -match "bit" -and $_.name -match "exe"}).FullName
+$keypath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |Where-object{$_.name -match "key"}).FullName
+$cfgpath=(Get-ChildItem "$scriptRoot\BITools\config\" -r -file |Where-object{$_.name -match $bitconfig}).FullName
 
 #check $bitconfig volumn # exist ##
 if($bitconfig -match "volume"){
@@ -342,7 +342,7 @@ $bcount=($bitp.id).Count
 
    start-sleep -s 10
      
-  taskkill -pid (get-process |?{$_ -match "bit"}).Id /F
+  taskkill -pid (get-process |Where-object{$_ -match "bit"}).Id /F
 
   start-sleep -s 5
 
@@ -405,7 +405,7 @@ $bcount=($bitp.id).Count
   }
 
 
-  $cmptid= (get-process *|?{$_.MainWindowTitle -match "Program Compatibility Assistant"}).Id
+  $cmptid= (get-process *|Where-object{$_.MainWindowTitle -match "Program Compatibility Assistant"}).Id
   if ($cmptid -ne $null){
   
   [Microsoft.VisualBasic.Interaction]::AppActivate($cmptid)
@@ -447,9 +447,9 @@ if($bitype -match "furmark"){
  $durationtime=[int64]$duration*60*1000
 
 $bifolder= "C:\Program Files (x86)\Geeks3D\Benchmarks\FurMark\FurMark.exe"
-$bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match "FurMark" -and $_.name -match "exe"}).FullName
-#$keypath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match "key"}).FullName
-#$cfgpath=(Get-ChildItem "$scriptRoot\BITools\config\" -r -file |?{$_.name -match $bitconfig}).FullName
+$bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |Where-object{$_.name -match "FurMark" -and $_.name -match "exe"}).FullName
+#$keypath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |Where-object{$_.name -match "key"}).FullName
+#$cfgpath=(Get-ChildItem "$scriptRoot\BITools\config\" -r -file |Where-object{$_.name -match $bitconfig}).FullName
 
 if((test-path $bifolder) -eq $false){
 
@@ -471,7 +471,7 @@ do{
  ### check if furmark running ##
  get-process -name furmark -ErrorVariable b -ErrorAction SilentlyContinue
  if(-not (($b.CategoryInfo).Reason -match  "ProcessCommandException")){
-     taskkill -pid (get-process |?{$_ -match "furmark"}).Id /F
+     taskkill -pid (get-process |Where-object{$_ -match "furmark"}).Id /F
            start-sleep -s 2
       }
  
@@ -494,7 +494,7 @@ if($wshell.AppActivate('Geeks3D') -eq $true ){
 
 &$actionss  -para3 nonlog -para5 "$action-settings"
    
-$picfile1=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-settings" }).FullName
+$picfile1=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "$action-settings" }).FullName
 
 ## start running
 
@@ -573,7 +573,7 @@ $pic1= (Get-ChildItem -path  "C:\Program Files (x86)\Geeks3D\Benchmarks\FurMark\
 
 &$actionss  -para3 nonlog -para5 "$action-start"
    
-$picfile2=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-start" }).FullName
+$picfile2=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "$action-start" }).FullName
 
 $picfile=[string]::join("`n",$picfile1,$picfile2)
 
@@ -598,11 +598,11 @@ if($wshell.AppActivate('Geeks3D') -eq $true ){
 $bifolder= "C:\Program Files (x86)\Geeks3D\Benchmarks\FluidMark\"
 $bitprg=".\FluidMark.exe"
 
-$bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match "FluidMark" -and $_.name -match "exe"}).FullName
+$bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |Where-object{$_.name -match "FluidMark" -and $_.name -match "exe"}).FullName
 $bipath2=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file -filter "*PhysX*System*").FullName
 
-#$keypath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match "key"}).FullName
-#$cfgpath=(Get-ChildItem "$scriptRoot\BITools\config\" -r -file |?{$_.name -match $bitconfig}).FullName
+#$keypath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |Where-object{$_.name -match "key"}).FullName
+#$cfgpath=(Get-ChildItem "$scriptRoot\BITools\config\" -r -file |Where-object{$_.name -match $bitconfig}).FullName
 
 ## install##
 if((test-path  "C:\Program Files (x86)\Geeks3D\Benchmarks\FluidMark\data") -eq $false){
@@ -642,7 +642,7 @@ if($wshell.AppActivate('Geeks3D') -eq $true ){
    ### window focus ###
 
 Get-Module -name appfocus |remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^appfocus\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^appfocus\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 appfocus -para1 FluidMark
 
@@ -735,7 +735,7 @@ if($bitype -match "prime95"){
 
  $action="prime95 stress burnin"
 
- $bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match $bitype -and $_.name -match "exe"}).FullName
+ $bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |Where-object{$_.name -match $bitype -and $_.name -match "exe"}).FullName
   
   $checkrun=((get-process -Name prime95 -ErrorAction SilentlyContinue).Id).count
 
@@ -790,7 +790,7 @@ if( $wshell.AppActivate($primid) ){
       
 &$actionss  -para3 nonlog -para5 "$action-settings"
    
-$picfile1=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-settings" }).FullName
+$picfile1=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "$action-settings" }).FullName
 
    ##### go ###
 
@@ -805,7 +805,7 @@ $picfile1=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "
 
 &$actionss  -para3 nonlog -para5 "$action-start"
    
-$picfile1=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-start" }).FullName
+$picfile1=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "$action-start" }).FullName
 
 $picfile=[string]::join("`n",$picfile1,$picfile2)
 
@@ -820,7 +820,7 @@ if($bitype -match "Unigine_Valley"){
 
  $action="Unigine Valley burnin"
 
-$bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match $bitype -and $_.name -match "exe"}).FullName
+$bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |Where-object{$_.name -match $bitype -and $_.name -match "exe"}).FullName
   
   $checkprocessing1=((get-process -name Valley -ea SilentlyContinue).Id).count 
   if( $checkprocessing1 -gt 0){
@@ -846,7 +846,7 @@ if(test-path $uninstallexe){
 set-location "C:\Program Files (x86)\Unigine\Valley Benchmark 1.0\"
 start-process cmd -WindowStyle Maximized
 start-sleep -s 2
-$id3=(Get-Process cmd).Id|?{$_ -notin $id0}
+$id3=(Get-Process cmd).Id|Where-object{$_ -notin $id0}
 [Microsoft.VisualBasic.interaction]::AppActivate($id3)|out-null
 
 ### click cmd window and hit enter###
@@ -880,7 +880,7 @@ $id3=(Get-Process cmd).Id|?{$_ -notin $id0}
   
 start-process cmd -WindowStyle Maximized
 start-sleep -s 2
-$id3=(Get-Process cmd).Id|?{$_ -notin $id0}
+$id3=(Get-Process cmd).Id|Where-object{$_ -notin $id0}
 [Microsoft.VisualBasic.interaction]::AppActivate($id3)|out-null
 
 ### click cmd window and hit enter###
@@ -961,7 +961,7 @@ $runcommand="C:\Program Files (x86)\Unigine\Valley Benchmark 1.0\valley.bat"
 start-process cmd -WindowStyle Maximized
 start-sleep -s 3
 
-$id3=(Get-Process cmd).Id|?{$_ -notin $id0}
+$id3=(Get-Process cmd).Id|Where-object{$_ -notin $id0}
 [Microsoft.VisualBasic.interaction]::AppActivate($id3)|out-null
 start-sleep -s 3
 
@@ -986,7 +986,7 @@ start-sleep -s 3
        
 &$actionss  -para3 nonlog -para5 "$action-settings"
    
-$picfile1=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-settings" }).FullName
+$picfile1=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "$action-settings" }).FullName
 
    ## close settings ###
 
@@ -1030,7 +1030,7 @@ do{
 start-process cmd -WindowStyle Maximized
 start-sleep -s 3
 
-$id3=(Get-Process cmd).Id|?{$_ -notin $id0}
+$id3=(Get-Process cmd).Id|Where-object{$_ -notin $id0}
 [Microsoft.VisualBasic.interaction]::AppActivate($id3)|out-null
 start-sleep -s 3
 
@@ -1169,13 +1169,13 @@ start-sleep -s 2
 
 &$actionss  -para3 nonlog -para5 "$action_1"
 
-$picfile2=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action_1" }).FullName
+$picfile2=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "$action_1" }).FullName
 
 start-sleep -s 7
 
 &$actionss  -para3 nonlog -para5 "$action_2"
 
-$picfile3=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action_2" }).FullName
+$picfile3=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "$action_2" }).FullName
 
 $picfile=[string]::join("`n",$picfile1,$picfile2,$picfile3)
     
@@ -1204,7 +1204,7 @@ $resx=($option2.split("x"))[0]
 $resy=($option2.split("x"))[1]
 }
 
-$bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match $bitype -and $_.name -match "exe"}).FullName
+$bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |Where-object{$_.name -match $bitype -and $_.name -match "exe"}).FullName
   
   $checkprocessing1=((get-process -name "Unigine_Superposition*" -ea SilentlyContinue).Id).count + ((get-process -name launcher -ea SilentlyContinue).Id).count 
   if( $checkprocessing1 -gt 0 -or $checkprocessing2 -gt 0){
@@ -1242,7 +1242,7 @@ if(-not($checkinstall -eq $true -and $checkinstall2 -eq $true)){
   $runcommandin="$bipath /VERYSILENT"
   start-process cmd -WindowStyle Maximized
   start-sleep -s 2
-  $id3=(Get-Process cmd).Id|?{$_ -notin $id0}
+  $id3=(Get-Process cmd).Id|Where-object{$_ -notin $id0}
   [Microsoft.VisualBasic.interaction]::AppActivate($id3)|out-null
 
 ### click cmd window and hit enter###
@@ -1295,7 +1295,7 @@ $runcommand=".\launcher.exe"
   set-location -Path "C:\Program Files\Unigine\Superposition Benchmark\bin"
   start-process cmd -WindowStyle Maximized
   start-sleep -s 2
-  $id3=(Get-Process cmd).Id|?{$_ -notin $id0}
+  $id3=(Get-Process cmd).Id|Where-object{$_ -notin $id0}
   [Microsoft.VisualBasic.interaction]::AppActivate($id3)|out-null
 
 ### click cmd window and hit enter###
@@ -1527,7 +1527,7 @@ if( !($bitconfig2 -match 1)){
 
  do{
  start-sleep -s 1
-  $checksave=Get-ChildItem -path "$env:USERPROFILE/Superposition/screenshots\*" |?{$_.lastwritetime -gt $timenowa}
+  $checksave=Get-ChildItem -path "$env:USERPROFILE/Superposition/screenshots\*" |Where-object{$_.lastwritetime -gt $timenowa}
   $timegap=(New-TimeSpan -start $timenowa -End (Get-Date)).TotalSeconds
   }until($checksave -or $timegap -gt 30)
 
@@ -1623,7 +1623,7 @@ $failcopy=""
 do{
 Start-Sleep -s 5
 $checktool=test-path $copytopath
-$bipath=(Get-ChildItem "$scriptRoot\BITools\$($bitype)\" -r -file |?{$_.name -match "exe"}).FullName
+$bipath=(Get-ChildItem "$scriptRoot\BITools\$($bitype)\" -r -file |Where-object{$_.name -match "exe"}).FullName
 }until($checktool -and $bipath.Length -gt 0)
 
 ##>
@@ -1686,7 +1686,7 @@ Get-Process |   Where-Object { $_.MainWindowHandle -ne 0  } |
 }
 
 &$actionss  -para3 nonlog -para5 "3DMark_uninstall"
-$picfile=$picfile+@((Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "3DMark_uninstall" }).FullName)
+$picfile=$picfile+@((Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "3DMark_uninstall" }).FullName)
 
 }
 ##>
@@ -1770,7 +1770,7 @@ Get-Process |   Where-Object { $_.MainWindowHandle -ne 0  } |
 ## screenshot of desktop
 
 &$actionss  -para3 nonlog -para5 "installcheck"
-$picfile=$picfile+@((Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "installcheck" }).FullName)
+$picfile=$picfile+@((Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "installcheck" }).FullName)
 $picfile=$picfile|Out-String
 
   }
@@ -1836,7 +1836,7 @@ netdisk_connect -webpath \\192.168.2.249\srvprj\Inventec\Dell -username pctest -
  do{
 Start-Sleep -s 5
 $checktool=test-path $copytopath
-$bipath=(Get-ChildItem "$scriptRoot\BITools\$($bitype)\" -r -file |?{$_.name -match "PCMark8-setup.exe"}).FullName
+$bipath=(Get-ChildItem "$scriptRoot\BITools\$($bitype)\" -r -file |Where-object{$_.name -match "PCMark8-setup.exe"}).FullName
 }until($checktool -and $bipath.Length -gt 0)
 
     }
@@ -1974,7 +1974,7 @@ if($resultNG -ne $null){$results=$resultNG}
 ######### write log #######
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

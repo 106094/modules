@@ -38,7 +38,7 @@ function idrac_Storage_distribution ([string]$para1,[string]$para2,[string]$para
 
     $actionsln ="selenium_prepare"
     Get-Module -name $actionsln|remove-module
-    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
     
     &$actionsln  edge nonlog
@@ -358,7 +358,7 @@ else{
 start-sleep -s 10
 
 ## check VD creatable ##
-$idracalertText2 = ($driver.FindElements([OpenQA.Selenium.By]::TagName("idrac-alert"))|?{($_.text).Length -gt 0}).text
+$idracalertText2 = ($driver.FindElements([OpenQA.Selenium.By]::TagName("idrac-alert"))|Where-object{($_.text).Length -gt 0}).text
 
 if(-not($idracalertText2 -match "Unable to create virtual disk")){
 
@@ -628,7 +628,7 @@ try{
  if($checkflag.length -gt 0){
     $actiondpart="diskpart_cmdline"
     Get-Module -name $actiondpart |remove-module
-    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actiondpart\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actiondpart\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
         
 &$actiondpart -para1 "det" -para5 "nolog"
@@ -676,7 +676,7 @@ write-host "$results,$index"
     
     if($nonlog_flag.Length -eq 0){
     Get-Module -name "outlog"|remove-module
-    $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     #write-host "Do $action!"

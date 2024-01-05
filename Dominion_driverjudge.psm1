@@ -8,7 +8,7 @@
 
     $actioncp="copyingfiles"
     Get-Module -name $actioncp|remove-module
-    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actioncp\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actioncp\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
     
     $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
@@ -17,7 +17,7 @@
 
 
     $inidrv=(Get-ChildItem "C:\testing_AI\logs\ini*\*" -r -Filter "*DriverVersion.csv"|Sort-Object lastwritetime|select -last 1).FullName
-    $checktype=(import-csv $inidrv|?{$_.DeviceClass -match "DISPLAY"}).devicename
+    $checktype=(import-csv $inidrv|Where-object{$_.DeviceClass -match "DISPLAY"}).devicename
     
     if($inidrv -and $checktype){
         if($checktype -match "NVIDIA"){
@@ -75,7 +75,7 @@
 
     ######### write log #######
     Get-Module -name "outlog"|remove-module
-    $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     #write-host "Do $action!"

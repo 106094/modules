@@ -38,14 +38,14 @@ function rebootn ([int]$para1, [int]$para2,[string]$para3){
     Start-Sleep -s  $waittime
 
 #region check oobe
-$checkoobe1=get-process -name *|?{$_.name -match "WWAHost"}
-$checkoobe2=get-process -name *|?{$_.name -match "WebExperienceHostApp"}
+$checkoobe1=get-process -name *|Where-object{$_.name -match "WWAHost"}
+$checkoobe2=get-process -name *|Where-object{$_.name -match "WebExperienceHostApp"}
 
 if($checkoobe1 -or $checkoobe2){
 
 $actionss="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 &$actionss  -para3 nonlog -para5 "oobe"
@@ -64,7 +64,7 @@ stop-process -name WebExperienceHostApp -Force -ErrorAction SilentlyContinue
 
     $datenow=get-date -format "yyMMdd_HHmmss"
 
-    $checklogexist=Get-ChildItem $picpath |?{$_.name -match "step$($tcstep)_reboot.log"} | Sort-Object LastWriteTime -Descending | Select-Object -Last 1
+    $checklogexist=Get-ChildItem $picpath |Where-object{$_.name -match "step$($tcstep)_reboot.log"} | Sort-Object LastWriteTime -Descending | Select-Object -Last 1
     #$checklogexist= $checklogexist | Sort-Object LastWriteTime -Descending | Select-Object -Last 1
 
     if($checklogexist){
@@ -130,7 +130,7 @@ stop-process -name WebExperienceHostApp -Force -ErrorAction SilentlyContinue
         #write log
         if( $nonlog_flag.Length -eq 0){
             Get-Module -name "outlog"|remove-module
-            $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+            $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
             Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
             #write-host "Do $action!"

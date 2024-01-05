@@ -23,7 +23,7 @@ $para1="Taipei"
   
   $desid=(Get-TimeZone *).id -match $id
 
-   $timezone=(Get-TimeZone -ListAvailable|?{$_.id -match "$id" }).id
+   $timezone=(Get-TimeZone -ListAvailable|Where-object{$_.id -match "$id" }).id
     $sets=  Set-TimeZone -id $timezone -PassThru
     $index1=$sets.tostring()
     
@@ -61,7 +61,7 @@ $tcnumber=((get-content $tcpath).split(","))[0]
 $tcstep=((get-content $tcpath).split(","))[1]
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

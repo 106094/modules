@@ -17,13 +17,13 @@ function driver_uninstall_ControlPanel ([string]$para1,[string]$para2){
     if($pkgename -eq "^display\b" -or $pkgename -match "^Gfx\b" -or $pkgename -eq "^graphics\b"){
 
         $pkgename=""
-        #$drvname=(Get-WmiObject Win32_VideoController | Select-Object name|?{$_.name -match "NVIDIA"} ).name
-        #$drvname2=(Get-WmiObject Win32_VideoController | Select-Object name|?{$_.name -match "AMD"} ).name
+        #$drvname=(Get-WmiObject Win32_VideoController | Select-Object name|Where-object{$_.name -match "NVIDIA"} ).name
+        #$drvname2=(Get-WmiObject Win32_VideoController | Select-Object name|Where-object{$_.name -match "AMD"} ).name
  
  $inidrv=(Get-ChildItem "C:\testing_AI\logs\ini*" -r -Filter "*DriverVersion.csv"|Sort-Object lastwritetime|select -last 1).FullName
 
 if($inidrv){
-$drvname=(import-csv $inidrv|?{$_.DeviceClass -match "DISPLAY"}).devicename
+$drvname=(import-csv $inidrv|Where-object{$_.DeviceClass -match "DISPLAY"}).devicename
 if($drvname -match "NVIDIA"){
 $pkgename="NVIDIA"
 }
@@ -46,20 +46,20 @@ $pkgename="AMD"
     #import moudle
     $actionss="screenshot"
     Get-Module -name $actionss|remove-module
-    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     #import moudle
     $actionts="taskschedule_atlogin"
     Get-Module -name $actionts|remove-module
-    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionts\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionts\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     
     #import moudle
     $actiontsd="taskschedule_delete"
     Get-Module -name $actiontsd|remove-module
-    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actiontsd\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actiontsd\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 
@@ -85,7 +85,7 @@ $pkgename="AMD"
    
     if($pkgename.length -ne 0){   
                                           
-        $packages_original = Get-Package |?{$_.name -like "*$pkgename*" -and $_.version -ne $null}
+        $packages_original = Get-Package |Where-object{$_.name -like "*$pkgename*" -and $_.version -ne $null}
 
       if($packages_original){
 
@@ -107,7 +107,7 @@ $pkgename="AMD"
         # Sort the list based on the custom ranking
         $packages=@()
         $packages=foreach ($ranking in $rankings){
-         ($packages_original.name)|?{
+         ($packages_original.name)|Where-object{
          if($_ -match $ranking){$_}
          }         
          }
@@ -151,7 +151,7 @@ $pkgename="AMD"
 
                 &$actionss  -para3 nonlog -para5 "_uninstall_$($package)_before"
 
-                $shell.Windows() |?{$_.name -eq "File Explorer"}| ForEach-Object { $_.Quit() }
+                $shell.Windows() |Where-object{$_.name -eq "File Explorer"}| ForEach-Object { $_.Quit() }
                 start-sleep -s 5
 
                 #Start-Process control -Verb Open -WindowStyle Maximized
@@ -182,7 +182,7 @@ $pkgename="AMD"
                     $wshell.SendKeys("y")
                     Start-Sleep -s 2
                     $wshell.SendKeys("u")
-                    $process_uninstall=(get-process * |?{$_.starttime -gt $timestart1 }).ProcessName
+                    $process_uninstall=(get-process * |Where-object{$_.starttime -gt $timestart1 }).ProcessName
                     $process_uninstall2=$process_uninstall|out-string
                     write-host "uninstall programs of $($pkgename): $($ctlpath)"
                     if($process_uninstall.count -eq 0){
@@ -200,7 +200,7 @@ $pkgename="AMD"
                     $wshell.SendKeys("~")
                     Start-Sleep -Seconds 120
                     $wshell.SendKeys("~")
-                    $process_uninstall=(get-process * |?{$_.starttime -gt $timestart1 }).ProcessName
+                    $process_uninstall=(get-process * |Where-object{$_.starttime -gt $timestart1 }).ProcessName
                     $process_uninstall2=$process_uninstall|out-string
                     write-host "uninstall programs of $($pkgename): "
                     if($process_uninstall.count -eq 0){
@@ -220,7 +220,7 @@ $pkgename="AMD"
                 if($flag.Length -eq 0){
                     do{
                     start-sleep -s 2
-                    $packages = (Get-Package |?{$_.name -eq $package}).name
+                    $packages = (Get-Package |Where-object{$_.name -eq $package}).name
                     }until($packages.count -eq 0)
                 }
                                     
@@ -237,7 +237,7 @@ $pkgename="AMD"
                 $wshell.SendKeys("l")
                 }
 
-                $shell.Windows() |?{$_.name -eq "File Explorer"}| ForEach-Object { $_.Quit() }
+                $shell.Windows() |Where-object{$_.name -eq "File Explorer"}| ForEach-Object { $_.Quit() }
                 start-sleep -s 5
 
                 ## screenshot after
@@ -249,7 +249,7 @@ $pkgename="AMD"
 
                 &$actionss  -para3 nonlog -para5 "uninstall_$($package)_after"
 
-                $shell.Windows() |?{$_.name -eq "File Explorer"}| ForEach-Object { $_.Quit() }
+                $shell.Windows() |Where-object{$_.name -eq "File Explorer"}| ForEach-Object { $_.Quit() }
 
 
                 &$actionts -para3 nonlog
@@ -301,7 +301,7 @@ $pkgename="AMD"
 if($nonlog_flag.Length -eq 0){
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

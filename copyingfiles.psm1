@@ -108,7 +108,7 @@ write-host "Folder files $($copyfilecount) files copied"
 
 $runaction="cmdline"
 Get-Module -name $runaction|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "^$runaction\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "^$runaction\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 if($copytopath -eq "C:\" -or $copytopath -eq "C:\Windows\System32\" -or $type_folder -eq $false){
@@ -121,10 +121,10 @@ else{
 $results="OK"
 foreach($copyfrom in $copyfroms){
 if($copytopath -eq "C:\" -or $copytopath -eq "C:\Windows\System32\" ){
-$size=(Get-ChildItem "$copytopath\*" -file |?{$_.name -eq $copyfrom.name}).Length
+$size=(Get-ChildItem "$copytopath\*" -file |Where-object{$_.name -eq $copyfrom.name}).Length
 }
 else{
-$size=(Get-ChildItem "$copytopath\*" -file -Recurse |?{$_.name -eq $copyfrom.name}).Length
+$size=(Get-ChildItem "$copytopath\*" -file -Recurse |Where-object{$_.name -eq $copyfrom.name}).Length
 }
 
 if($size -ne $copyfrom.Length){
@@ -151,7 +151,7 @@ $index="no defined path is found after waiting 60s"
 if( $nonlog_flag.Length -eq 0){
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

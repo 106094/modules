@@ -137,7 +137,7 @@ Add-Type -TypeDefinition $clickSource -ReferencedAssemblies System.Windows.Forms
 
     $actionsw ="Set_Window"
     Get-Module -name $actionsw|remove-module
-    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionsw\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionsw\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     Set_Window -para1 "IOMeter" -para4 "nonlog"
@@ -179,7 +179,7 @@ Add-Type -TypeDefinition $clickSource -ReferencedAssemblies System.Windows.Forms
     
     if($nolog_flag.length -eq 0){
         Get-Module -name "outlog"|remove-module
-        $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+        $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
         Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
         #write-host "Do $action!"

@@ -95,7 +95,7 @@ function dcu_updatedriver ([string]$para1 , [string]$para2 , [string]$para3 , [s
 
     #4 + 4
     #Get-Process NVMUP + DUP
-
+    
 
     #Loading XML
     Start-Sleep -s 60

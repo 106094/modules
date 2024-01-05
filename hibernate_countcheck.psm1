@@ -90,7 +90,7 @@ $tcstep=((get-content $tcpath).split(","))[1]
 $action="hibernate cycle count $counta check"
 
 $logfile=(Split-Path -Parent $scriptRoot)+"\logs\logs_timemap.csv"
-$lastlogtime = (import-csv $logfile |?{$_.actions -match "s4" -or $_.actions -match "hibernate"}|select -Last 1).Time
+$lastlogtime = (import-csv $logfile |Where-object{$_.actions -match "s4" -or $_.actions -match "hibernate"}|select -Last 1).Time
 
 $s4count=(Get-WinEvent -FilterHashtable @{ LogName='System'; StartTime=$lastlogtime; Id='42' } -ErrorAction SilentlyContinue).count
 $checkexe=((get-process -name pwrtest -ErrorAction SilentlyContinue).Id).count
@@ -249,7 +249,7 @@ foreach($cmdid in $cmdids) {
 
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

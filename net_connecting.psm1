@@ -54,7 +54,7 @@ if(( $connects |Select-String -pattern "ok").count -ne 2){
    ## without specific internet name connect all netnames ##
 else{
 
-$netnames=(Get-NetAdapter|?{$_.status -ne "UP"}).name
+$netnames=(Get-NetAdapter|Where-object{$_.status -ne "UP"}).name
 
    foreach($netname in $netnames){
   Enable-NetAdapter -Name $netname -Confirm:$false
@@ -64,10 +64,10 @@ $netnames=(Get-NetAdapter|?{$_.status -ne "UP"}).name
   
   }
   
- $netname=[string]::Join("/",((Get-NetAdapter)|?{$_.status -eq "UP"}).name)
+ $netname=[string]::Join("/",((Get-NetAdapter)|Where-object{$_.status -eq "UP"}).name)
  write-host "connecting after enable: $netname"
 
-  #$netcount2=(((Get-NetAdapter)|?{$_.status -eq "UP"}).name).count
+  #$netcount2=(((Get-NetAdapter)|Where-object{$_.status -eq "UP"}).name).count
  
    $nowtime=Get-Date
 
@@ -141,7 +141,7 @@ ipconfig|set-content $ipconfigtxt
  $index=$linkaction|Out-String
     
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

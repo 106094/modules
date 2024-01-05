@@ -142,7 +142,7 @@ $runcommand="DCVT.exe"
 
 start-process cmd
 start-sleep -s 3
- $id3=(Get-Process cmd).Id|?{$_ -notin $id0}
+ $id3=(Get-Process cmd).Id|Where-object{$_ -notin $id0}
  start-sleep -s 1
  [Microsoft.VisualBasic.interaction]::AppActivate($id3)|out-null
  Set-Clipboard $runcommand
@@ -213,7 +213,7 @@ foreach($value in $allTablesAsObject){
 
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

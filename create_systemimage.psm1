@@ -173,7 +173,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 
 $actionmd="screenshot"
 Get-Module -name $actionmd|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 
@@ -182,7 +182,7 @@ Import-Module $mdpath -WarningAction SilentlyContinue -Global
 control /name Microsoft.BackupAndRestore -WindowStyle Maximized
 Start-Sleep -s 2
 
-$wid=(get-process *|?{$_.MainWindowTitle -match "backup and restore"}).Id
+$wid=(get-process *|Where-object{$_.MainWindowTitle -match "backup and restore"}).Id
 $wshell.AppActivate($wid)
 
  Get-Process -id $wid  | Set-WindowState -State MAXIMIZE
@@ -195,7 +195,7 @@ $ctlpath="Control Panel\System and Security\Backup and Restore (Windows 7)"
 Start-Process control -Verb Open -WindowStyle Maximized
 start-sleep -s 5
 
-$wid=(get-process *|?{$_.MainWindowTitle -match "control panel"}).Id
+$wid=(get-process *|Where-object{$_.MainWindowTitle -match "control panel"}).Id
 $wshell.AppActivate($wid)
 
  Get-Process -id $wid  | Set-WindowState -State MAXIMIZE
@@ -274,7 +274,7 @@ start-sleep -s 5
 
 
 ## active Create image window ###
-$cwid=(get-process *|?{$_.MainWindowTitle -match "Create a system image"}).Id
+$cwid=(get-process *|Where-object{$_.MainWindowTitle -match "Create a system image"}).Id
 start-sleep -s 2
 $wshell.AppActivate($cwid)
 start-sleep -s 5
@@ -343,7 +343,7 @@ start-sleep -s 10
 
  Start-Sleep -s 1
 
-$wid2=(get-process *|?{$_.MainWindowTitle -match "create"}).Id
+$wid2=(get-process *|Where-object{$_.MainWindowTitle -match "create"}).Id
 $wshell.AppActivate($wid2)
 
  Start-Sleep -s 5
@@ -382,7 +382,7 @@ $signature = @"
 "@
 Add-Type -MemberDefinition $signature -Name MyType -Namespace MyNamespace
 
- $shell.Windows() |?{$_.name -eq "File Explorer"}| ForEach-Object { $_.Quit() }
+ $shell.Windows() |Where-object{$_.name -eq "File Explorer"}| ForEach-Object { $_.Quit() }
  
  $sname=$env:COMPUTERNAME
  do{
@@ -428,7 +428,7 @@ foreach ($window in $windows) {
 &$actionmd  -para3 nonlog -para5 "imagebackup_explorer"
 
 
- $shell.Windows() |?{$_.name -eq "File Explorer"}| ForEach-Object { $_.Quit() }
+ $shell.Windows() |Where-object{$_.name -eq "File Explorer"}| ForEach-Object { $_.Quit() }
 
 
  $reesults="wait check"
@@ -446,7 +446,7 @@ foreach ($window in $windows) {
 
 if($nonlog_flag.Length -eq 0){
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

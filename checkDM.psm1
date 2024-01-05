@@ -168,7 +168,7 @@ $scriptRoot=$PSScriptRoot
 
 $actionss="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global      
  
  $paracheck=$PSBoundParameters.ContainsKey('para1')
@@ -209,8 +209,8 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 ## before driver install collect DRV info
 if ($expand_flag -match "display"){
 
-#Get-WmiObject Win32_PnPSignedDriver|select DeviceName, DriverVersion, HardwareID, Signer, IsSigned, DriverProviderName, InfName,Description,Location,DeviceClass |?{$_.DeviceClass -match "display"}|out-string|set-content  "$picpath\$($dd)_step$($tcstep)_DisplayDeviceManager.txt"
-$applist=Get-AppxPackage  |?{$_.Name -match "AMD" -or $_.Name -match "NVIDIA"}| Select-object Name,Version,Vendor,InstallDate,PackageFullName|out-string
+#Get-WmiObject Win32_PnPSignedDriver|select DeviceName, DriverVersion, HardwareID, Signer, IsSigned, DriverProviderName, InfName,Description,Location,DeviceClass |Where-object{$_.DeviceClass -match "display"}|out-string|set-content  "$picpath\$($dd)_step$($tcstep)_DisplayDeviceManager.txt"
+$applist=Get-AppxPackage  |Where-object{$_.Name -match "AMD" -or $_.Name -match "NVIDIA"}| Select-object Name,Version,Vendor,InstallDate,PackageFullName|out-string
 if(!$applist){$applist="na"}
 $applist|set-content  "$picpath\$($dd)_step$($tcstep)_Display_AppInfo.txt"
 
@@ -231,7 +231,7 @@ $index=$yefile
 $dxdinfo="$picpath\$($dd)_step$($tcstep)_DxDiag.txt"
 
 $inidrv=(Get-ChildItem "C:\testing_AI\logs\ini*" -r -Filter "*DriverVersion.csv"|Sort-Object lastwritetime|select -last 1).FullName
-$checktype=(import-csv $inidrv|?{$_.DeviceClass -match "DISPLAY"}).devicename
+$checktype=(import-csv $inidrv|Where-object{$_.DeviceClass -match "DISPLAY"}).devicename
 
 dxdiag /t $dxdinfo
 do{
@@ -248,14 +248,14 @@ catch{set-content $nvsmiinfo -value "no install a NV Display driver"}
 }
 
 else{
-Get-WmiObject Win32_PnPSignedDriver|select DeviceName, DriverVersion, HardwareID, Signer, IsSigned, DriverProviderName, InfName,Description,Location,DeviceClass |?{$_.InfName -match "oem"}|Export-Csv "$picpath\$($dd)_step$($tcstep)_DriverVersion.csv" -Encoding UTF8 -NoTypeInformation
+Get-WmiObject Win32_PnPSignedDriver|select DeviceName, DriverVersion, HardwareID, Signer, IsSigned, DriverProviderName, InfName,Description,Location,DeviceClass |Where-object{$_.InfName -match "oem"}|Export-Csv "$picpath\$($dd)_step$($tcstep)_DriverVersion.csv" -Encoding UTF8 -NoTypeInformation
 Get-WmiObject Win32_PnPSignedDriver|select DeviceName, DriverVersion, HardwareID, Signer, IsSigned, DriverProviderName, InfName,Description,Location,DeviceClass |Export-Csv "$picpath\$($dd)_step$($tcstep)_DriverVersion_all.csv" -Encoding UTF8 -NoTypeInformation
 Get-Package | select name, Version,ProviderName,Source,FastPackageReference |Export-Csv -Path  "$picpath\$($dd)_step$($tcstep)_packages.csv" -Encoding UTF8  -NoTypeInformation
 Get-CimInstance win32_product | Select-object Name,Version,Vendor,InstallDate,PackageFullName | Export-csv "$picpath\$($dd)_step$($tcstep)_AppVersion.csv" -Encoding UTF8 -NoTypeInformation 
 Get-AppxPackage | Select-object Name,Version,Vendor,InstallDate,PackageFullName | Export-csv "$picpath\$($dd)_step$($tcstep)_AppVersion.csv"  -Append  -Encoding UTF8  -NoTypeInformation
 Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Select-Object DisplayName, DisplayVersion, Publisher, InstallDate|export-csv "$picpath\$($dd)_step$($tcstep)_controlpanel_programs.csv" -Encoding UTF8  -NoTypeInformation
 start-sleep -s 5
-$ye=Get-WmiObject Win32_PnPEntity|?{ $_.ConfigManagerErrorCode -ne 0}|select Name,Description, DeviceID, @{Name="HardwareID";Expression={$_.HardwareID -join "; "}},Manufacturer
+$ye=Get-WmiObject Win32_PnPEntity|Where-object{ $_.ConfigManagerErrorCode -ne 0}|select Name,Description, DeviceID, @{Name="HardwareID";Expression={$_.HardwareID -join "; "}},Manufacturer
 $results="OK"
 $index="check logs"
 if($ye.DeviceID.count -gt 0){
@@ -305,7 +305,7 @@ Start-Sleep -Seconds 2
 
 if($expand_flag.Length -eq 0){
 &$actionss  -para3 nonlog -para5 "DevicecManager"
-$picfile=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "DeviceManager" }).FullName
+$picfile=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "DeviceManager" }).FullName
   start-sleep -s 2
   }
 
@@ -410,7 +410,7 @@ Set-Clipboard " "
    
 #region Lan SpeedDuplex/SoftwareTimestamp config 
 
-$landevs=(import-csv "$picpath\$($dd)_step$($tcstep)_DriverVersion_all.csv"|?{$_.DeviceClass -match "Net" -and $_.location -ne ""}).InfName|sort name|Get-Unique
+$landevs=(import-csv "$picpath\$($dd)_step$($tcstep)_DriverVersion_all.csv"|Where-object{$_.DeviceClass -match "Net" -and $_.location -ne ""}).InfName|sort name|Get-Unique
 foreach($landev in $landevs){
 $setinfo=get-content C:\Windows\INF\$landev 
 
@@ -469,7 +469,7 @@ if($wshell.AppActivate('Device Manager') -eq $true){stop-process -name mmc}
  #Start-Process control -Verb Open -WindowStyle Maximized
 
  
-$shell.Windows() |?{$_.name -eq "File Explorer"}| ForEach-Object { $_.Quit() }
+$shell.Windows() |Where-object{$_.name -eq "File Explorer"}| ForEach-Object { $_.Quit() }
 start-sleep -s 5
 
    appwiz.cpl
@@ -480,7 +480,7 @@ start-sleep -s 5
 
  &$actionss  -para3 nonlog -para5 "controlpanel_programs"
 
-$shell.Windows() |?{$_.name -eq "File Explorer"}| ForEach-Object { $_.Quit() }
+$shell.Windows() |Where-object{$_.name -eq "File Explorer"}| ForEach-Object { $_.Quit() }
 start-sleep -s 5
 
 
@@ -490,7 +490,7 @@ start-sleep -s 5
 if($output_flag.length -eq 0){
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

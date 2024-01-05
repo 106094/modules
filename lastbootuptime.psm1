@@ -18,11 +18,11 @@ $Index="last BootUp at "+$lastbootuptime
 
 <##
 $logspath=(Split-Path -Parent $scriptRoot)+"\logs\logs_timemap.csv" 
-$reboottime=(import-csv $logspath|?{$_.actions -match "reboot"}|select -Last 1).Time
+$reboottime=(import-csv $logspath|Where-object{$_.actions -match "reboot"}|select -Last 1).Time
 
 $update=import-csv $logspath
-($update|?{$_.actions -match "reboot"}|select -Last 1).Index="last BootUp at "+$lastbootuptime
-($update|?{$_.actions -match "reboot"}|select -Last 1).Results=$results
+($update|Where-object{$_.actions -match "reboot"}|select -Last 1).Index="last BootUp at "+$lastbootuptime
+($update|Where-object{$_.actions -match "reboot"}|select -Last 1).Results=$results
 $update  | export-csv -path  $logspath -Encoding OEM -NoTypeInformation  #### no new line ### no append ####
 ###>
 
@@ -33,7 +33,7 @@ $tcnumber=((get-content $tcpath).split(","))[0]
 $tcstep=((get-content $tcpath).split(","))[1]
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

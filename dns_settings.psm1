@@ -46,7 +46,7 @@ $adtname=$_.InterfaceAlias
 
 $timennow=get-date -Format "yyMMdd_HHmmss"
 $dnsconfigtxt=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\$($timennow)_step$($tcstep)_dnsconfig_before.txt"
-Get-DnsClientServerAddress -InterfaceAlias $adtname|?{$_.AddressFamily -eq "2"}|Out-String|set-content $dnsconfigtxt
+Get-DnsClientServerAddress -InterfaceAlias $adtname|Where-object{$_.AddressFamily -eq "2"}|Out-String|set-content $dnsconfigtxt
 
 if($dnsip.Length -gt 2){
 ## change dns
@@ -55,7 +55,7 @@ Clear-DnsClientCache
 start-sleep -s 30
 $timennow=get-date -Format "yyMMdd_HHmmss"
 $dnsconfigtxt=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\$($timennow)_step$($tcstep)_dnsconfig_after.txt"
-Get-DnsClientServerAddress -InterfaceAlias $adtname|?{$_.AddressFamily -eq "2"}|Out-String|set-content $dnsconfigtxt
+Get-DnsClientServerAddress -InterfaceAlias $adtname|Where-object{$_.AddressFamily -eq "2"}|Out-String|set-content $dnsconfigtxt
 
 $results="NG"
 $index="DNS changed to $dnsip fail"
@@ -74,7 +74,7 @@ Clear-DnsClientCache
 start-sleep -s 30
 $timennow=get-date -Format "yyMMdd_HHmmss"
 $dnsconfigtxt=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\$($timennow)_step$($tcstep)_dnsconfig_after.txt"
-Get-DnsClientServerAddress -InterfaceAlias $adtname|?{$_.AddressFamily -eq "2"}|Out-String|set-content $dnsconfigtxt
+Get-DnsClientServerAddress -InterfaceAlias $adtname|Where-object{$_.AddressFamily -eq "2"}|Out-String|set-content $dnsconfigtxt
 
 $results="NG"
 $index="DNS changed to original settings fail"
@@ -103,7 +103,7 @@ if($nonlogflag.length -eq 0){
  $index="ipconfig_result.txt"
  
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

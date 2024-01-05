@@ -69,7 +69,7 @@ $moninfo=$picpath+"$($timenow)_step$($tcstep)_monitorinfo_before.csv"
 
 $actionss ="screenshot_multiscreen"
 Get-Module -name $actionss|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 
@@ -91,7 +91,7 @@ Start-Sleep -s 5
 }until(test-path  $moninfo)
 Start-Sleep -s 5
 
-$moninfodata=import-csv  $moninfo|?{$_.Active -eq "Yes"}
+$moninfodata=import-csv  $moninfo|Where-object{$_.Active -eq "Yes"}
 $maxr=0
 foreach($mondata in $moninfodata){
 $rex=((($mondata."Maximum Resolution").split("X"))[0]).trim()
@@ -120,7 +120,7 @@ Start-Sleep -s 5
 
 ## show only primary
 if($showonlypri.length -gt 0){
-$nonpris=(import-csv  $moninfo2|?{$_.Active -eq "Yes" -and $_.name -ne $maxname}).name
+$nonpris=(import-csv  $moninfo2|Where-object{$_.Active -eq "Yes" -and $_.name -ne $maxname}).name
 foreach ($nonpri in $nonpris){
 &$mtool /disable $nonpri
 Start-Sleep -s 10
@@ -138,7 +138,7 @@ Start-Sleep -s 10
 
 Start-Sleep -s 2
 
-$newprimary=(import-csv  $moninfo2|?{$_.Active -eq "Yes" -and $_.Primary  -eq "Yes"}).name
+$newprimary=(import-csv  $moninfo2|Where-object{$_.Active -eq "Yes" -and $_.Primary  -eq "Yes"}).name
 
 $results="NG"
 $index="Fail to setup primary display, need check"
@@ -151,7 +151,7 @@ $index="$maxname set as primary display"
 
 if($nonlog.Length -eq 0){
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

@@ -67,7 +67,7 @@ function ConvertTo-Hashtable {
 }
 
 $wshash=$wtsettings | ConvertFrom-Json | ConvertTo-HashTable
-$guidcmd=($wshash.profiles.list|?{$_.name -match "command"}).guid
+$guidcmd=($wshash.profiles.list|Where-object{$_.name -match "command"}).guid
 
 $wtsettings|%{
 
@@ -537,7 +537,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 
 $actionmd ="screenshot"
 Get-Module -name $actionmd|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $screen = [System.Windows.Forms.Screen]::PrimaryScreen
@@ -550,7 +550,7 @@ $timen=get-date -Format "yyMMdd_HHmmss"
 $logn="$($picpath)_$($timen)_step$($tcstep)_S4_cycle_$($countn).txt"
 
 $logfile=(Split-Path -Parent $scriptRoot)+"\logs\logs_timemap.csv"
-#$lastlogtime = (import-csv $logfile |?{$_.actions -match "s4" -or $_.actions -match "hibernate"}|select -Last 1).Time
+#$lastlogtime = (import-csv $logfile |Where-object{$_.actions -match "s4" -or $_.actions -match "hibernate"}|select -Last 1).Time
 $lastlogtime = (Get-ChildItem $logfile).lastwritetime
 
 $s4count=(Get-WinEvent -FilterHashtable @{ LogName='System'; StartTime=$lastlogtime; Id='42' } -ErrorAction SilentlyContinue).count
@@ -596,7 +596,7 @@ set-location "C:/dash/tools/$($pl)/"
   
 start-process cmd -WindowStyle Maximized
 start-sleep -s 3
-$id3=(Get-Process cmd).Id|?{$_ -notin $id0}
+$id3=(Get-Process cmd).Id|Where-object{$_ -notin $id0}
 
 [Microsoft.VisualBasic.interaction]::AppActivate($id3)|out-null
 start-sleep -s 3
@@ -688,7 +688,7 @@ $index="check $picfile"
 
 if($nonlog_flag.Length -eq 0){
     Get-Module -name "outlog"|remove-module
-    $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     #write-host "Do $action!"

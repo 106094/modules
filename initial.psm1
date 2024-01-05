@@ -423,7 +423,7 @@ $name=(Get-WmiObject Win32_OperatingSystem).caption
   ###########  Check Yellow Bang ########
 
 $ye=Get-WmiObject Win32_PnPEntity|where-object{ $_.ConfigManagerErrorCode -ne 0}|Select-Object Name,Description, DeviceID, Manufacturer
-# Get-PnpDevice -InstanceId *|?{$_.Status -match "error" }
+# Get-PnpDevice -InstanceId *|Where-object{$_.Status -match "error" }
 
 if($ye.count -gt 0){
 $yefile= "$daver_path\$($dd)_step$($tcstep)_yellowbang.csv" 
@@ -497,7 +497,7 @@ $lastid=  (Get-Process cmd |Sort-Object StartTime -ea SilentlyContinue |Select-O
 
 ###########  save SW versions ######## move to check DM ##
 
-#Get-WmiObject Win32_PnPSignedDriver|select DeviceName, DriverVersion, HardwareID, Signer, IsSigned, DriverProviderName, InfName|?{$_.InfName -match "oem"}|Export-Csv $daver_path\DriverVersion_$($dd).csv -Encoding UTF8 -NoTypeInformation
+#Get-WmiObject Win32_PnPSignedDriver|select DeviceName, DriverVersion, HardwareID, Signer, IsSigned, DriverProviderName, InfName|Where-object{$_.InfName -match "oem"}|Export-Csv $daver_path\DriverVersion_$($dd).csv -Encoding UTF8 -NoTypeInformation
 #Get-WmiObject Win32_PnPSignedDriver|select DeviceName, DriverVersion, HardwareID, Signer, IsSigned, DriverProviderName, InfName|Export-Csv $daver_path\DriverVersion_all_$($dd).csv -Encoding UTF8 -NoTypeInformation
 #Get-CimInstance win32_product | Select-object Name,Version,Vendor,InstallDate,PackageFullName | Export-csv "$daver_path\$($dd)_step$($tcstep)_AppVersion.csv" -Encoding UTF8 -NoTypeInformation 
 #Get-AppxPackage | Select-object Name,Version,Vendor,InstallDate,PackageFullName | Export-csv "$daver_path\$($dd)_step$($tcstep)_AppVersion.csv"  -Append  -Encoding UTF8  -NoTypeInformation

@@ -47,7 +47,7 @@ $tcstep=((get-content $tcpath).split(","))[1]
 $logpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
 if(-not(test-path $logpath)){new-item -ItemType directory -path $logpath -Force|Out-Null}
 
-$filecopyfrom=Get-ChildItem $logpath -Recurse |?{$_.name -match $filename}
+$filecopyfrom=Get-ChildItem $logpath -Recurse |Where-object{$_.name -match $filename}
 
 
  if($filecopyfrom.length -ne 0){
@@ -77,7 +77,7 @@ $filecopyfrom=Get-ChildItem $logpath -Recurse |?{$_.name -match $filename}
 
 $runaction="cmdline"
 Get-Module -name $runaction|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "^$runaction\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "^$runaction\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 &$runaction  -para1 "Get-ChildItem $copytofolder" -para3 "powershell" -para5 "nolog"
@@ -130,7 +130,7 @@ else{$index="check logs"}
 if( $nonlog_flag.Length -eq 0){
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

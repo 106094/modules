@@ -21,7 +21,7 @@ $time=get-date -Format "yyyy/M/d HH:mm:ss"
 $timenowfm=get-date -format "yyMMdd_HHmmss"
 
 $settings=import-csv C:\testing_AI\settings\flowsettings.csv
-$current_settins=$settings|?{$_.TC -eq $tcnumber -and $_.Step_No -eq $tcstep}
+$current_settins=$settings|Where-object{$_.TC -eq $tcnumber -and $_.Step_No -eq $tcstep}
 $prgname=$current_settins.programs
 
 if($index.Length -gt 100){
@@ -38,7 +38,7 @@ $index="check $($indextxt)"
 if($checknewlog -match "program"){
 
 $settings=import-csv C:\testing_AI\settings\flowsettings.csv
-$current_settins=$settings|?{$_.TC -eq $tcnumber -and $_.Step_No -eq $tcstep}
+$current_settins=$settings|Where-object{$_.TC -eq $tcnumber -and $_.Step_No -eq $tcstep}
 $prgname=$current_settins.programs
 $mustfg=$current_settins.must
 $para1=$current_settins.para1

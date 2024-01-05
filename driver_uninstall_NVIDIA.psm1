@@ -22,7 +22,7 @@ $scriptRoot=$PSScriptRoot
 
 $actionss="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 
@@ -41,14 +41,14 @@ $index=@()
 
 if($pkgename.length -ne 0){
 
-$packages = (Get-Package |?{$_.name -like "*$pkgename*"}).name
+$packages = (Get-Package |Where-object{$_.name -like "*$pkgename*"}).name
 $controlpn="Control Panel\Programs\Programs and Features"
 
 if($packages.count -ne 0){
 
 ## start uninstall ##
 
-$packages = (Get-Package |?{$_.name -like "*$pkgename*"}).name
+$packages = (Get-Package |Where-object{$_.name -like "*$pkgename*"}).name
 $packages|Out-File $programlistpath 
 
 foreach ($package in $packages){
@@ -70,7 +70,7 @@ Start-Sleep -s 10
 
   &$actionss  -para3 nonlog -para5 "before_uninstall_$($package)_check"
 
-$shell.Windows() |?{$_.name -eq "File Explorer"}| ForEach-Object { $_.Quit() }
+$shell.Windows() |Where-object{$_.name -eq "File Explorer"}| ForEach-Object { $_.Quit() }
 start-sleep -s 5
 
 Start-Process control -Verb Open -WindowStyle Maximized
@@ -93,7 +93,7 @@ Start-Sleep -s 10
 $wshell.SendKeys("u")
 
 do{
-$packages = (Get-Package |?{$_.name -eq $package}).name
+$packages = (Get-Package |Where-object{$_.name -eq $package}).name
 }until($packages.count -eq 0)
 
 
@@ -104,7 +104,7 @@ $index=$index+@("$package uninstall done")
 Start-Sleep -s 5
 $wshell.SendKeys("l")
 
-$shell.Windows() |?{$_.name -eq "File Explorer"}| ForEach-Object { $_.Quit() }
+$shell.Windows() |Where-object{$_.name -eq "File Explorer"}| ForEach-Object { $_.Quit() }
 start-sleep -s 5
 
 
@@ -123,7 +123,7 @@ Start-Sleep -s 10
 
  &$actionss  -para3 nonlog -para5 "after_uninstall_$($package)_check"
 
-$shell.Windows() |?{$_.name -eq "File Explorer"}| ForEach-Object { $_.Quit() }
+$shell.Windows() |Where-object{$_.name -eq "File Explorer"}| ForEach-Object { $_.Quit() }
 
 }
 
@@ -133,10 +133,10 @@ $timenow=get-date -format "yyMMdd_HHmmss"
 $programlistpath2=$picpath+"$($timenow)_step$($tcstep)_programslist_after.txt"
 $programlistpath3=$picpath+"$($timenow)_step$($tcstep)_programslist_uninstall.txt"
 
-$packages2 = (Get-Package |?{$_.name -like "*$pkgename*"}).name
+$packages2 = (Get-Package |Where-object{$_.name -like "*$pkgename*"}).name
 $packages2 |Out-File $programlistpath2 
 
-$packages|?{$_ -notin $packages2} |Out-File $programlistpath3
+$packages|Where-object{$_ -notin $packages2} |Out-File $programlistpath3
 
 }
 
@@ -157,7 +157,7 @@ $index="No define uninstall target name"
 if($nonlog_flag.Length -eq 0){
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

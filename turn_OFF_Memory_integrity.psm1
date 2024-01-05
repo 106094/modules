@@ -16,7 +16,7 @@ explorer.exe windowsdefender://coreisolation
 #start-process cmd -ArgumentList "/c $cmd"
 start-sleep -s 5
 
- $id=((Get-Process *)|?{$_.MainWindowTitle -match "Windows Security"}).Id
+ $id=((Get-Process *)|Where-object{$_.MainWindowTitle -match "Windows Security"}).Id
  start-sleep -s 5
  [Microsoft.VisualBasic.interaction]::AppActivate($id)|out-null
 
@@ -68,7 +68,7 @@ $tcnumber=((get-content $tcpath).split(","))[0]
 $tcstep=((get-content $tcpath).split(","))[1]
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

@@ -80,12 +80,12 @@ $paracheck2=$PSBoundParameters.ContainsKey('para5')
 
 if($paracheck1 -eq $false -or $para1.Length -eq 0){
 
- $fromdiskid=((Get-Disk)|?{$_.BootFromDisk -eq $true}).Number
+ $fromdiskid=((Get-Disk)|Where-object{$_.BootFromDisk -eq $true}).Number
 
- $para1 = ((Get-partition)|?{$_.DiskId -eq ((Get-Disk)|?{$_.BootFromDisk -eq $true}).path}|?{$_.type -eq "Basic"}).DriveLetter
+ $para1 = ((Get-partition)|Where-object{$_.DiskId -eq ((Get-Disk)|Where-object{$_.BootFromDisk -eq $true}).path}|Where-object{$_.type -eq "Basic"}).DriveLetter
 }
 else{
-$fromdiskid=((get-disk)|?{$_.path -eq (((Get-partition)|?{$_.DriveLetter -eq $para1}).DiskId)}).Number
+$fromdiskid=((get-disk)|Where-object{$_.path -eq (((Get-partition)|Where-object{$_.DriveLetter -eq $para1}).DiskId)}).Number
 }
 
 if($paracheck2 -eq $false -or $para2.Length -eq 0){
@@ -119,7 +119,7 @@ $scriptRoot=$PSScriptRoot
 
 $actionss="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 
@@ -133,7 +133,7 @@ $picpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
 if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-null}
 
 
-  if( -not ((Get-Partition|?{$_.DriveLetter -eq $dletter}).DriveLetter -eq $dletter )){
+  if( -not ((Get-Partition|Where-object{$_.DriveLetter -eq $dletter}).DriveLetter -eq $dletter )){
 
 #1. Get-Disk
    # Get-Disk
@@ -151,7 +151,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
    
   $resizeC= (Get-Volume -Drive $fromdisklt).Size - $size
   
-     #$sysd=((Get-Disk)|?{$_.BootFromDisk -eq $true}).Number
+     #$sysd=((Get-Disk)|Where-object{$_.BootFromDisk -eq $true}).Number
 
 
     get-partition -DriveLetter $fromdisklt| resize-partition -size $resizeC
@@ -185,7 +185,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 
 &$actionss  -para3 nonlog　-para5 "check1"
    
-$picfile1=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "check1" }).FullName
+$picfile1=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "check1" }).FullName
 
      $shell = New-Object -ComObject Shell.Application
       foreach ($window in $shell.windows()){$window.quit()}
@@ -208,7 +208,7 @@ diskmgmt.msc
  
 &$actionss  -para3 nonlog　-para5 "diskmgmt"
    
-$picfile2=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "diskmgmt" }).FullName
+$picfile2=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "diskmgmt" }).FullName
      
  start-sleep -s 2
 
@@ -223,7 +223,7 @@ $picfile2=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "
 ####
     $index="check screenshots"
 
-     if( (Get-Partition|?{$_.DriveLetter -eq $dletter}).DriveLetter -eq $dletter){
+     if( (Get-Partition|Where-object{$_.DriveLetter -eq $dletter}).DriveLetter -eq $dletter){
       $results= "OK"
        }
       else{
@@ -249,7 +249,7 @@ $scriptRoot=$PSScriptRoot
 $action="add partitions"
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-Object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

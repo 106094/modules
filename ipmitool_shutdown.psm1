@@ -129,7 +129,7 @@ $timenow2=get-date
  ### disable windows update ###
 
 Get-Module -name "disable_wu"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "disable_wu" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-object{$_.name -match "disable_wu" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 disable_wu -para1 nolog
 
@@ -149,13 +149,13 @@ $countcb=0
   ### collecting same info as initial ##
 
 Get-Module -name "initial"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "initial" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-object{$_.name -match "initial" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 initial -para1 nodialog -para2 nolog -para3 nocapture
 
  ## data moving ##
  
-$collectings=(Get-ChildItem -Path $inifd_tcnumber -File |?{$_.LastWriteTime -gt $timenow2}).FullName
+$collectings=(Get-ChildItem -Path $inifd_tcnumber -File |Where-object{$_.LastWriteTime -gt $timenow2}).FullName
 $collectings
 foreach($collecting in $collectings){
 move-Item $collecting -Destination $inifd_ini -Force -ErrorAction SilentlyContinue 
@@ -211,13 +211,13 @@ write-host " #$($countcb) cb checking"
 write-host "checking #$($countcb) cycle and saving files in  folder name $($inifd_sysct)"
 
 Get-Module -name "initial"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "initial" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-object{$_.name -match "initial" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 initial -para1 nodialog -para2 nolog　-para3 nocapture
  
  ## data moving ##
  
-$collectings=(Get-ChildItem -Path $inifd_tcnumber -File |?{$_.LastWriteTime -gt $timenow2}).FullName
+$collectings=(Get-ChildItem -Path $inifd_tcnumber -File |Where-object{$_.LastWriteTime -gt $timenow2}).FullName
 $collectings
 foreach($collecting in $collectings){
 move-Item $collecting -Destination $inifd_sysct -Force -ErrorAction SilentlyContinue 
@@ -267,7 +267,7 @@ add-content -path $logspath -value "cycle,time_start,time_end,Sys_Check,DRV_Chec
 $cyfoldes=Get-ChildItem -Path $sysfd -directory -Exclude "ini" |sort {[int]$_.Name}
 
 ### compare results ###
-$driverfilename1=(Get-ChildItem $inifd_ini\*DriverVersion.csv |Sort-Object lastwritetime |Select-Object -Last 1|?{$_.name -notmatch "all"}).FullName
+$driverfilename1=(Get-ChildItem $inifd_ini\*DriverVersion.csv |Sort-Object lastwritetime |Select-Object -Last 1|Where-object{$_.name -notmatch "all"}).FullName
 $old_drivercsv=import-csv -path $driverfilename1|sort InfName
 $old_sysfile= (Get-ChildItem -path $inifd_ini\*SystemInfo.txt|Sort-Object lastwritetime |Select-Object -Last 1).fullname
 $old_sys=get-content -path $old_sysfile |select  -Skip  1  
@@ -284,11 +284,11 @@ write-host " check $inifd_sysct"
 ##driver## 
 
 $fd_count=$cyfolde.name
-$driverfilename2=(Get-ChildItem $inifd_sysct\*DriverVersion.csv|Sort-Object lastwritetime |Select-Object -Last 1 |?{$_.name -notmatch "all"}).FullName
+$driverfilename2=(Get-ChildItem $inifd_sysct\*DriverVersion.csv|Sort-Object lastwritetime |Select-Object -Last 1 |Where-object{$_.name -notmatch "all"}).FullName
 $new_drivercsv=import-csv -path $driverfilename2|sort InfName
 $old_yb=test-path "$inifd_ini\*yellowbang.csv"
 $drvcheck="FAIL"
-$drvdiffc=((Compare-Object $old_drivercsv $new_drivercsv|?{$_.SideIndicator -eq "<=" -or $_.SideIndicator -eq "=>" }).SideIndicator).count
+$drvdiffc=((Compare-Object $old_drivercsv $new_drivercsv|Where-object{$_.SideIndicator -eq "<=" -or $_.SideIndicator -eq "=>" }).SideIndicator).count
 if($drvdiffc -eq 0){$drvcheck="PASS"}
 
 ## yellowbang ##
@@ -300,7 +300,7 @@ $ybcheck="PASS"
 else{
 $old_ybct=get-content ((Get-ChildItem "$inifd_ini\*yellowbang.csv"|Sort-Object lastwritetime |Select-Object -Last 1).FullName)
 $new_ybct=get-content ((Get-ChildItem "$inifd_sysct\*yellowbang.csv" |Sort-Object lastwritetime |Select-Object -Last 1 ).FullName)
-$ybdiffc=((Compare-Object $old_ybct $new_ybct|?{$_.SideIndicator -eq "<=" -or $_.SideIndicator -eq "=>" }).SideIndicator).count
+$ybdiffc=((Compare-Object $old_ybct $new_ybct|Where-object{$_.SideIndicator -eq "<=" -or $_.SideIndicator -eq "=>" }).SideIndicator).count
 if($ybdiffc -eq 0){$ybcheck="PASS"}
 }
 
@@ -308,14 +308,14 @@ if($ybdiffc -eq 0){$ybcheck="PASS"}
 $new_sysfile= (Get-ChildItem $inifd_sysct\*SystemInfo.txt |Sort-Object lastwritetime |Select-Object -Last 1 ).fullname
 $new_sys=get-content -path $new_sysfile |select  -Skip  1  
 $syscheck="FAIL"
-$sysdiffc=((Compare-Object $old_sys $new_sys|?{$_.SideIndicator -eq "<=" -or $_.SideIndicator -eq "=>" }).SideIndicator).count
+$sysdiffc=((Compare-Object $old_sys $new_sys|Where-object{$_.SideIndicator -eq "<=" -or $_.SideIndicator -eq "=>" }).SideIndicator).count
 if($sysdiffc -eq 0){$syscheck="PASS"}
 
 ## APP ##
 $new_appfile=(Get-ChildItem -path $inifd_sysct\*AppVersion*.csv|Sort-Object lastwritetime |Select-Object -Last 1).fullname
 $new_appcsv=import-csv -path $new_appfile|sort Name
 $appcheck="FAIL"
-$appdiffc=((Compare-Object $old_appcsv $new_appcsv|?{$_.SideIndicator -eq "<=" -or $_.SideIndicator -eq "=>" }).SideIndicator).count
+$appdiffc=((Compare-Object $old_appcsv $new_appcsv|Where-object{$_.SideIndicator -eq "<=" -or $_.SideIndicator -eq "=>" }).SideIndicator).count
 if($appdiffc -eq 0){$appcheck="PASS"}
 
 ## DUMP ##
@@ -352,7 +352,7 @@ Move-Item -Path $inifd_sysct -Destination $inifd_sysctf -Force
 #########   copy result to main folder  #######
 
 ## filter fail #
-$failcontents=import-csv $logspath -Encoding UTF8 |?{$_."DRV_Check" -match "fail" -or $_."Sys_Check" -match "fail" -or $_."APP_Check" -match "fail" -or $_."Dump_Check" -match "fail"-or $_."YB_Check" -match "fail"}
+$failcontents=import-csv $logspath -Encoding UTF8 |Where-object{$_."DRV_Check" -match "fail" -or $_."Sys_Check" -match "fail" -or $_."APP_Check" -match "fail" -or $_."Dump_Check" -match "fail"-or $_."YB_Check" -match "fail"}
 if(($failcontents."cycle").Count -ne 0){
 $failcontents|   export-csv -path  $faillogspath  -Force -Encoding UTF8 -NoTypeInformation
 }
@@ -375,7 +375,7 @@ $index="check $logspath"
 if($nonlog_flag.length -eq 0){
 
     Get-Module -name "outlog"|remove-module
-    $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     #write-host "Do $action!"
@@ -464,7 +464,7 @@ $contents=$null
 $id0=(Get-Process cmd).Id
 start-process cmd -WindowStyle Maximized
 start-sleep -s 2
-$id2=(Get-Process cmd).Id|?{$_ -notin $id0}
+$id2=(Get-Process cmd).Id|Where-object{$_ -notin $id0}
 [Microsoft.VisualBasic.interaction]::AppActivate($id2)|out-null
 
 ### click cmd window and hit enter###
@@ -613,8 +613,8 @@ exit
     export-modulemember -Function ipmitool_shutdown
 
 <##
-    #(Get-ChildItem C:\Users\MG_W251\Desktop\logs\TC-120562\6_ipmishutdown\sys -directory).FullName|?{(Get-ChildItem $_ -file).count -eq 0}
-    (Get-ChildItem C:\Users\MG_W251\Desktop\logs\TC-120562\6_ipmishutdown\sys -directory).FullName|?{(Get-ChildItem $_ -file).count -eq 0}|remove-item -Force
+    #(Get-ChildItem C:\Users\MG_W251\Desktop\logs\TC-120562\6_ipmishutdown\sys -directory).FullName|Where-object{(Get-ChildItem $_ -file).count -eq 0}
+    (Get-ChildItem C:\Users\MG_W251\Desktop\logs\TC-120562\6_ipmishutdown\sys -directory).FullName|Where-object{(Get-ChildItem $_ -file).count -eq 0}|remove-item -Force
 $folders=((Get-ChildItem C:\Users\MG_W251\Desktop\logs\TC-120562\6_ipmishutdown\sys -directory -Exclude "*ini*")|Sort-Object {[int64]($_.Name)}).FullName
 
 foreach($folder in $folders){

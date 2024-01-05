@@ -110,16 +110,16 @@ $diskpcmds|diskpart|add-content -path $logpath
 
 
 #os disk id
-$osdisk=((Get-partition)|?{$_.DriveLetter -eq "C"}).Disknumber
-$diskall=(Get-PhysicalDisk).DeviceId|?{$_ -ne $osdisk}
+$osdisk=((Get-partition)|Where-object{$_.DriveLetter -eq "C"}).Disknumber
+$diskall=(Get-PhysicalDisk).DeviceId|Where-object{$_ -ne $osdisk}
 $ssddisks = (Get-PhysicalDisk | Where-Object { $_.MediaType -eq 'SSD' }).DeviceId
 
 #usbdiskid
 $useuid=(Get-Disk | Where-Object -FilterScript {$_.Bustype -Eq "USB"}).UniqueId
 if($useuid){
 $useuid2=$useuid.substring($useuid.length -10,10)
-$usbletter=(Get-Partition|?{$_.uniqueid -match $useuid2}).DriveLetter|?{$_}
-$usedisk=((Get-partition)|?{$_.DriveLetter -in $usbletter}).Disknumber|Get-Unique
+$usbletter=(Get-Partition|Where-object{$_.uniqueid -match $useuid2}).DriveLetter|Where-object{$_}
+$usedisk=((Get-partition)|Where-object{$_.DriveLetter -in $usbletter}).Disknumber|Get-Unique
 $diskall=(Get-PhysicalDisk).DeviceId|%{
 if(!($_ -in $osdisk -or $_ -in $usedisk)){
 $_
@@ -177,7 +177,7 @@ if($assingletter.Length -gt 0){
 $diskmattext="\s"+$assingletter+"\s"
 $volinfo="list volume"|diskpart
   $volinfo1=$volinfo -match $diskmattext
-  $volno=(($volinfo1.split(" "))|?{$_.length -gt 0})[1]
+  $volno=(($volinfo1.split(" "))|Where-object{$_.length -gt 0})[1]
 
   write-host "the disk $($assingletter) belongs to volume $($volno)"
 
@@ -306,7 +306,7 @@ $results="NG"
 $index="No non-raid disk is found"
 }
 else{
-$diskall=$diskall|?{$_ -notin $allraiddisk}
+$diskall=$diskall|Where-object{$_ -notin $allraiddisk}
 write-host "non-raid disk is $diskall"
 }
 
@@ -351,7 +351,7 @@ diskpcmd "list disk"
 if($assingletter.Length -gt 0){
     $actionfexp="filexplorer"
     Get-Module -name $actionfexp|remove-module
-    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionfexp\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionfexp\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
     $openpath=$assingletter+":\"
     &$actionfexp -para1  $openpath -para2 nonlog
@@ -373,13 +373,13 @@ remove-item $logpath -Force
 
  ### close file explore windows
 
- $shell.Windows() |?{$_.name -eq "File Explorer"}| ForEach-Object { $_.Quit() }
+ $shell.Windows() |Where-object{$_.name -eq "File Explorer"}| ForEach-Object { $_.Quit() }
 
 ######### write log #######
 
 if($nonlog_flag.Length -eq 0){
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

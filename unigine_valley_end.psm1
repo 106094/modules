@@ -119,7 +119,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
  
 $actionss ="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $screen = [System.Windows.Forms.Screen]::PrimaryScreen
@@ -171,11 +171,11 @@ $height=$bounds.Height
 
 ##### screen shot by Windows ###
 &$actionss  -para3 nonlog -para5 "1"
-$picfile1=(Get-ChildItem $picpath |?{$_.name -match ".jpg"} |sort lastwritetime|select -Last 1).FullName
+$picfile1=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg"} |sort lastwritetime|select -Last 1).FullName
 start-sleep -s 10
 
 &$actionss  -para3 nonlog -para5 "2"
-$picfile2=(Get-ChildItem $picpath |?{$_.name -match ".jpg"} |sort lastwritetime|select -Last 1).FullName 
+$picfile2=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg"} |sort lastwritetime|select -Last 1).FullName 
 
 $picfile=[string]::join("`n",$picfile1,$picfile2)
 ### close unigine valley benchmark ###
@@ -229,7 +229,7 @@ start-sleep -s 2
 ### write log ##
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

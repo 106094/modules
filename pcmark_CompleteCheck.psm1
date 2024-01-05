@@ -31,7 +31,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath  -Force
 
 $actionss ="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $checkrunning= get-process -name PCMARK8 -ea SilentlyContinue
@@ -46,7 +46,7 @@ $height  = (([string]::Join("`n", (wmic path Win32_VideoController get CurrentVe
   $gaps=(New-TimeSpan  -Start $getlasttime -end $nowtime).TotalMinutes
  
   #$resultfile=Get-ChildItem -path $env:USERPROFILE\documents\3DMark\3DMark.log -ErrorAction SilentlyContinue
-   $resultfile2=(Get-ChildItem -path "$env:USERPROFILE\Documents\PCMark 8\Log\*\result.pcmark-8-result" -ErrorAction SilentlyContinue)|?{$_.LastWriteTime -gt $getlasttime}
+   $resultfile2=(Get-ChildItem -path "$env:USERPROFILE\Documents\PCMark 8\Log\*\result.pcmark-8-result" -ErrorAction SilentlyContinue)|Where-object{$_.LastWriteTime -gt $getlasttime}
      #$resultfile3=Get-ChildItem -path $env:USERPROFILE\documents\*.xml -ErrorAction SilentlyContinue
 
  if($gaps -ge $timelimit -and $resultfile2.count -eq 0){
@@ -65,7 +65,7 @@ start-sleep -s 30
 
 &$actionss  -para3 nonlog -para5 score
    
-$picfile=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "score" }).FullName
+$picfile=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "score" }).FullName
  
  copy-item (split-path -parent ($resultfile2.FullName)) -Destination $picpath -Recurse
    
@@ -86,7 +86,7 @@ $picfile=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "s
 ######### write log #######
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

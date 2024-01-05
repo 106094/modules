@@ -67,7 +67,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 
 $actionss ="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $screen = [System.Windows.Forms.Screen]::PrimaryScreen
@@ -81,7 +81,7 @@ $skipprun=$false
 if($appname -match "premiercolor"){
 $skipprun=$true
 $listfile=(Split-Path -Parent $scriptRoot)+"\settings\premiercolor_monitor_list.txt"
-$monlist=(get-content $listfile)|?{$_.length -gt 0}
+$monlist=(get-content $listfile)|Where-object{$_.length -gt 0}
 $monitors = (Get-WmiObject -Namespace "root\CIMv2" -Query "SELECT * FROM Win32_PnPEntity WHERE PNPClass='Monitor'").name
 $monitors2  =Get-WmiObject -Namespace "root/WMI" -Class WmiMonitorID | ForEach-Object {
     $edidBytes = $_.UserFriendlyName
@@ -152,7 +152,7 @@ Set-Clipboard $appname
    
    Start-Sleep -s $waittime
 
-   $checkrunning=get-process *|?{$_.StartTime -gt $startchecktime}
+   $checkrunning=get-process *|Where-object{$_.StartTime -gt $startchecktime}
    $checkrunningnames=$checkrunning.name|Out-String
 
    if(!($checkrunningnames -match $appprocess)){
@@ -198,7 +198,7 @@ $index="check screenshots"
 
 if($nonlog_flag.Length -eq 0){
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

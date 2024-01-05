@@ -36,34 +36,34 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 
 $actionss="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $actioncp="copyingfiles"
 Get-Module -name $actioncp|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actioncp\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actioncp\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $actioncmd="cmdline"
 Get-Module -name $actioncmd|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actioncmd\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actioncmd\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $actionexp="filexplorer"
 Get-Module -name $actionexp|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionexp\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionexp\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $actionus="driver_uninstall"
 Get-Module -name $actionus|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionus\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionus\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $results="-"
 $index="check logs"
 
 $inidrv=(Get-ChildItem "C:\testing_AI\logs\ini*\*" -r -Filter "*DriverVersion.csv"|Sort-Object lastwritetime|select -last 1).FullName
-$checktype=(import-csv $inidrv|?{$_.DeviceClass -match "DISPLAY"}).devicename
+$checktype=(import-csv $inidrv|Where-object{$_.DeviceClass -match "DISPLAY"}).devicename
 
 if($inidrv -and $checktype){
 if($checktype -match "NVIDIA"){
@@ -118,7 +118,7 @@ write-host "extract DUP fail"
 }
 do{
 start-sleep -s 5
-$runfiles=(Get-ChildItem -path $zipdes -Recurse |?{$_.name -match "ATISetup\.exe"})
+$runfiles=(Get-ChildItem -path $zipdes -Recurse |Where-object{$_.name -match "ATISetup\.exe"})
 write-host  "wait DUP extract (ATIsetup)"
 }until($runfiles)
 }
@@ -142,10 +142,10 @@ add-content -Path $logpath -value "no zip file in$($drvfd)"
 
 if($results -ne "NG"){
 $logpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\$($timenow)_step$($tcstep)_AMD_GFX_uninstall_log.txt"
-$runfiles=(Get-ChildItem -path $zipdes -Recurse |?{$_.name -match "AMDCleanupUtility\.exe"}).FullName
+$runfiles=(Get-ChildItem -path $zipdes -Recurse |Where-object{$_.name -match "AMDCleanupUtility\.exe"}).FullName
 $uninstallcmd=$runfiles+" /silent"
 if(!$runfiles){
-$runfiles=(Get-ChildItem -path $zipdes -Recurse |?{$_.name -match "ATISetup\.exe"}).FullName
+$runfiles=(Get-ChildItem -path $zipdes -Recurse |Where-object{$_.name -match "ATISetup\.exe"}).FullName
 $uninstallcmd=$runfiles+" -uninstall all -log $logpath "
 }
 
@@ -198,7 +198,7 @@ write-host "$results, $index"
 if( $nonlogflag.Length -eq 0){
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

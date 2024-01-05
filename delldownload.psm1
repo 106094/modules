@@ -44,7 +44,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 
 $actionmd="screenshot"
 Get-Module -name $actionmd|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $screen = [System.Windows.Forms.Screen]::PrimaryScreen
@@ -69,7 +69,7 @@ $dlnames=(Get-ChildItem $env:USERPROFILE\downloads\*.exe).name
 $actionsln ="selenium_prepare"
 
 Get-Module -name $actionsln|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 &$actionsln -para1 edge -para2 nonlog
@@ -261,9 +261,9 @@ Start-Sleep -s 5
 $dlcount2=(Get-ChildItem $env:USERPROFILE\downloads\*.exe).count
 } until ($dlcount2 -gt $dlcount -or $i -gt 60)
 
-$dlnames2=(Get-ChildItem $env:USERPROFILE\downloads\*.exe|?{$_.name -notin $dlnames}).name
-$dlnamesfull=(Get-ChildItem $env:USERPROFILE\downloads\*.exe|?{$_.name -notin $dlnames}).fullname
-$dlsize=(Get-ChildItem $env:USERPROFILE\downloads\*.exe|?{$_.name -notin $dlnames}).length
+$dlnames2=(Get-ChildItem $env:USERPROFILE\downloads\*.exe|Where-object{$_.name -notin $dlnames}).name
+$dlnamesfull=(Get-ChildItem $env:USERPROFILE\downloads\*.exe|Where-object{$_.name -notin $dlnames}).fullname
+$dlsize=(Get-ChildItem $env:USERPROFILE\downloads\*.exe|Where-object{$_.name -notin $dlnames}).length
 
 if($dlcount2 -gt $dlcount){
 Move-Item $dlnamesfull $picpath -Force
@@ -303,7 +303,7 @@ $nonlog_flag
 
 if($nonlog_flag.Length -eq 0 -or $timespanmin -gt 30){
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

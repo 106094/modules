@@ -25,7 +25,7 @@ $winv= ([System.Environment]::OSVersion.Version).Build
 Start-Process msedge.exe
 start-sleep -s 30
 
- $id=(Get-Process msedge |?{($_.MainWindowTitle).length -gt 0}).Id
+ $id=(Get-Process msedge |Where-object{($_.MainWindowTitle).length -gt 0}).Id
 
 [Microsoft.VisualBasic.interaction]::AppActivate($id)|out-null
 
@@ -70,7 +70,7 @@ start-sleep -s 5
 ### start to setting##
 Start-Process msedge.exe 
  start-sleep -s 10
- $id=(Get-Process msedge |?{($_.MainWindowTitle).length -gt 0}).Id
+ $id=(Get-Process msedge |Where-object{($_.MainWindowTitle).length -gt 0}).Id
 
 [Microsoft.VisualBasic.interaction]::AppActivate($id)|out-null
  start-sleep -s 2
@@ -145,7 +145,7 @@ start-sleep -s 3
 Start-Process msedge.exe
 
 start-sleep -s 3
-$id=(Get-Process msedge |?{($_.MainWindowTitle).length -gt 0}).Id
+$id=(Get-Process msedge |Where-object{($_.MainWindowTitle).length -gt 0}).Id
 [Microsoft.VisualBasic.interaction]::AppActivate($id)|out-null
  start-sleep -s 1
 [System.Windows.Forms.SendKeys]::SendWait("{esc}")
@@ -186,7 +186,7 @@ $action=((get-content $tcpath).split(","))[2]
 $index= $url
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

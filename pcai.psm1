@@ -99,7 +99,7 @@ $scriptRoot=$PSScriptRoot
 
 $actionss="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 #&$actionss  -para3 nonlog  -para5 ""
 
@@ -191,7 +191,7 @@ if($scriptfull -match "3dmark"){
 do{
 start-sleep -s 5
 if(get-process -name 3Dmark -ea SilentlyContinue){
-$3dmarkwdopenstart=(get-process -name 3Dmark -ea SilentlyContinue|?{$_.MainWindowTitle -match "Edition"}).StartTime
+$3dmarkwdopenstart=(get-process -name 3Dmark -ea SilentlyContinue|Where-object{$_.MainWindowTitle -match "Edition"}).StartTime
 $3dmarkwdopentime=(New-TimeSpan -start $3dmarkwdopenstart -end (get-date)).TotalSeconds
 }
 }until($3dmarkwdopentime -gt 180)
@@ -213,7 +213,7 @@ $pcaifpath=split-path $pcaipath
 
 <## firewell open for auto tool ##
 
-$checkrule=(Show-NetFirewallRule |select DisplayName |?{$_.displayname -eq "AutoTool"}).count
+$checkrule=(Show-NetFirewallRule |select DisplayName |Where-object{$_.displayname -eq "AutoTool"}).count
 if($checkrule -eq 0){
 
 New-NetFirewallRule -DisplayName "AutoTool" -Direction Inbound -Program "$pcaipath" -Action Allow
@@ -326,7 +326,7 @@ $runtimemin= (New-TimeSpan -start $startpcaitime -End (Get-Date)).TotalMinutes
 
 
 start-sleep -s 5
-$checkfinish=((get-process -Name msedge|?{($_.MainWindowTitle) -match "allion"}).id).Count
+$checkfinish=((get-process -Name msedge|Where-object{($_.MainWindowTitle) -match "allion"}).id).Count
 
 if($checkfinish -ge 1){
  (get-process -name msedge).CloseMainWindow()
@@ -410,7 +410,7 @@ else{
 if($nonlog_flag.length -eq 0){
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

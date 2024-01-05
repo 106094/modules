@@ -7,7 +7,7 @@
       
 $actionss ="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
   
 $nonlog_flag=$para1
@@ -34,7 +34,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 $actionsln ="selenium_prepare"
 
 Get-Module -name $actionsln|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 &$actionsln -para1 edge -para2 nonlog
@@ -153,7 +153,7 @@ Start-Sleep -s 1
 
  do{
  start-sleep -s 5
-$downlfs_new=(Get-ChildItem $env:userprofile\Downloads\* -file).Name|?{$_ -notin $downlfs}
+$downlfs_new=(Get-ChildItem $env:userprofile\Downloads\* -file).Name|Where-object{$_ -notin $downlfs}
 }until($downlfs_new -match "amd-software" -and $downlfs_new -match "\.exe")
  
 start-sleep -s 5
@@ -188,7 +188,7 @@ write-host "index:$index"
 
 if($nonlog_flag.Length -eq 0 -or $timespanmin -gt 30){
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

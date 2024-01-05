@@ -28,7 +28,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 $timenow=get-date -format "yyMMdd_HHmmss"
 $steplog=$picpath+"$($timenow)_step$($tcstep)_IOmemeter_disksetting.txt"
 
-$checkdid = (get-physicaldisk|?{$_.mediatype -eq "SSD"}|select deviceid).deviceid
+$checkdid = (get-physicaldisk|Where-object{$_.mediatype -eq "SSD"}|select deviceid).deviceid
 $checkdidstr=[string]::Join(",",$checkdid)
 
 $results="NG"
@@ -66,7 +66,7 @@ $index="Disk is is $($checkdidstr)"
 
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

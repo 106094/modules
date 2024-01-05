@@ -99,17 +99,17 @@ if(!(test-path $log3)){new-item -path $log3|out-null}
   
 $func="enable_wu"
 Get-Module -name $func|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$func\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$func\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $func_dw="disable_wu"
 Get-Module -name $func_dw|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$func_dw\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$func_dw\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $func_pcai="pcai"
 Get-Module -name $func_pcai|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$func_pcai\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$func_pcai\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 
@@ -126,7 +126,7 @@ if($checkoobe){
 
 $actionss="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 &$actionss  -para3 nonlog -para5 "oobe"
@@ -145,8 +145,8 @@ start-sleep -s 10
 
 stop-process -Name SystemSettings -Force
 
-$checkwudone=Get-ChildItem $picpath -file -r |?{$_.name -match "wucheck_finish" -and $_.name -match ".png"}
-$checkwurun=Get-ChildItem $picpath -file -r |?{$_.name -match "wucheck_running" -and $_.name -match ".png"}
+$checkwudone=Get-ChildItem $picpath -file -r |Where-object{$_.name -match "wucheck_finish" -and $_.name -match ".png"}
+$checkwurun=Get-ChildItem $picpath -file -r |Where-object{$_.name -match "wucheck_running" -and $_.name -match ".png"}
 
 ### command to update ##
 if(!$checkwudone -and $checkwurun.count -lt 4){
@@ -183,7 +183,7 @@ start-sleep -s 5
 ######### write log #######
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"
