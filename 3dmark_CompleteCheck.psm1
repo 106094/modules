@@ -31,7 +31,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath  -Force
 
 $actionmd ="screenshot"
 Get-Module -name $actionmd|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $width  = (([string]::Join("`n", (wmic path Win32_VideoController get CurrentHorizontalResolution))).split("`n") -match "\d{1,}")[0]
@@ -42,9 +42,9 @@ $height  = (([string]::Join("`n", (wmic path Win32_VideoController get CurrentVe
   $gaps=(New-TimeSpan  -Start $getlasttime -end   $nowtime).TotalMinutes
   $Index=""
  
-  #$resultfile=gci -path $env:USERPROFILE\documents\3DMark\3DMark.log -ErrorAction SilentlyContinue
-   $resultfile2=gci -path $env:USERPROFILE\documents\3DMark\*.3dmark-result -ErrorAction SilentlyContinue
-     #$resultfile3=gci -path $env:USERPROFILE\documents\*.xml -ErrorAction SilentlyContinue
+  #$resultfile=Get-ChildItem -path $env:USERPROFILE\documents\3DMark\3DMark.log -ErrorAction SilentlyContinue
+   $resultfile2=Get-ChildItem -path $env:USERPROFILE\documents\3DMark\*.3dmark-result -ErrorAction SilentlyContinue
+     #$resultfile3=Get-ChildItem -path $env:USERPROFILE\documents\*.xml -ErrorAction SilentlyContinue
 
 
  if($gaps -ge $timelimit -and $resultfile2.count -eq 0){
@@ -63,7 +63,7 @@ start-sleep -s 30
 
 &$actionmd  -para3 nonlog -para5 score
    
-$picfile=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "score" }).FullName
+$picfile=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "score" }).FullName
  
   $results="OK"
   $Index="$picfile"
@@ -75,7 +75,7 @@ $picfile=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "score" }).F
 ######### write log #######
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"
