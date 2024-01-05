@@ -492,7 +492,7 @@ $pl="pwrtest"
  $pwrtest1= test-path  "C:/dash/tools/pwrtest/$($pl).exe"
 
  if( $pwrtest1 -eq $false){
-  $fpath=(gci -path $scriptRoot -r -file -filter "*$pl*exe").fullname
+  $fpath=(Get-ChildItem -path $scriptRoot -r -file -filter "*$pl*exe").fullname
 
   if( (test-path "C:\dash\tools\$pl\") -eq $false){new-item -ItemType directory -Path "C:/dash/tools/$pl/" |Out-Null }
   copy-item  $fpath -Destination "C:/dash/tools/$pl/" -Force
@@ -537,7 +537,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 
 $actionmd ="screenshot"
 Get-Module -name $actionmd|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $screen = [System.Windows.Forms.Screen]::PrimaryScreen
@@ -551,7 +551,7 @@ $logn="$($picpath)_$($timen)_step$($tcstep)_S4_cycle_$($countn).txt"
 
 $logfile=(Split-Path -Parent $scriptRoot)+"\logs\logs_timemap.csv"
 #$lastlogtime = (import-csv $logfile |?{$_.actions -match "s4" -or $_.actions -match "hibernate"}|select -Last 1).Time
-$lastlogtime = (gci $logfile).lastwritetime
+$lastlogtime = (Get-ChildItem $logfile).lastwritetime
 
 $s4count=(Get-WinEvent -FilterHashtable @{ LogName='System'; StartTime=$lastlogtime; Id='42' } -ErrorAction SilentlyContinue).count
 
@@ -688,7 +688,7 @@ $index="check $picfile"
 
 if($nonlog_flag.Length -eq 0){
     Get-Module -name "outlog"|remove-module
-    $mdpath=(gci -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     #write-host "Do $action!"

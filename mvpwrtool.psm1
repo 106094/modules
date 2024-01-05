@@ -24,7 +24,7 @@ $results="OK"
  #$pl 
  $pwrtest1= test-path  "C:/dash/tools/pwrtest/$_($pl).exe"
  if( $pwrtest1 -eq $false){
-  $fpath=(gci -path $scriptRoot -r -file -filter "*$pl*exe").fullname
+  $fpath=(Get-ChildItem -path $scriptRoot -r -file -filter "*$pl*exe").fullname
 
   if( (test-path "C:\dash\tools\$pl\") -eq $false){new-item -ItemType directory -Path "C:/dash/tools/$pl/" |Out-Null }
   copy-item  $fpath -Destination "C:/dash/tools/$pl/" -Force
@@ -58,7 +58,7 @@ $tcnumber=((get-content $tcpath).split(","))[0]
 $tcstep=((get-content $tcpath).split(","))[1]
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

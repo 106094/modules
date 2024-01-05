@@ -38,7 +38,7 @@ Register-ScheduledTask -Action $action -Trigger $trigger -Settings $Stset -Force
 
 }
 
-$starttime=(gci  $startflag).CreationTime
+$starttime=(Get-ChildItem  $startflag).CreationTime
 $timegap= (NEW-TIMESPAN –Start $starttime –End (get-date)).TotalMinutes
 
 #$now=get-date
@@ -64,7 +64,7 @@ $index=get-content $startflag
 $results="OK"
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

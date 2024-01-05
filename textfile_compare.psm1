@@ -27,8 +27,8 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
      $nonlog_flag=$para3
 
 
-    $filename1=(gci $picpath |?{$_.name -match $checkfile}).FullName
-    $filename2=(gci $picpath |?{$_.name -match $checkfile2}).FullName
+    $filename1=(Get-ChildItem $picpath |?{$_.name -match $checkfile}).FullName
+    $filename2=(Get-ChildItem $picpath |?{$_.name -match $checkfile2}).FullName
 
    # echo "$filename1, $filename1, $($checkfile.length), $($checkfile2.length), $($filename1.count), $($filename2.count)"
 
@@ -66,7 +66,7 @@ $index="check $outtextpath"
 
 if($nonlog_flag.Length -eq 0){
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

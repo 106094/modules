@@ -108,7 +108,7 @@ $scriptRoot=$PSScriptRoot
 
 $actionss ="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
   
 
@@ -121,11 +121,11 @@ $tcstep=((get-content $tcpath).split(","))[1]
 $picpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
 if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-null}
 
-$installfile=(gci $picpath  -Recurse -filter "*amd-software*").FullName
-$installfile2=(gci $picpath  -Recurse -filter "*amd-software*").basename
+$installfile=(Get-ChildItem $picpath  -Recurse -filter "*amd-software*").FullName
+$installfile2=(Get-ChildItem $picpath  -Recurse -filter "*amd-software*").basename
 if($installername.Length -ne 0){
-$installfile=(gci $picpath -Recurse |?{$_.name -match "$installername"} ).FullName
-$installfile2=(gci $picpath -Recurse |?{$_.name -match "$installername"}).basename
+$installfile=(Get-ChildItem $picpath -Recurse |?{$_.name -match "$installername"} ).FullName
+$installfile2=(Get-ChildItem $picpath -Recurse |?{$_.name -match "$installername"}).basename
 }
 
 &$installfile 
@@ -171,7 +171,7 @@ $windowRect = New-Object RECT
     
 $funcpcai="pcai"
 Get-Module -name $funcpcai|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$funcpcai\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$funcpcai\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 &$funcpcai -para1 AMDInstall -para4 nc -para5 nolog
@@ -181,7 +181,7 @@ Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 if($nonlog_flag.Length -eq 0 -or $timespanmin -gt 30){
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

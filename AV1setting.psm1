@@ -23,7 +23,7 @@ $yco = $bounds.Height*0.7
 
 $actionss ="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $cSource = @'
@@ -95,11 +95,11 @@ Add-Type -TypeDefinition $cSource -ReferencedAssemblies System.Windows.Forms,Sys
       
     $actionmd ="selenium_prepare"
 
-    gci  "C:\testing_AI\modules\selenium\WebDriver.dll" |Unblock-File 
+    Get-ChildItem  "C:\testing_AI\modules\selenium\WebDriver.dll" |Unblock-File 
     Add-Type -Path "C:\testing_AI\modules\selenium\WebDriver.dll"
 
     Get-Module -name $actionmd|remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     $login = Get-Content "C:\testing_AI\settings\google_account.txt"
@@ -272,7 +272,7 @@ Add-Type -TypeDefinition $cSource -ReferencedAssemblies System.Windows.Forms,Sys
     ######### write log #######
     if($para2.length -eq 0){
         Get-Module -name "outlog"|remove-module
-        $mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+        $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
         Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
         #write-host "Do $action!"

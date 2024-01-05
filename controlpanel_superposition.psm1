@@ -81,7 +81,7 @@ $scriptRoot=$PSScriptRoot
 
 $pcaimd="pcai"
 Get-Module -name $pcaimd|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$pcaimd\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$pcaimd\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
@@ -89,8 +89,8 @@ $tcnumber=((get-content $tcpath).split(","))[0]
 $tcstep=((get-content $tcpath).split(","))[1]
 
 $path_setting1="C:\ProgramData\NVIDIA Corporation\Drs"
-$path_setting2=(gci "$env:userprofile\AppData\Local\Packages\NVIDIACorp*\SystemAppData\Helium\" -directory).fullname
-$path_run=(gci "C:\Program Files\WindowsApps\NVIDIACorp.NVIDIAControlPane*\" -directory).fullname
+$path_setting2=(Get-ChildItem "$env:userprofile\AppData\Local\Packages\NVIDIACorp*\SystemAppData\Helium\" -directory).fullname
+$path_run=(Get-ChildItem "C:\Program Files\WindowsApps\NVIDIACorp.NVIDIAControlPane*\" -directory).fullname
  
 ### find the system gfx model ##
  $drvname=((Get-WmiObject Win32_VideoController | Select-Object name|?{$_.name -match "NVIDIA"} ).name)[0]
@@ -104,10 +104,10 @@ $action="NVControlpanelSettings"
 &$pcaimd -para1 nv_controlpanel_start -para4 nc -para5 nolog
 
 ### copy settigns ##
-$settingf1=(gci C:\testing_AI\settings\nv_Controlpanel\$drvname\* -file).fullname
+$settingf1=(Get-ChildItem C:\testing_AI\settings\nv_Controlpanel\$drvname\* -file).fullname
 $settingf1| %{Copy-Item $_ -Destination $path_setting1 -Force }
 
-#$settingf2=(gci C:\testing_AI\settings\nv_Controlpanel\$drvname\SystemAppData\Helium\* -file).fullname
+#$settingf2=(Get-ChildItem C:\testing_AI\settings\nv_Controlpanel\$drvname\SystemAppData\Helium\* -file).fullname
 #$settingf2| %{Copy-Item $_ -Destination $path_setting2 -Force }
 #set-location $path_run
 #start-process .\nvcplui.exe -WindowStyle Maximized
@@ -123,7 +123,7 @@ $action="AMDControlpanelSettings"
 
 $startmenuappmd="startmenuapp"
 Get-Module -name $startmenuappmd|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$startmenuappmd\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$startmenuappmd\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 &$startmenuappmd -para1 "AMD software" -para3 nonlog
@@ -143,7 +143,7 @@ $index="check pcai steps"
 ######### write log #######
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

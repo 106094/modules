@@ -21,7 +21,7 @@ function idrac_IntegratedDevices ([string]$para1){
     }
 
     Get-Module -name "screenshot" |remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^screenshot\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^screenshot\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     #$changeto=$para1
@@ -34,13 +34,13 @@ function idrac_IntegratedDevices ([string]$para1){
     ## import edge driver #
     $actionsln ="selenium_prepare"
     Get-Module -name $actionsln|remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     &$actionsln  edge nonlog
     
     ## import dll
-    gci  "C:\testing_AI\modules\selenium\WebDriver.dll" |Unblock-File 
+    Get-ChildItem  "C:\testing_AI\modules\selenium\WebDriver.dll" |Unblock-File 
     Add-Type -Path "C:\testing_AI\modules\selenium\WebDriver.dll"
     
      try{$driver = New-Object OpenQA.Selenium.Edge.EdgeDriver}
@@ -165,7 +165,7 @@ function idrac_IntegratedDevices ([string]$para1){
     $tcstep=((get-content $tcpath).split(","))[1]
  
     Get-Module -name "outlog"|remove-module
-    $mdpath=(gci -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     #write-host "Do $action!"

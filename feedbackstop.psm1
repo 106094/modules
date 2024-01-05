@@ -173,13 +173,13 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
     $actionss ="screenshot"
 
     Get-Module -name $actionss|remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     
     $actionpcai ="pcai"
     Get-Module -name $actionpcai|remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionpcai\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionpcai\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue
 
 
@@ -265,7 +265,7 @@ $fid=(Get-Process "ApplicationFrameHost").Id
 ##>
 
 $logfile=(Split-Path -Parent $scriptRoot)+"\logs\logs_timemap.csv"
-$recstart=(gci $logfile).LastWriteTime
+$recstart=(Get-ChildItem $logfile).LastWriteTime
 
 $digpath="$env:userprofile\AppData\Local\Packages\Microsoft.WindowsFeedbackHub_*\RoamingState\DiagnosticLogs"
 $digpath2="$env:userprofile\AppData\Local\Packages\Microsoft.WindowsFeedbackHub_*\LocalCache\DiagnosticLogs"
@@ -279,7 +279,7 @@ $timestart=get-date
   $passtime=[math]::Round((New-TimeSpan -start $timestart -end $timeend).TotalMinutes,1)
   $nowtime=get-date -format "HH:mm:ss"
   if(test-path $digpath){
-   $recfiles= (gci $digpath\*\*  -Directory |?{$_.name -match "Repro"}|?{$_.LastWriteTime -gt $recstart})
+   $recfiles= (Get-ChildItem $digpath\*\*  -Directory |?{$_.name -match "Repro"}|?{$_.LastWriteTime -gt $recstart})
   $recfilec=$recfiles.count
    if($recfilec -eq 0){ write-host " $($nowtime): $digpath not found yet "}
     else{ write-host "$($nowtime): found report folder - $digpath"}
@@ -287,7 +287,7 @@ $timestart=get-date
 
   if($recfilec -eq 0 -and (test-path $digpath2)){
   
-  $recfiles= (gci $digpath2\*\*  -Directory |?{$_.name -match "Repro"}|?{$_.LastWriteTime -gt $recstart})
+  $recfiles= (Get-ChildItem $digpath2\*\*  -Directory |?{$_.name -match "Repro"}|?{$_.LastWriteTime -gt $recstart})
   $recfilec=$recfiles.count
   if($recfilec -eq 0){ write-host "$($nowtime): $digpath2 not found yet"}
     else{ write-host "$($nowtime): found report folder - $digpath2"}
@@ -296,7 +296,7 @@ $timestart=get-date
 
   if($recfilec -eq 0 -and (test-path $digpath3)){
   
-  $recfiles= (gci $digpath3\*\*  -Directory |?{$_.name -match "Repro"}|?{$_.LastWriteTime -gt $recstart})
+  $recfiles= (Get-ChildItem $digpath3\*\*  -Directory |?{$_.name -match "Repro"}|?{$_.LastWriteTime -gt $recstart})
   $recfilec=$recfiles.count  
   if($recfilec -eq 0){ write-host "$($nowtime): $digpath3 not found yet"}
   else{ write-host "$($nowtime): found report folder - $digpath3 "}
@@ -363,7 +363,7 @@ else{
 
 if($nonlog_flag.Length -eq 0){
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

@@ -136,35 +136,35 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 
 $actioncp="copyingfiles"
 Get-Module -name $actioncp|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actioncp\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actioncp\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $actioncmd="cmdline"
 Get-Module -name $actioncmd|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actioncmd\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actioncmd\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $actiondup="dup_install"
 Get-Module -name $actiondup|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actiondup\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actiondup\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $actionexp="filexplorer"
 Get-Module -name $actionexp|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionexp\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionexp\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $actionamdins="amdinstall"
 Get-Module -name $actionamdins|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionamdins\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionamdins\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $actionss="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
-$inidrv=(gci "C:\testing_AI\logs\ini*\*" -r -Filter "*DriverVersion.csv"|Sort-Object lastwritetime|select -last 1).FullName
+$inidrv=(Get-ChildItem "C:\testing_AI\logs\ini*\*" -r -Filter "*DriverVersion.csv"|Sort-Object lastwritetime|select -last 1).FullName
 $checktype=(import-csv $inidrv|?{$_.DeviceClass -match "DISPLAY"}).devicename
 
 if($inidrv -and $checktype){
@@ -236,7 +236,7 @@ $results_ng="NG($($sub))"
 $index_nofile="$($sub) folder no DUP(exe) or MUP(zip) files"
 }
 
-$exefile=gci $insfd\*.exe -ea SilentlyContinue|sort lastwritetime|select -last 1
+$exefile=Get-ChildItem $insfd\*.exe -ea SilentlyContinue|sort lastwritetime|select -last 1
 ### DUP ##
 if($exefile){
 
@@ -269,10 +269,10 @@ do{
 start-sleep -s 5
 }until(!(get-process -name $runfilename -ErrorAction SilentlyContinue))
 
-$extractcheck=(gci -path $extractpath -file -Recurse).count
+$extractcheck=(Get-ChildItem -path $extractpath -file -Recurse).count
 if($extractcheck -gt 0){
 &$actionexp -para1 $extractpath -para2 nonlog
-$picfile=gci -path $picpath -r |?{$_.Name -match "gfx_install_file_explore.jpg"}|sort lastwritetime|select -Last 1
+$picfile=Get-ChildItem -path $picpath -r |?{$_.Name -match "gfx_install_file_explore.jpg"}|sort lastwritetime|select -Last 1
 $picfilename=($picfile.fullname).replace("gfx_install_file_explore.jpg","gfx_extract_file_explore.jpg")
 if($sub.length -gt 0){
 $picfilename=($picfile.fullname).replace("gfx_install_file_explore.jpg","gfx_$($sub)_extract_file_explore.jpg")
@@ -306,7 +306,7 @@ $cmdaf=(get-process -name cmd -ea SilentlyContinue).Id|?{$_ -notin $cmdbf}
 if($cmdaf.count -gt 0){
 $actionss="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 &$actionss -para3 nonlog -para5 "$($dupnamepic1)_cmdwindow"
@@ -365,7 +365,7 @@ if($actiontype.Length -eq 0 -or $actiontype -match "install"){
 #### MUP ##
 else{
 
-$zipfile=gci $insfd\*.zip|sort lastwritetime|select -last 1
+$zipfile=Get-ChildItem $insfd\*.zip|sort lastwritetime|select -last 1
 $zipfilebname=$zipfile.BaseName
 if($zipfile){
 Expand-Archive $zipfile.FullName -DestinationPath  $zipdes -Force
@@ -377,15 +377,15 @@ if($actiontype.Length -eq 0 -or $actiontype -match "extract"){
 #### MUP only support install ##
 if($actiontype.Length -eq 0 -or $actiontype -match "install"){
 if($checktype -match "AMD"){
-$runfiles=(gci -path $zipdes -Recurse |?{$_.name -match "ATISetup\.exe"　})
-$runfiles_att=((gci -path $zipdes -Recurse |?{$_.name -match "^Setup\.exe"|sort {($_.fullname).length}}|select -First 1).FullName).replace("$zipdes",".\")
-$apprunfiles2=((gci -path $zipdes -Recurse |?{$_.name -match "_License"}).FullName).replace("$zipdes",".\")
-$apprunfiles1=((gci -path $zipdes -Recurse |?{$_.name -match (($apprunfiles2.split("\\"))[-1].split("_"))[0]+"\.appx" }).FullName ).replace("$zipdes",".\")
-$apprunfiles3=((gci -path $zipdes -Recurse |?{$_.name -match "\.appx" -and $_.name -match "x64" }).FullName ).replace("$zipdes",".\")
+$runfiles=(Get-ChildItem -path $zipdes -Recurse |?{$_.name -match "ATISetup\.exe"　})
+$runfiles_att=((Get-ChildItem -path $zipdes -Recurse |?{$_.name -match "^Setup\.exe"|sort {($_.fullname).length}}|select -First 1).FullName).replace("$zipdes",".\")
+$apprunfiles2=((Get-ChildItem -path $zipdes -Recurse |?{$_.name -match "_License"}).FullName).replace("$zipdes",".\")
+$apprunfiles1=((Get-ChildItem -path $zipdes -Recurse |?{$_.name -match (($apprunfiles2.split("\\"))[-1].split("_"))[0]+"\.appx" }).FullName ).replace("$zipdes",".\")
+$apprunfiles3=((Get-ChildItem -path $zipdes -Recurse |?{$_.name -match "\.appx" -and $_.name -match "x64" }).FullName ).replace("$zipdes",".\")
 
 }
 if($checktype -match "NVIDIA"){
-$runfiles=gci -path $zipdes -Recurse |?{$_.name -match "installapp\.bat" -or $_.name -match "NVMUP\.exe"}
+$runfiles=Get-ChildItem -path $zipdes -Recurse |?{$_.name -match "installapp\.bat" -or $_.name -match "NVMUP\.exe"}
 }
 
 
@@ -442,7 +442,7 @@ if($attachedmode.length -ne 0){
 ## call again ## module lost by unknow reason
 $actionss="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 ##>
 
@@ -564,7 +564,7 @@ write-host "$results,$index"
 if( $nonlogflag.Length -eq 0){
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

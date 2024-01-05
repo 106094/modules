@@ -98,7 +98,7 @@ $logpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\step$($tcstep)_cmd
 
 $actionmd="screenshot"
 Get-Module -name $actionmd|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $checkcudap=$false
@@ -119,14 +119,14 @@ if($checkcudap -eq 0){
 ### if zip need uninstall ###
 
 if($drvfile -match "\.zip"){
-$drivername= (gci $scriptRoot\driver\$drivertype\* -Recurse -File|where{$_.name -eq $drvfile}).FullName
-$zipf=(gci $scriptRoot\driver\$drivertype\* -Recurse -File|where{$_.name -eq $drvfile}).BaseName
+$drivername= (Get-ChildItem $scriptRoot\driver\$drivertype\* -Recurse -File|where{$_.name -eq $drvfile}).FullName
+$zipf=(Get-ChildItem $scriptRoot\driver\$drivertype\* -Recurse -File|where{$_.name -eq $drvfile}).BaseName
  $driverfolder= "$scriptRoot\driver\$drivertype\$zipf\"
 if(-not(Test-Path $driverfolder)){new-item -ItemType directory $driverfolder -Force|out-null}
  $shell.NameSpace("$scriptRoot\driver\$drivertype\$zipf\").copyhere($shell.NameSpace($drivername).Items(),16)
  }
 else{
-$driverfullname= (gci $scriptRoot\driver\$drivertype\* -Recurse -File|where{$_.name -eq $drvfile}).FullName
+$driverfullname= (Get-ChildItem $scriptRoot\driver\$drivertype\* -Recurse -File|where{$_.name -eq $drvfile}).FullName
  $driverfolder= split-path -Parent $driverfullname
 }
   #### cmd / powershell ##
@@ -225,7 +225,7 @@ $exerun=((get-process -Name $exefile -ea SilentlyContinue).Id).count
 if( $nonlogflag.Length -eq 0){
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

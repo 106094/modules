@@ -119,7 +119,7 @@ $scriptRoot=$PSScriptRoot
 
 $actionss="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 
@@ -185,7 +185,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 
 &$actionss  -para3 nonlog　-para5 "check1"
    
-$picfile1=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "check1" }).FullName
+$picfile1=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "check1" }).FullName
 
      $shell = New-Object -ComObject Shell.Application
       foreach ($window in $shell.windows()){$window.quit()}
@@ -208,7 +208,7 @@ diskmgmt.msc
  
 &$actionss  -para3 nonlog　-para5 "diskmgmt"
    
-$picfile2=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "diskmgmt" }).FullName
+$picfile2=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "diskmgmt" }).FullName
      
  start-sleep -s 2
 
@@ -249,7 +249,7 @@ $scriptRoot=$PSScriptRoot
 $action="add partitions"
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

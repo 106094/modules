@@ -120,7 +120,7 @@ else{
 
  ### open the last loop result
 
- $lastloop=(gci $picpath -filter "*Custom*.3dmark-result" |?{$_.Name -notmatch "FAIL"}|sort creationtime|select -last 1).fullname
+ $lastloop=(Get-ChildItem $picpath -filter "*Custom*.3dmark-result" |?{$_.Name -notmatch "FAIL"}|sort creationtime|select -last 1).fullname
  start-process  $lastloop -WindowStyle Maximized
 
  start-sleep -s 180
@@ -131,7 +131,7 @@ else{
 
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

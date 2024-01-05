@@ -162,12 +162,12 @@ $scriptRoot=$PSScriptRoot
 
 $actionexp="filexplorer"
 Get-Module -name $actionexp|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionexp\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionexp\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $actionss ="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $actiontype=$extractorinstall
@@ -184,7 +184,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 #defaul dup filename collect
 
   
- $inidrv=(gci "C:\testing_AI\logs\ini*\*" -r -Filter "*DriverVersion.csv"|Sort-Object lastwritetime|select -last 1).FullName
+ $inidrv=(Get-ChildItem "C:\testing_AI\logs\ini*\*" -r -Filter "*DriverVersion.csv"|Sort-Object lastwritetime|select -last 1).FullName
 $checktype=(import-csv $inidrv|?{$_.DeviceClass -match "DISPLAY"}).devicename
 
 if($inidrv -and $checktype){
@@ -194,7 +194,7 @@ if($checktype -match "ada"){
 $drvtype2="NV_A6000ada"
 }
 
-$installfile=(gci ($scriptRoot+"\driver\GFX\$($drvtype2)\N\driver\") -File |?{$_.name -match "NVIDIA" -and $_.name -match "\.exe"} |sort lastwritetime|select -first 1).fullname
+$installfile=(Get-ChildItem ($scriptRoot+"\driver\GFX\$($drvtype2)\N\driver\") -File |?{$_.name -match "NVIDIA" -and $_.name -match "\.exe"} |sort lastwritetime|select -first 1).fullname
  $installfilebn=(split-path -Leaf $installfile) -replace "\.exe",""
 
  write-host "The Display Type is $($drvtype2)"
@@ -205,7 +205,7 @@ if($checktype -match "AMD"){
     $chekdrv=$checktype -match "[a-zA-Z]\d{4}"
     if(!$chekdrv){$checktype -match "\d{4}"}
     $drvtype2="AMD_"+$matches[0]
- $installfile=(gci ($scriptRoot+"\driver\GFX\$($drvtype2)\N\") -File |?{$_.name -match "AMD" -and $_.name -match "\.exe" }|sort lastwritetime|select -first 1 ).fullname
+ $installfile=(Get-ChildItem ($scriptRoot+"\driver\GFX\$($drvtype2)\N\") -File |?{$_.name -match "AMD" -and $_.name -match "\.exe" }|sort lastwritetime|select -first 1 ).fullname
  $installfilebn=(split-path -Leaf $installfile) -replace "\.exe",""
 
 write-host "The Display Driver is $($drvtype2)"
@@ -215,9 +215,9 @@ write-host "The Display Driver is $($drvtype2)"
 }
 
  if($dupname.length -ne 0){
-$installfile=(gci $picpath -Recurse -filter "*$dupname*").FullName
+$installfile=(Get-ChildItem $picpath -Recurse -filter "*$dupname*").FullName
 if(!$installfile){
-$installfile=(gci $scriptRoot -Recurse -filter "*$dupname*").FullName|sort lastwritetime|select -first 1
+$installfile=(Get-ChildItem $scriptRoot -Recurse -filter "*$dupname*").FullName|sort lastwritetime|select -first 1
 }
 $installfilebn=(split-path -Leaf $installfile) -replace "\.exe",""
 }
@@ -585,7 +585,7 @@ $index="no DUP filename is found"
 
 if($nonlog_flag.Length -eq 0 -or $timespanmin -gt 30){
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

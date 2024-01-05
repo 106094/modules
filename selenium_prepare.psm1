@@ -34,18 +34,18 @@ $browserpath = (Get-Item (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\Cur
 $version=(Get-Item $browserpath).VersionInfo.FileVersion
 $versionc=[string]::Join(".",($version -split "\."|select -First 3))
 
-$driverpath=(gci -path C:\testing_AI\modules\selenium\$brwstype\*|?{$_.name -match "$versionc"}|sort name|select -Last 1).FullName
-if(!$driverpath){$driverpath=(gci -path C:\testing_AI\modules\selenium\$brwstype\*  -Directory|sort lastwritetime|select -Last 1).FullName}
-gci $driverpath\*.exe |copy-item -Destination C:\testing_AI\modules\selenium\ -Force
+$driverpath=(Get-ChildItem -path C:\testing_AI\modules\selenium\$brwstype\*|?{$_.name -match "$versionc"}|sort name|select -Last 1).FullName
+if(!$driverpath){$driverpath=(Get-ChildItem -path C:\testing_AI\modules\selenium\$brwstype\*  -Directory|sort lastwritetime|select -Last 1).FullName}
+Get-ChildItem $driverpath\*.exe |copy-item -Destination C:\testing_AI\modules\selenium\ -Force
 
 }
 
 
 if($brwstype -match "firefox"){
 
-$driverpath=(gci -path C:\testing_AI\modules\selenium\$brwstype\*|sort lastwritetime|select -Last 1).FullName
+$driverpath=(Get-ChildItem -path C:\testing_AI\modules\selenium\$brwstype\*|sort lastwritetime|select -Last 1).FullName
 
-gci $driverpath\*.exe |copy-item -Destination C:\testing_AI\modules\selenium\ -Force
+Get-ChildItem $driverpath\*.exe |copy-item -Destination C:\testing_AI\modules\selenium\ -Force
 
 }
 
@@ -56,8 +56,8 @@ $browserpath = (Get-Item (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\Cur
 $version=(Get-Item $browserpath).VersionInfo.FileVersion
 $versionc=[string]::Join(".",($version -split "\."|select -First 3))
 
-$driverpath=(gci -path C:\testing_AI\modules\selenium\$brwstype\*|?{$_.name -match "$versionc"}|sort name|select -Last 1).FullName
-gci $driverpath\*.exe |copy-item -Destination C:\testing_AI\modules\selenium\ -Force
+$driverpath=(Get-ChildItem -path C:\testing_AI\modules\selenium\$brwstype\*|?{$_.name -match "$versionc"}|sort name|select -Last 1).FullName
+Get-ChildItem $driverpath\*.exe |copy-item -Destination C:\testing_AI\modules\selenium\ -Force
 
 }
 
@@ -72,7 +72,7 @@ $tcnumber=((get-content $tcpath).split(","))[0]
 $tcstep=((get-content $tcpath).split(","))[1]
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

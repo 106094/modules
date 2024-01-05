@@ -27,7 +27,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath  -Force
 
 $actionmd="screenshot"
 Get-Module -name $actionmd|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 
@@ -49,7 +49,7 @@ else {
 
  &$actionmd  -para3 nonlog 
 
- $picfile1=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match $action -and $_.name -match "step$($tcstep)"}|sort lastwritetime |select -Last 1).FullName
+ $picfile1=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match $action -and $_.name -match "step$($tcstep)"}|sort lastwritetime |select -Last 1).FullName
  
 (get-process -name FluidMark -ea SilentlyContinue).CloseMainWindow()
   stop-process -name FluidMark -ea SilentlyContinue
@@ -64,7 +64,7 @@ else {
 ######### write log #######
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

@@ -95,7 +95,7 @@ $index="$para1 version is $version"
     ######### write log #######
     if($para2.length -eq 0){
         Get-Module -name "outlog"|remove-module
-        $mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+        $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
         Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
         #write-host "Do $action!"
@@ -104,5 +104,5 @@ $index="$para1 version is $version"
 }
 
 
-# 匯出模絁E�E�E員
+# 匯出模絁E�E�E員
 Export-ModuleMember -Function browserInstall

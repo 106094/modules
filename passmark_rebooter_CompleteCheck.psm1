@@ -88,7 +88,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 
     $actionss ="screenshot"
     Get-Module -name $actionss|remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
  $doneflag=$null
@@ -97,7 +97,7 @@ if(test-path "$env:HOMEPATH\Documents\PassMark\Rebooter\Rebooter.log"){
  $checkdone= get-content $env:HOMEPATH\Documents\PassMark\Rebooter\Rebooter.log
  if(  $checkdone -match "FINISHED REBOOT CYCLE"){
  $doneflag="done"
- $backuplogtime=Get-Date((gci $env:HOMEPATH\\Documents\PassMark\Rebooter\Rebooter.log).LastWriteTime) -Format "yyMMdd_HHmm"
+ $backuplogtime=Get-Date((Get-ChildItem $env:HOMEPATH\\Documents\PassMark\Rebooter\Rebooter.log).LastWriteTime) -Format "yyMMdd_HHmm"
  #$logpath=(Split-Path -Parent $scriptRoot)+"\logs\Rebooter\"
  $logpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\Rebooter\"
  $newlogname=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\Rebooter\Rebooter_TC$($tcnumber)_$($tcstep)_$($backuplogtime).log"
@@ -215,7 +215,7 @@ exit
 
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

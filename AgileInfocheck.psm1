@@ -14,12 +14,12 @@ function AgileInfocheck ([string]$para1,[string]$para2){
     
     $actionss="screenshot"
     Get-Module -name $actionss|remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
     
     $actionse ="selenium_prepare"
     Get-Module -name $actionse|remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionse\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionse\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     $action="Agile Info check"
@@ -35,7 +35,7 @@ function AgileInfocheck ([string]$para1,[string]$para2){
         
    if($SWB.length -eq 0){
   
- $inidrv=(gci "C:\testing_AI\logs\ini*\*" -r -Filter "*DriverVersion.csv"|Sort-Object lastwritetime|select -last 1).FullName
+ $inidrv=(Get-ChildItem "C:\testing_AI\logs\ini*\*" -r -Filter "*DriverVersion.csv"|Sort-Object lastwritetime|select -last 1).FullName
 $checktype=(import-csv $inidrv|?{$_.DeviceClass -match "DISPLAY"}).devicename
 
 if($inidrv -and $checktype){
@@ -45,7 +45,7 @@ if($checktype -match "ada"){
 $drvtype2="NV_A6000ada"
 }
 
- $drivername=(gci ($scriptRoot+"\driver\GFX\$($drvtype2)\N\driver\") -File |?{$_.name -match "NVIDIA" -and $_.name -match "\.exe"}|sort lastwritetime|select -first 1 ).Name
+ $drivername=(Get-ChildItem ($scriptRoot+"\driver\GFX\$($drvtype2)\N\driver\") -File |?{$_.name -match "NVIDIA" -and $_.name -match "\.exe"}|sort lastwritetime|select -first 1 ).Name
  $SWB=$drivername.split("_") |? {$_.length -eq 5 -and !($_  -match "^WIN\d{2}") }
  write-host "The Display Type is $($drvtype2)"
  write-host "The Display Driver SWB is $($SWB)"
@@ -55,7 +55,7 @@ if($checktype -match "AMD"){
     $chekdrv=$checktype -match "[a-zA-Z]\d{4}"
     if(!$chekdrv){$checktype -match "\d{4}"}
     $drvtype2="AMD_"+$matches[0] 
- $drivername=(gci ($scriptRoot+"\driver\GFX\$($drvtype2)\N\") -File |?{$_.name -match "AMD" -and $_.name -match "\.exe" }|sort lastwritetime|select -first 1 ).Name
+ $drivername=(Get-ChildItem ($scriptRoot+"\driver\GFX\$($drvtype2)\N\") -File |?{$_.name -match "AMD" -and $_.name -match "\.exe" }|sort lastwritetime|select -first 1 ).Name
  $SWB=$drivername.split("_") |? {$_.length -eq 5 -and !($_  -match "^WIN\d{2}")}
 
 write-host "The Display Driver is $($drvtype2)"
@@ -71,7 +71,7 @@ if($SWB -and $SWB.count -eq 1){
 
    &$actionse -para1 "edge" -para2 "nonlog"
 
-    gci  "C:\testing_AI\modules\selenium\WebDriver.dll" |Unblock-File 
+    Get-ChildItem  "C:\testing_AI\modules\selenium\WebDriver.dll" |Unblock-File 
     Add-Type -Path "C:\testing_AI\modules\selenium\WebDriver.dll"
 
    try{$driver = New-Object OpenQA.Selenium.Edge.EdgeDriver}
@@ -207,7 +207,7 @@ $index="SWB number read fail"
 if($nonlog_flag.Length -eq 0){
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

@@ -152,14 +152,14 @@ start-sleep -s 3
 [System.Windows.Forms.SendKeys]::SendWait("~")
  start-sleep -s 5
   
-  $resultpathold=(gci "$scriptRoot\dcvt\results\DCVT*.zip" -ErrorAction SilentlyContinue|sort creationtime |select -Last 1).fullname
+  $resultpathold=(Get-ChildItem "$scriptRoot\dcvt\results\DCVT*.zip" -ErrorAction SilentlyContinue|sort creationtime |select -Last 1).fullname
 
   do{
     start-sleep -s 5  
   
-  $resultpath=(gci "$scriptRoot\dcvt\results\DCVT*.zip" -ErrorAction SilentlyContinue|sort creationtime |select -Last 1).fullname
+  $resultpath=(Get-ChildItem "$scriptRoot\dcvt\results\DCVT*.zip" -ErrorAction SilentlyContinue|sort creationtime |select -Last 1).fullname
   
-  $resultpathbase=(gci "$scriptRoot\dcvt\results\DCVT*.zip" -ErrorAction SilentlyContinue|sort creationtime |select -Last 1).basename
+  $resultpathbase=(Get-ChildItem "$scriptRoot\dcvt\results\DCVT*.zip" -ErrorAction SilentlyContinue|sort creationtime |select -Last 1).basename
 
    }until($resultpath.length -gt 0  -and  $resultpath -ne $resultpathold )
 
@@ -178,7 +178,7 @@ if(-not(test-path $dest)){new-item -ItemType directory -path $dest |out-null}
  
   $shell.NameSpace($dest).copyhere($shell.NameSpace($zip).Items(),16)
 
-  $htmlpath=(gci "$dest\AssessmentResults.html" -ErrorAction SilentlyContinue).fullname 
+  $htmlpath=(Get-ChildItem "$dest\AssessmentResults.html" -ErrorAction SilentlyContinue).fullname 
 
  $html = New-Object -Com "HTMLFile"
 
@@ -213,7 +213,7 @@ foreach($value in $allTablesAsObject){
 
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

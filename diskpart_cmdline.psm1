@@ -250,7 +250,7 @@ $diskpcmds=$fmtntfs_512g
 #region raid type handling
 if($raidtype.length -ne 0){
 
-$raidmappinglog=(gci $picpath -Filter "*raidmapping.txt"|sort lastwritetime|select -Last 1).fullname
+$raidmappinglog=(Get-ChildItem $picpath -Filter "*raidmapping.txt"|sort lastwritetime|select -Last 1).fullname
 
 if($raidmappinglog){
 $raidcontent=get-content $raidmappinglog
@@ -351,7 +351,7 @@ diskpcmd "list disk"
 if($assingletter.Length -gt 0){
     $actionfexp="filexplorer"
     Get-Module -name $actionfexp|remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionfexp\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionfexp\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
     $openpath=$assingletter+":\"
     &$actionfexp -para1  $openpath -para2 nonlog
@@ -379,7 +379,7 @@ remove-item $logpath -Force
 
 if($nonlog_flag.Length -eq 0){
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

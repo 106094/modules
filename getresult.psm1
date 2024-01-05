@@ -37,14 +37,14 @@ $height  = ([string]::Join("`n", (wmic path Win32_VideoController get CurrentVer
 
 if($result_type -match "passmark"){
 
-  $resultfile=gci -path C:\testing_AI\logs\passmark*.log
+  $resultfile=Get-ChildItem -path C:\testing_AI\logs\passmark*.log
   
   if($resultfile.count -ne 0){
   
   move-Item C:\testing_AI\logs\passmark*.log $logpath -Force
     move-Item C:\testing_AI\logs\passmark*.htm $logpath -Force
   
-  $resultfilename= (gci $logpath -Filte "passmark*.log"|sort lastwritetime|select -last 1).fullname
+  $resultfilename= (Get-ChildItem $logpath -Filte "passmark*.log"|sort lastwritetime|select -last 1).fullname
 
   $results="OK"
   $Index= $resultfilename
@@ -61,15 +61,15 @@ if($result_type -match "passmark"){
 
 if($result_type -match "3dmark"){
 
-  $getlasttime=(gci -path C:\testing_AI\logs\logs_timemap.csv).lastwritetime
+  $getlasttime=(Get-ChildItem -path C:\testing_AI\logs\logs_timemap.csv).lastwritetime
   $nowtime=get-date
   $gaps=(New-TimeSpan  -Start $getlasttime -end  $nowtime).TotalMinutes
   $Index=""
  
-  $resultfile=gci -path $env:USERPROFILE\documents\3DMark\3DMark.log -ErrorAction SilentlyContinue
-   $resultfile2=gci -path $env:USERPROFILE\documents\3DMark\*.3dmark-result -ErrorAction SilentlyContinue
-     $resultfile3=gci -path $env:USERPROFILE\documents\3DMark\*.xml -ErrorAction SilentlyContinue
-       $resultfile32=gci -path $env:USERPROFILE\documents\*.xml -ErrorAction SilentlyContinue
+  $resultfile=Get-ChildItem -path $env:USERPROFILE\documents\3DMark\3DMark.log -ErrorAction SilentlyContinue
+   $resultfile2=Get-ChildItem -path $env:USERPROFILE\documents\3DMark\*.3dmark-result -ErrorAction SilentlyContinue
+     $resultfile3=Get-ChildItem -path $env:USERPROFILE\documents\3DMark\*.xml -ErrorAction SilentlyContinue
+       $resultfile32=Get-ChildItem -path $env:USERPROFILE\documents\*.xml -ErrorAction SilentlyContinue
 
 
    ## finish with log ###
@@ -90,7 +90,7 @@ if($result_type -match "3dmark"){
 ########### log #########
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

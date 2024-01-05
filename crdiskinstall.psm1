@@ -23,7 +23,7 @@ $checkcdv=$checkcdv.ToString().trim()
 }
 catch{
 
- $crdinfo= (gci -path $scriptRoot -r -file "CrystalDiskInfo*").fullname
+ $crdinfo= (Get-ChildItem -path $scriptRoot -r -file "CrystalDiskInfo*").fullname
 
  & $crdinfo  /verysilent
 
@@ -60,7 +60,7 @@ $tcnumber=((get-content $tcpath).split(","))[0]
 $tcstep=((get-content $tcpath).split(","))[1]
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

@@ -31,7 +31,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath  -Force
 
 $actionss ="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $checkrunning= get-process -name PCMARK8 -ea SilentlyContinue
@@ -41,13 +41,13 @@ if($checkrunning){
 $width  = (([string]::Join("`n", (wmic path Win32_VideoController get CurrentHorizontalResolution))).split("`n") -match "\d{1,}")[0]
 $height  = (([string]::Join("`n", (wmic path Win32_VideoController get CurrentVerticalResolution))).split("`n") -match "\d{1,}")[0]
 
-  $getlasttime=(gci C:\testing_AI\logs\logs_timemap.csv).lastwritetime
+  $getlasttime=(Get-ChildItem C:\testing_AI\logs\logs_timemap.csv).lastwritetime
   $nowtime=get-date
   $gaps=(New-TimeSpan  -Start $getlasttime -end $nowtime).TotalMinutes
  
-  #$resultfile=gci -path $env:USERPROFILE\documents\3DMark\3DMark.log -ErrorAction SilentlyContinue
-   $resultfile2=(gci -path "$env:USERPROFILE\Documents\PCMark 8\Log\*\result.pcmark-8-result" -ErrorAction SilentlyContinue)|?{$_.LastWriteTime -gt $getlasttime}
-     #$resultfile3=gci -path $env:USERPROFILE\documents\*.xml -ErrorAction SilentlyContinue
+  #$resultfile=Get-ChildItem -path $env:USERPROFILE\documents\3DMark\3DMark.log -ErrorAction SilentlyContinue
+   $resultfile2=(Get-ChildItem -path "$env:USERPROFILE\Documents\PCMark 8\Log\*\result.pcmark-8-result" -ErrorAction SilentlyContinue)|?{$_.LastWriteTime -gt $getlasttime}
+     #$resultfile3=Get-ChildItem -path $env:USERPROFILE\documents\*.xml -ErrorAction SilentlyContinue
 
  if($gaps -ge $timelimit -and $resultfile2.count -eq 0){
    $results="NG"
@@ -65,7 +65,7 @@ start-sleep -s 30
 
 &$actionss  -para3 nonlog -para5 score
    
-$picfile=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "score" }).FullName
+$picfile=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "score" }).FullName
  
  copy-item (split-path -parent ($resultfile2.FullName)) -Destination $picpath -Recurse
    
@@ -86,7 +86,7 @@ $picfile=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "score" }).F
 ######### write log #######
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

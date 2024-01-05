@@ -70,7 +70,7 @@ $y -f "Time","check_type","result","remark","HDD1","HDD2","HDD3","HDD4","HDD5","
 
 Start-Process "$($Env:ProgramFiles)\CrystalDiskInfo\DiskInfo64.exe" -ArgumentList "/CopyExit" -wait
 
-$checktime=((gci "$($Env:ProgramFiles)\CrystalDiskInfo\DiskInfo.txt").lastwritetime).ToString()
+$checktime=((Get-ChildItem "$($Env:ProgramFiles)\CrystalDiskInfo\DiskInfo.txt").lastwritetime).ToString()
 $DiskInfoRaw  = get-content "$($Env:ProgramFiles)\CrystalDiskInfo\DiskInfo.txt"
 
 
@@ -125,7 +125,7 @@ $col2="HDD"+$i+"_diff"
 
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

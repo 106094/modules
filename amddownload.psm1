@@ -7,7 +7,7 @@
       
 $actionss ="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
   
 $nonlog_flag=$para1
@@ -34,12 +34,12 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 $actionsln ="selenium_prepare"
 
 Get-Module -name $actionsln|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 &$actionsln -para1 edge -para2 nonlog
 
-gci  "C:\testing_AI\modules\selenium\WebDriver.dll" |Unblock-File 
+Get-ChildItem  "C:\testing_AI\modules\selenium\WebDriver.dll" |Unblock-File 
 Add-Type -Path "C:\testing_AI\modules\selenium\WebDriver.dll"
 
     try{$driver = New-Object OpenQA.Selenium.Edge.EdgeDriver}
@@ -136,7 +136,7 @@ Start-Sleep -s 1
  else{$index=$index+@("5. fail to find and click Drivers")}
 
 #check  before download files
-$downlfs=(gci $env:userprofile\Downloads\* -file).Name
+$downlfs=(Get-ChildItem $env:userprofile\Downloads\* -file).Name
  
 Start-Sleep -s 5
 ##Download Windows Drivers
@@ -153,7 +153,7 @@ Start-Sleep -s 1
 
  do{
  start-sleep -s 5
-$downlfs_new=(gci $env:userprofile\Downloads\* -file).Name|?{$_ -notin $downlfs}
+$downlfs_new=(Get-ChildItem $env:userprofile\Downloads\* -file).Name|?{$_ -notin $downlfs}
 }until($downlfs_new -match "amd-software" -and $downlfs_new -match "\.exe")
  
 start-sleep -s 5
@@ -188,7 +188,7 @@ write-host "index:$index"
 
 if($nonlog_flag.Length -eq 0 -or $timespanmin -gt 30){
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

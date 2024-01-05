@@ -168,7 +168,7 @@ $scriptRoot=$PSScriptRoot
 
 $actionss="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global      
  
  $paracheck=$PSBoundParameters.ContainsKey('para1')
@@ -230,7 +230,7 @@ $index=$yefile
 
 $dxdinfo="$picpath\$($dd)_step$($tcstep)_DxDiag.txt"
 
-$inidrv=(gci "C:\testing_AI\logs\ini*" -r -Filter "*DriverVersion.csv"|Sort-Object lastwritetime|select -last 1).FullName
+$inidrv=(Get-ChildItem "C:\testing_AI\logs\ini*" -r -Filter "*DriverVersion.csv"|Sort-Object lastwritetime|select -last 1).FullName
 $checktype=(import-csv $inidrv|?{$_.DeviceClass -match "DISPLAY"}).devicename
 
 dxdiag /t $dxdinfo
@@ -305,7 +305,7 @@ Start-Sleep -Seconds 2
 
 if($expand_flag.Length -eq 0){
 &$actionss  -para3 nonlog -para5 "DevicecManager"
-$picfile=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "DeviceManager" }).FullName
+$picfile=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "DeviceManager" }).FullName
   start-sleep -s 2
   }
 
@@ -490,7 +490,7 @@ start-sleep -s 5
 if($output_flag.length -eq 0){
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

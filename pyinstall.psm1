@@ -18,7 +18,7 @@ $scriptRoot=$PSScriptRoot
 
 $actioncmd="cmdline"
 Get-Module -name $actioncmd|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actioncmd\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actioncmd\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $pyver=$para1
@@ -107,14 +107,14 @@ $dl0=$pypage3.Links.Href| Select-String "amd64"| Select-String "exe"|sort|select
 $dl=$dl0.tostring().trim()
 $pyfn=($dl.split("/"))[-1]
 
-gci c:/temp/python*.exe -ea SilentlyContinue|Remove-Item -Force |out-null
+Get-ChildItem c:/temp/python*.exe -ea SilentlyContinue|Remove-Item -Force |out-null
 
 Invoke-WebRequest -Uri $dl -OutFile "C:\temp\$pyfn" -UseBasicParsing
 
 do{
-$size1= (gci c:/temp/python*.exe).length
+$size1= (Get-ChildItem c:/temp/python*.exe).length
 start-sleep -s 5
-$size2= (gci c:/temp/python*.exe).length
+$size2= (Get-ChildItem c:/temp/python*.exe).length
 $dlcheck=$size2-$size1
 $dlcheck
 }until ($size2 -gt 0 -and $dlcheck -eq 0)
@@ -133,8 +133,8 @@ $pyrun=((get-process -name python*).Id).count
 
 $pypath1=split-path ((get-command python).Source)
 $pypath2=split-path ((get-command py).Source)
-$pypath3=(gci "$env:USERPROFILE\AppData\Local\Programs\Python\Python*").FullName
-$pypath4=((gci -path $pypath3 -r -filter "pip.exe").Directory).FullName
+$pypath3=(Get-ChildItem "$env:USERPROFILE\AppData\Local\Programs\Python\Python*").FullName
+$pypath4=((Get-ChildItem -path $pypath3 -r -filter "pip.exe").Directory).FullName
 if($pypath1 -and $pypath1 -notin ($Env:PATH -split ";")){$Env:PATH += ";"+$pypath1}
 if($pypath2 -and $pypath2 -notin ($Env:PATH -split ";")){$Env:PATH += ";"+$pypath2}
 if($pypath3 -and $pypath3 -notin ($Env:PATH -split ";")){$Env:PATH += ";"+$pypath3}
@@ -175,8 +175,8 @@ $index=$checkpyv.trim()|Out-String
 #region pip  install ##
 if(!( $connectstatus -match "could not find host")){
 write-host "pip install start --- $(get-date)"
-$usgpath=(gci "C:\testing_AI\modules\py\csg*\csg_utils*.whl"|sort lastwritetime|select -last 1).FullName
-$piplistpath=(gci "C:\testing_AI\modules\py\csg*\piplist.bat"|sort lastwritetime|select -last 1).FullName
+$usgpath=(Get-ChildItem "C:\testing_AI\modules\py\csg*\csg_utils*.whl"|sort lastwritetime|select -last 1).FullName
+$piplistpath=(Get-ChildItem "C:\testing_AI\modules\py\csg*\piplist.bat"|sort lastwritetime|select -last 1).FullName
 $Command2="pip install --upgrade pip"
 $Command3="pip install $usgpath" 
 $Command4=$piplistpath
@@ -198,7 +198,7 @@ write-host "pip install done --- $(get-date)"
 ######### write log #######
 if($nonlogflag.Length -eq 0){
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

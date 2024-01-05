@@ -20,8 +20,8 @@ $tcnumber=((get-content $tcpath).split(","))[0]
 $tcstep=((get-content $tcpath).split(","))[1]
 
 $path_setting1="C:\ProgramData\NVIDIA Corporation\Drs"
-$path_setting2=(gci "$env:userprofile\AppData\Local\Packages\NVIDIACorp*\SystemAppData\Helium\" -directory).fullname
-$path_run=(gci "C:\Program Files\WindowsApps\NVIDIACorp.NVIDIAControlPane*\" -directory).fullname
+$path_setting2=(Get-ChildItem "$env:userprofile\AppData\Local\Packages\NVIDIACorp*\SystemAppData\Helium\" -directory).fullname
+$path_run=(Get-ChildItem "C:\Program Files\WindowsApps\NVIDIACorp.NVIDIAControlPane*\" -directory).fullname
  
 ### find the system gfx model ##
  $drvname=(Get-WmiObject Win32_VideoController | Select-Object name|?{$_.name -match "NVIDIA"} ).name
@@ -29,8 +29,8 @@ $path_run=(gci "C:\Program Files\WindowsApps\NVIDIACorp.NVIDIAControlPane*\" -di
  if( $drvname){
 
 ### copy settigns ##
-$settingf1=(gci C:\testing_AI\settings\nv_Controlpanel\$drvname\* -file).fullname
-#$settingf2=(gci C:\testing_AI\settings\nv_Controlpanel\$drvname\SystemAppData\Helium\* -file).fullname
+$settingf1=(Get-ChildItem C:\testing_AI\settings\nv_Controlpanel\$drvname\* -file).fullname
+#$settingf2=(Get-ChildItem C:\testing_AI\settings\nv_Controlpanel\$drvname\SystemAppData\Helium\* -file).fullname
 
 $settingf1| %{Copy-Item $_ -Destination $path_setting1 -Force }
 #$settingf2| %{Copy-Item $_ -Destination $path_setting2 -Force }
@@ -55,7 +55,7 @@ $index="non-NVIDIA, bypass"
 ######### write log #######
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

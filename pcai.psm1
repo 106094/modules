@@ -99,7 +99,7 @@ $scriptRoot=$PSScriptRoot
 
 $actionss="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 #&$actionss  -para3 nonlog  -para5 ""
 
@@ -181,9 +181,9 @@ if($checkrun -ne $null){
 
 $action="pcai-$scriptname"
 
-$scriptfull=( gci "C:\testing_AI\modules\PC_AI_Tool*\Main\Windows\*\script\*"  -filter "*$($scriptname).ScriptAction").FullName
+$scriptfull=( Get-ChildItem "C:\testing_AI\modules\PC_AI_Tool*\Main\Windows\*\script\*"  -filter "*$($scriptname).ScriptAction").FullName
 
-$oldresult=(gci C:\testing_AI\modules\PC_AI_Tool*\Main\Windows\Report\*\*.html).count
+$oldresult=(Get-ChildItem C:\testing_AI\modules\PC_AI_Tool*\Main\Windows\Report\*\*.html).count
 
 ### wait 3D mark window open ##
 
@@ -197,7 +197,7 @@ $3dmarkwdopentime=(New-TimeSpan -start $3dmarkwdopenstart -end (get-date)).Total
 }until($3dmarkwdopentime -gt 180)
 }
 
-$pcaipath=(gci C:\testing_AI\modules\PC_AI_Tool*\AutoTool.exe).FullName
+$pcaipath=(Get-ChildItem C:\testing_AI\modules\PC_AI_Tool*\AutoTool.exe).FullName
 $pcaifpath=split-path $pcaipath
 
 ### revise pcai settings ### 
@@ -304,7 +304,7 @@ if($runpcai){
  
 do{
 start-sleep -s 60
-$newresult=(gci C:\testing_AI\modules\PC_AI_Tool*\Main\Windows\Report\*\*.html).count
+$newresult=(Get-ChildItem C:\testing_AI\modules\PC_AI_Tool*\Main\Windows\Report\*\*.html).count
 $runtimemin= (New-TimeSpan -start $startpcaitime -End (Get-Date)).TotalMinutes
 }until (($newresult - $oldresult) -gt 0 -or $runtimemin -gt $waitlimit)
 
@@ -319,7 +319,7 @@ $startpcaitime=Get-Date
 
 do{
 start-sleep -s 60
-$newresult=(gci C:\testing_AI\modules\PC_AI_Tool*\Main\Windows\Report\*\*.html).count
+$newresult=(Get-ChildItem C:\testing_AI\modules\PC_AI_Tool*\Main\Windows\Report\*\*.html).count
 $runtimemin= (New-TimeSpan -start $startpcaitime -End (Get-Date)).TotalMinutes
 }until (($newresult - $oldresult) -gt 0 -or $runtimemin -gt $waitlimit)
 }
@@ -341,15 +341,15 @@ if($checkrun){
 #remove-item C:\testing_AI\modules\PC_AI_Tool*\Token*.xml -Force
 if(($newresult - $oldresult) -gt 0){
 start-sleep -s 5
-$pcairesult=(gci -path C:\testing_AI\modules\PC_AI_Tool*\Main\Windows\Report\* -Directory|sort creationtime |select -last 1).fullname
+$pcairesult=(Get-ChildItem -path C:\testing_AI\modules\PC_AI_Tool*\Main\Windows\Report\* -Directory|sort creationtime |select -last 1).fullname
 Move-Item $pcairesult $scriptpath -Force
 move-item C:\testing_AI\logs\*.png  $picpath0 -Force ## merge all pic
 start-sleep -s 5
 ## rename pic filename
-$renamepics=gci -path $picpath0 -Filter "*.png"
+$renamepics=Get-ChildItem -path $picpath0 -Filter "*.png"
 foreach($renamepic in $renamepics){
 if(!($renamepic.name -match "^\d{6}_${6}")){
-$datewrite=get-date((gci $renamepic.fullname).LastWriteTime) -format "yyMMdd_HHmmss"
+$datewrite=get-date((Get-ChildItem $renamepic.fullname).LastWriteTime) -format "yyMMdd_HHmmss"
 $newname=$datewrite+"_"+$renamepic.Name
 rename-item $renamepic.fullname -NewName $newname ## rename as same date format
 }
@@ -410,7 +410,7 @@ else{
 if($nonlog_flag.length -eq 0){
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

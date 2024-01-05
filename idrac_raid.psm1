@@ -20,12 +20,12 @@ function idrac_raid ([string]$para1){
 
     $actionsln ="selenium_prepare"
     Get-Module -name $actionsln|remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     $actionss="screenshot"
     Get-Module -name $actionss |remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 
@@ -45,7 +45,7 @@ function idrac_raid ([string]$para1){
     $idracuser=$idracinfo[1]
     $idracpwd=$idracinfo[2]
 
-    gci  "C:\testing_AI\modules\selenium\WebDriver.dll" |Unblock-File 
+    Get-ChildItem  "C:\testing_AI\modules\selenium\WebDriver.dll" |Unblock-File 
     Add-Type -Path "C:\testing_AI\modules\selenium\WebDriver.dll"
 
     try{$driver = New-Object OpenQA.Selenium.Edge.EdgeDriver}
@@ -166,7 +166,7 @@ function idrac_raid ([string]$para1){
     ### write to log ###
 
     Get-Module -name "outlog"|remove-module
-    $mdpath=(gci -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     #write-host "Do $action!"

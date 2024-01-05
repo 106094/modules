@@ -49,7 +49,7 @@ if($Version.CurrentBuildNumber -ge 22000){
 $winflag="Win11"
 }
 
-if($isofile.Length -eq 0){ $isopath=(gci $picpath -Recurse |Where-Object{$_.name -match "\.iso"}|Where-Object{$_.fullname -match $winflag}).FullName}
+if($isofile.Length -eq 0){ $isopath=(Get-ChildItem $picpath -Recurse |Where-Object{$_.name -match "\.iso"}|Where-Object{$_.fullname -match $winflag}).FullName}
 else{$isopath=(Get-ChildItem $picpath -Recurse |Where-Object{$_.name -match "\.iso" -and $_.name -match $isofile }).FullName}
 if($isopath.length -eq 0 -or $isopath.count -ne 1){
 $results="NG"

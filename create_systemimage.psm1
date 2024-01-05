@@ -173,7 +173,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 
 $actionmd="screenshot"
 Get-Module -name $actionmd|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 
@@ -364,7 +364,7 @@ $wshell.SendKeys("C")
  <### explore ###
  $usern=$env:USERNAME
 
- $backuppath=(gci -path "X:\WindowsImageBackup\$usern\Backup*" -directory).FullName
+ $backuppath=(Get-ChildItem -path "X:\WindowsImageBackup\$usern\Backup*" -directory).FullName
 
  ### add acl ##
 $sharepath =  $backuppath
@@ -387,7 +387,7 @@ Add-Type -MemberDefinition $signature -Name MyType -Namespace MyNamespace
  $sname=$env:COMPUTERNAME
  do{
   start-sleep -s 10
-   $backuppath2=(gci -path "$backuppath\WindowsImageBackup\$($sname)\Backup*" -directory).FullName
+   $backuppath2=(Get-ChildItem -path "$backuppath\WindowsImageBackup\$($sname)\Backup*" -directory).FullName
  }until( $backuppath2.Length -gt 0)
 
 
@@ -446,7 +446,7 @@ foreach ($window in $windows) {
 
 if($nonlog_flag.Length -eq 0){
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

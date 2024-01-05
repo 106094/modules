@@ -179,7 +179,7 @@ $bounds = $screen.Bounds
 
     $actionss="screenshot"
     Get-Module -name $actionss |remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     $action="Device Manager Check"
@@ -227,7 +227,7 @@ $bounds = $screen.Bounds
 
         if($expand_flag.Length -eq 0){
         &$actionss  -para3 nonlog -para5 "DevicecManager"
-        $picfile=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "DeviceManager" }).FullName
+        $picfile=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "DeviceManager" }).FullName
           start-sleep -s 2
           }
 

@@ -83,7 +83,7 @@ if(-not(test-path $waitflag)){
 
 new-item -Path $waitflag -Force |out-null
 
-$timestart=[datetime]((gci $waitflag).CreationTime)
+$timestart=[datetime]((Get-ChildItem $waitflag).CreationTime)
 $count=((Get-RestartInfo).date -gt $timestart).count
 $timenow=(get-date)
 $timegap=(New-TimeSpan –Start $timestart –End $timenow).TotalMinutes
@@ -93,7 +93,7 @@ $results="wait"
 
 $content_log=import-csv "C:\testing_AI\logs\logs_timemap.csv"
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"
@@ -107,7 +107,7 @@ outlog $action $results  $tcnumber $tcstep $index
 
 else{
 
-$timestart=[datetime]((gci $waitflag).CreationTime)
+$timestart=[datetime]((Get-ChildItem $waitflag).CreationTime)
 $count=((Get-RestartInfo).date -gt $timestart).count
 $countx=$count+1
 $timenow=(get-date)

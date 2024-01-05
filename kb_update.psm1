@@ -46,7 +46,7 @@ $kbupdateinfo=$picpath+"$($timenow)_step$($tcstep)_KBlist_before.txt"
 
 $actionss ="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 
@@ -59,10 +59,10 @@ Get-HotFix|out-string|set-content $kbupdateinfo
 ## kb_update ##
 
 if($KBname.Length -eq 0){
-$kbfiles=(gci $picpath -r -filter "*.msu").FullName
+$kbfiles=(Get-ChildItem $picpath -r -filter "*.msu").FullName
 }
 else{
-$kbfiles=(gci $picpath -r -filter "*.msu"|?{$_.name -match $KBname}).FullName
+$kbfiles=(Get-ChildItem $picpath -r -filter "*.msu"|?{$_.name -match $KBname}).FullName
 }
 
 
@@ -133,7 +133,7 @@ set-content -path $kbupdateinfo2 -Value $updateevent -Force
 
 if($nonlog_flag.Length -eq 0){
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

@@ -101,7 +101,7 @@ Add-Type -TypeDefinition $clickSource -ReferencedAssemblies System.Windows.Forms
     $tcnumber=((get-content $tcpath).split(","))[0]
     $tcstep=((get-content $tcpath).split(","))[1]
 
-    $iometerpath=(gci "$Toolpath\IOMETER.exe").FullName
+    $iometerpath=(Get-ChildItem "$Toolpath\IOMETER.exe").FullName
 
 
     ############################## run ioMeter ##############################
@@ -137,7 +137,7 @@ Add-Type -TypeDefinition $clickSource -ReferencedAssemblies System.Windows.Forms
 
     $actionsw ="Set_Window"
     Get-Module -name $actionsw|remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionsw\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionsw\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     Set_Window -para1 "IOMeter" -para4 "nonlog"
@@ -166,7 +166,7 @@ Add-Type -TypeDefinition $clickSource -ReferencedAssemblies System.Windows.Forms
     
     Start-Sleep -s $totalsec
 
-    if(gci "C:\testing_AI\logs\$tcnumber\step$($tcstep)_iometerlog.csv"){
+    if(Get-ChildItem "C:\testing_AI\logs\$tcnumber\step$($tcstep)_iometerlog.csv"){
         $results="OK"
         $action="IOMeter Run Success"
     }else{
@@ -179,7 +179,7 @@ Add-Type -TypeDefinition $clickSource -ReferencedAssemblies System.Windows.Forms
     
     if($nolog_flag.length -eq 0){
         Get-Module -name "outlog"|remove-module
-        $mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+        $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
         Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
         #write-host "Do $action!"

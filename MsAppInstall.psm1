@@ -21,7 +21,7 @@ Function MsAppInstall([string]$para1,[string]$para2){
 
     $actionss ="screenshot"
     Get-Module -name $actionss|remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
     
     #Find AppID
@@ -31,12 +31,12 @@ Function MsAppInstall([string]$para1,[string]$para2){
     $actionse ="selenium_prepare"
 
     Get-Module -name $actionse|remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionse\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionse\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     &$actionse -para1 "edge" -para2 "nonlog"
 
-    gci  "C:\testing_AI\modules\selenium\WebDriver.dll" |Unblock-File 
+    Get-ChildItem  "C:\testing_AI\modules\selenium\WebDriver.dll" |Unblock-File 
     Add-Type -Path "C:\testing_AI\modules\selenium\WebDriver.dll"
     $driver = New-Object OpenQA.Selenium.Edge.EdgeDriver
     $driver.Manage().Window.Maximize()
@@ -124,7 +124,7 @@ Function MsAppInstall([string]$para1,[string]$para2){
 
     $actionmd="enable_wu"
     Get-Module -name $actionmd|remove-module
-    $mdpath=(gci -path $scriptRoot\* -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot\* -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     &$actionmd -para1 nonlog
@@ -243,7 +243,7 @@ Function MsAppInstall([string]$para1,[string]$para2){
 
     $actionmd="disable_wu"
     Get-Module -name $actionmd|remove-module
-    $mdpath=(gci -path $scriptRoot\* -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot\* -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     &$actionmd -para1 nonlog
@@ -253,7 +253,7 @@ Function MsAppInstall([string]$para1,[string]$para2){
 
     if($nonlog_flag.Length -eq 0){
         Get-Module -name "outlog"|remove-module
-        $mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+        $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
         Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
         #write-host "Do $action!"
@@ -264,5 +264,5 @@ Function MsAppInstall([string]$para1,[string]$para2){
 }
 
 
-# ÂåØÂá∫Ê®°ÁµÅEÅEΩEÅEΩEÅEΩEÅEΩEÅEΩEÅEΩEÅEΩEÅEΩEÂì°
+# ÂåØÂá∫Ê®°ÁµÅEÔøΩEÔøΩEÔøΩEÔøΩEÔøΩEÔøΩEÔøΩEÔøΩEÔøΩEÔøΩEÔøΩEÔøΩEÔøΩEÔøΩEÔøΩEÔøΩEÂì°
 Export-ModuleMember -Function MsAppInstall

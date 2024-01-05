@@ -19,7 +19,7 @@ $scriptRoot=$PSScriptRoot
 
 $actionss ="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $action="PnP_Uninstall"
@@ -67,7 +67,7 @@ $SignerName = $PSItem.Context.PostContext[5] -replace '.*:\s+'
 
 $dupinfnames=$infname
 if($dupinfnames.Length -eq 0){
-$dupinfnames=(gci $picpath -Recurse -filter "*.inf").name
+$dupinfnames=(Get-ChildItem $picpath -Recurse -filter "*.inf").name
 }
 $PublishedNames=$null
 foreach($dupinfname in $dupinfnames){
@@ -114,7 +114,7 @@ $index="check pnpuninstall.txt"
 
 if($nonlog_flag.Length -eq 0 -or $timespanmin -gt 30){
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

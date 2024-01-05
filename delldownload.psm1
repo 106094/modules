@@ -44,7 +44,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 
 $actionmd="screenshot"
 Get-Module -name $actionmd|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $screen = [System.Windows.Forms.Screen]::PrimaryScreen
@@ -56,11 +56,11 @@ $height = $bounds.Height
 #$height  = (([string]::Join("`n", (wmic path Win32_VideoController get CurrentVerticalResolution))).split("`n") -match "\d{1,}")[0]
 
 
-gci  "C:\testing_AI\modules\selenium\WebDriver.dll" |Unblock-File 
+Get-ChildItem  "C:\testing_AI\modules\selenium\WebDriver.dll" |Unblock-File 
 Add-Type -Path "C:\testing_AI\modules\selenium\WebDriver.dll"
 
-$dlcount=(gci $env:USERPROFILE\downloads\*.exe).count
-$dlnames=(gci $env:USERPROFILE\downloads\*.exe).name
+$dlcount=(Get-ChildItem $env:USERPROFILE\downloads\*.exe).count
+$dlnames=(Get-ChildItem $env:USERPROFILE\downloads\*.exe).name
 
 
 ### web ##
@@ -69,7 +69,7 @@ $dlnames=(gci $env:USERPROFILE\downloads\*.exe).name
 $actionsln ="selenium_prepare"
 
 Get-Module -name $actionsln|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 &$actionsln -para1 edge -para2 nonlog
@@ -258,12 +258,12 @@ $i=0
 do{
 $i++
 Start-Sleep -s 5
-$dlcount2=(gci $env:USERPROFILE\downloads\*.exe).count
+$dlcount2=(Get-ChildItem $env:USERPROFILE\downloads\*.exe).count
 } until ($dlcount2 -gt $dlcount -or $i -gt 60)
 
-$dlnames2=(gci $env:USERPROFILE\downloads\*.exe|?{$_.name -notin $dlnames}).name
-$dlnamesfull=(gci $env:USERPROFILE\downloads\*.exe|?{$_.name -notin $dlnames}).fullname
-$dlsize=(gci $env:USERPROFILE\downloads\*.exe|?{$_.name -notin $dlnames}).length
+$dlnames2=(Get-ChildItem $env:USERPROFILE\downloads\*.exe|?{$_.name -notin $dlnames}).name
+$dlnamesfull=(Get-ChildItem $env:USERPROFILE\downloads\*.exe|?{$_.name -notin $dlnames}).fullname
+$dlsize=(Get-ChildItem $env:USERPROFILE\downloads\*.exe|?{$_.name -notin $dlnames}).length
 
 if($dlcount2 -gt $dlcount){
 Move-Item $dlnamesfull $picpath -Force
@@ -286,7 +286,7 @@ $driver.Quit()
 ######### check timespan  #######
 
 $logs=(Split-Path -Parent $scriptRoot)+"\logs\logs_timemap.csv"
-$lastactiontime=(gci $logs).LastWriteTime
+$lastactiontime=(Get-ChildItem $logs).LastWriteTime
 $timespanmin=(New-TimeSpan -start $lastactiontime -end (get-date)).TotalMinutes
 if($timespanmin -gt 30){
 $nonlog_flag=""
@@ -303,7 +303,7 @@ $nonlog_flag
 
 if($nonlog_flag.Length -eq 0 -or $timespanmin -gt 30){
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

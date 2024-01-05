@@ -171,14 +171,14 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 
     $actionss ="screenshot"
     Get-Module -name $actionss|remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $results="check screenshot"
 $Index="rebooter_start.jpg"
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"
@@ -200,7 +200,7 @@ start-sleep -s 5
 
 
 if(test-path "$env:USERPROFILE\Documents\PassMark\Rebooter\Rebooter.log"){
-$backuplogtime=Get-Date((gci $env:USERPROFILE\\Documents\PassMark\Rebooter\Rebooter.log).LastWriteTime) -Format "yyMMdd_HHmmss"
+$backuplogtime=Get-Date((Get-ChildItem $env:USERPROFILE\\Documents\PassMark\Rebooter\Rebooter.log).LastWriteTime) -Format "yyMMdd_HHmmss"
 Move-Item -Path "$env:USERPROFILE\Documents\PassMark\Rebooter\Rebooter.log" "$env:USERPROFILE\Documents\PassMark\Rebooter\Rebooter_$($backuplogtime).log" -Force
 }
 
@@ -212,7 +212,7 @@ $inidelete=test-path $env:USERPROFILE\Documents\PassMark\Rebooter\RebooterConfig
 }until($inidelete -eq $false)
 }
 
-$rebt= (gci -path $scriptRoot -Recurse -File -Filter "rebooter.exe").FullName
+$rebt= (Get-ChildItem -path $scriptRoot -Recurse -File -Filter "rebooter.exe").FullName
 start-process $rebt
 start-sleep -s 5
 

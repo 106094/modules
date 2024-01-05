@@ -90,13 +90,13 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 
     $actionss ="screenshot"
     Get-Module -name $actionss|remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue
         
 
     $actionpcai ="pcai"
     Get-Module -name $actionpcai|remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionpcai\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionpcai\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue
 
 
@@ -107,7 +107,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 Start-Process "feedback-hub:" -WindowStyle Maximized
  do{
  start-sleep -s 5
- $settingfile=gci  "$env:USERPROFILE\AppData\Local\Packages\Microsoft.WindowsFeedbackHub_*\LocalState\content\FeedbackCategories.json"
+ $settingfile=Get-ChildItem  "$env:USERPROFILE\AppData\Local\Packages\Microsoft.WindowsFeedbackHub_*\LocalState\content\FeedbackCategories.json"
  }until( $settingfile)
     $contentFeed = Get-Content $settingfile
     $cataindex = $contentFeed.IndexOf("$para1")
@@ -265,7 +265,7 @@ $index=""
 
 if($nonlog_flag.Length -eq 0){
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

@@ -20,7 +20,7 @@ function driver_uninstall_ControlPanel ([string]$para1,[string]$para2){
         #$drvname=(Get-WmiObject Win32_VideoController | Select-Object name|?{$_.name -match "NVIDIA"} ).name
         #$drvname2=(Get-WmiObject Win32_VideoController | Select-Object name|?{$_.name -match "AMD"} ).name
  
- $inidrv=(gci "C:\testing_AI\logs\ini*" -r -Filter "*DriverVersion.csv"|Sort-Object lastwritetime|select -last 1).FullName
+ $inidrv=(Get-ChildItem "C:\testing_AI\logs\ini*" -r -Filter "*DriverVersion.csv"|Sort-Object lastwritetime|select -last 1).FullName
 
 if($inidrv){
 $drvname=(import-csv $inidrv|?{$_.DeviceClass -match "DISPLAY"}).devicename
@@ -46,20 +46,20 @@ $pkgename="AMD"
     #import moudle
     $actionss="screenshot"
     Get-Module -name $actionss|remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     #import moudle
     $actionts="taskschedule_atlogin"
     Get-Module -name $actionts|remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionts\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionts\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     
     #import moudle
     $actiontsd="taskschedule_delete"
     Get-Module -name $actiontsd|remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actiontsd\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actiontsd\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 
@@ -301,7 +301,7 @@ $pkgename="AMD"
 if($nonlog_flag.Length -eq 0){
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

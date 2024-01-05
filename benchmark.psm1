@@ -265,7 +265,7 @@ $scriptRoot=$PSScriptRoot
 
 $actionss="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
@@ -293,9 +293,9 @@ if($bitype -match "passmark"){
  $action="passmark burnin"
 
 $bifolder= "C:\Program Files\BurnInTest\bit.exe"
-$bipath=(gci "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match "bit" -and $_.name -match "exe"}).FullName
-$keypath=(gci "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match "key"}).FullName
-$cfgpath=(gci "$scriptRoot\BITools\config\" -r -file |?{$_.name -match $bitconfig}).FullName
+$bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match "bit" -and $_.name -match "exe"}).FullName
+$keypath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match "key"}).FullName
+$cfgpath=(Get-ChildItem "$scriptRoot\BITools\config\" -r -file |?{$_.name -match $bitconfig}).FullName
 
 #check $bitconfig volumn # exist ##
 if($bitconfig -match "volume"){
@@ -447,9 +447,9 @@ if($bitype -match "furmark"){
  $durationtime=[int64]$duration*60*1000
 
 $bifolder= "C:\Program Files (x86)\Geeks3D\Benchmarks\FurMark\FurMark.exe"
-$bipath=(gci "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match "FurMark" -and $_.name -match "exe"}).FullName
-#$keypath=(gci "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match "key"}).FullName
-#$cfgpath=(gci "$scriptRoot\BITools\config\" -r -file |?{$_.name -match $bitconfig}).FullName
+$bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match "FurMark" -and $_.name -match "exe"}).FullName
+#$keypath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match "key"}).FullName
+#$cfgpath=(Get-ChildItem "$scriptRoot\BITools\config\" -r -file |?{$_.name -match $bitconfig}).FullName
 
 if((test-path $bifolder) -eq $false){
 
@@ -494,7 +494,7 @@ if($wshell.AppActivate('Geeks3D') -eq $true ){
 
 &$actionss  -para3 nonlog -para5 "$action-settings"
    
-$picfile1=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-settings" }).FullName
+$picfile1=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-settings" }).FullName
 
 ## start running
 
@@ -521,7 +521,7 @@ if($wshell.AppActivate('*** Caution') -eq $true ){
 
 <##### screen shot by F9 ###
 
-$pic1= (gci -path  "C:\Program Files (x86)\Geeks3D\Benchmarks\FurMark\screenshots\*" -Recurse -file -Filter "*jpg*").fullname
+$pic1= (Get-ChildItem -path  "C:\Program Files (x86)\Geeks3D\Benchmarks\FurMark\screenshots\*" -Recurse -file -Filter "*jpg*").fullname
 
    start-sleep -s 2  
  $wshell.SendKeys("{F1}")
@@ -531,7 +531,7 @@ $pic1= (gci -path  "C:\Program Files (x86)\Geeks3D\Benchmarks\FurMark\screenshot
  $wshell.SendKeys("{F9}")
   start-sleep -s 5  
   
-  $pic2= (gci -path  "C:\Program Files (x86)\Geeks3D\Benchmarks\FurMark\screenshots\*" -Recurse -file -Filter "*jpg*").fullname
+  $pic2= (Get-ChildItem -path  "C:\Program Files (x86)\Geeks3D\Benchmarks\FurMark\screenshots\*" -Recurse -file -Filter "*jpg*").fullname
   foreach($pic in $pic2){
   if($pic -notin $pic1){
   $picfile=$picpath+"$timenow-$tcnumber-$tcstep-$action-1.jpg"
@@ -546,7 +546,7 @@ $pic1= (gci -path  "C:\Program Files (x86)\Geeks3D\Benchmarks\FurMark\screenshot
  $wshell.SendKeys("{F9}")
   start-sleep -s 5  
   
-  $pic3= (gci -path  "C:\Program Files (x86)\Geeks3D\Benchmarks\FurMark\screenshots\*" -Recurse -file -Filter "*jpg*").fullname
+  $pic3= (Get-ChildItem -path  "C:\Program Files (x86)\Geeks3D\Benchmarks\FurMark\screenshots\*" -Recurse -file -Filter "*jpg*").fullname
   foreach($pic in $pic3){
   if($pic -notin $pic2){
   $picfile=$picpath+"$timenow-$tcnumber-$tcstep-$action-2.jpg"
@@ -573,7 +573,7 @@ $pic1= (gci -path  "C:\Program Files (x86)\Geeks3D\Benchmarks\FurMark\screenshot
 
 &$actionss  -para3 nonlog -para5 "$action-start"
    
-$picfile2=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-start" }).FullName
+$picfile2=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-start" }).FullName
 
 $picfile=[string]::join("`n",$picfile1,$picfile2)
 
@@ -598,11 +598,11 @@ if($wshell.AppActivate('Geeks3D') -eq $true ){
 $bifolder= "C:\Program Files (x86)\Geeks3D\Benchmarks\FluidMark\"
 $bitprg=".\FluidMark.exe"
 
-$bipath=(gci "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match "FluidMark" -and $_.name -match "exe"}).FullName
-$bipath2=(gci "$scriptRoot\BITools\$bitype\" -r -file -filter "*PhysX*System*").FullName
+$bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match "FluidMark" -and $_.name -match "exe"}).FullName
+$bipath2=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file -filter "*PhysX*System*").FullName
 
-#$keypath=(gci "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match "key"}).FullName
-#$cfgpath=(gci "$scriptRoot\BITools\config\" -r -file |?{$_.name -match $bitconfig}).FullName
+#$keypath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match "key"}).FullName
+#$cfgpath=(Get-ChildItem "$scriptRoot\BITools\config\" -r -file |?{$_.name -match $bitconfig}).FullName
 
 ## install##
 if((test-path  "C:\Program Files (x86)\Geeks3D\Benchmarks\FluidMark\data") -eq $false){
@@ -642,7 +642,7 @@ if($wshell.AppActivate('Geeks3D') -eq $true ){
    ### window focus ###
 
 Get-Module -name appfocus |remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^appfocus\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^appfocus\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 appfocus -para1 FluidMark
 
@@ -735,7 +735,7 @@ if($bitype -match "prime95"){
 
  $action="prime95 stress burnin"
 
- $bipath=(gci "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match $bitype -and $_.name -match "exe"}).FullName
+ $bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match $bitype -and $_.name -match "exe"}).FullName
   
   $checkrun=((get-process -Name prime95 -ErrorAction SilentlyContinue).Id).count
 
@@ -790,7 +790,7 @@ if( $wshell.AppActivate($primid) ){
       
 &$actionss  -para3 nonlog -para5 "$action-settings"
    
-$picfile1=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-settings" }).FullName
+$picfile1=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-settings" }).FullName
 
    ##### go ###
 
@@ -805,7 +805,7 @@ $picfile1=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-se
 
 &$actionss  -para3 nonlog -para5 "$action-start"
    
-$picfile1=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-start" }).FullName
+$picfile1=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-start" }).FullName
 
 $picfile=[string]::join("`n",$picfile1,$picfile2)
 
@@ -820,7 +820,7 @@ if($bitype -match "Unigine_Valley"){
 
  $action="Unigine Valley burnin"
 
-$bipath=(gci "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match $bitype -and $_.name -match "exe"}).FullName
+$bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match $bitype -and $_.name -match "exe"}).FullName
   
   $checkprocessing1=((get-process -name Valley -ea SilentlyContinue).Id).count 
   if( $checkprocessing1 -gt 0){
@@ -986,7 +986,7 @@ start-sleep -s 3
        
 &$actionss  -para3 nonlog -para5 "$action-settings"
    
-$picfile1=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-settings" }).FullName
+$picfile1=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-settings" }).FullName
 
    ## close settings ###
 
@@ -1130,7 +1130,7 @@ start-sleep -s 2
  [System.Windows.Forms.SendKeys]::SendWait("{esc}")
 
 <##### screenshot *2 by F12###
- $pngfile=(gci -path "$env:USERPROFILE/valley/screenshots").fullname
+ $pngfile=(Get-ChildItem -path "$env:USERPROFILE/valley/screenshots").fullname
  $id2=(Get-Process -name Valley).Id
   $id2title=(Get-Process -name Valley).MainWindowTitle
  Get-Process -id $id2 | Set-WindowState -State MAXIMIZE
@@ -1145,8 +1145,8 @@ start-sleep -s 2
   $timenow=get-date -format "yyMMdd_HHmmss"
    start-sleep -s 10
     $picfile2=$($picpath)+"$($timenow)-$($tcnumber)-$($tcstep)-$($action)-2.jpg"    
- $pngfile1=((gci -path "$env:USERPROFILE/valley/screenshots")|sort LastWriteTime|select -last 2|select -first 1).fullname
-  $pngfile2=((gci -path "$env:USERPROFILE/valley/screenshots")|sort LastWriteTime|select -last 1).fullname  
+ $pngfile1=((Get-ChildItem -path "$env:USERPROFILE/valley/screenshots")|sort LastWriteTime|select -last 2|select -first 1).fullname
+  $pngfile2=((Get-ChildItem -path "$env:USERPROFILE/valley/screenshots")|sort LastWriteTime|select -last 1).fullname  
   $picfile=""
   if( $pngfile -ne 0 -and  $pngfile1 -notin  $pngfile){ copy-item $pngfile1 $picfile1 -Force; $picfile=$picfile1}
   if( $pngfile -ne 0 -and  $pngfile2 -notin  $pngfile){ copy-item $pngfile2 $picfile2 -Force; $picfile=$picfile1+"`n"+$picfile2}
@@ -1169,13 +1169,13 @@ start-sleep -s 2
 
 &$actionss  -para3 nonlog -para5 "$action_1"
 
-$picfile2=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action_1" }).FullName
+$picfile2=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action_1" }).FullName
 
 start-sleep -s 7
 
 &$actionss  -para3 nonlog -para5 "$action_2"
 
-$picfile3=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action_2" }).FullName
+$picfile3=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action_2" }).FullName
 
 $picfile=[string]::join("`n",$picfile1,$picfile2,$picfile3)
     
@@ -1204,7 +1204,7 @@ $resx=($option2.split("x"))[0]
 $resy=($option2.split("x"))[1]
 }
 
-$bipath=(gci "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match $bitype -and $_.name -match "exe"}).FullName
+$bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match $bitype -and $_.name -match "exe"}).FullName
   
   $checkprocessing1=((get-process -name "Unigine_Superposition*" -ea SilentlyContinue).Id).count + ((get-process -name launcher -ea SilentlyContinue).Id).count 
   if( $checkprocessing1 -gt 0 -or $checkprocessing2 -gt 0){
@@ -1527,7 +1527,7 @@ if( !($bitconfig2 -match 1)){
 
  do{
  start-sleep -s 1
-  $checksave=gci -path "$env:USERPROFILE/Superposition/screenshots\*" |?{$_.lastwritetime -gt $timenowa}
+  $checksave=Get-ChildItem -path "$env:USERPROFILE/Superposition/screenshots\*" |?{$_.lastwritetime -gt $timenowa}
   $timegap=(New-TimeSpan -start $timenowa -End (Get-Date)).TotalSeconds
   }until($checksave -or $timegap -gt 30)
 
@@ -1537,7 +1537,7 @@ if( !($bitconfig2 -match 1)){
   $picfile1=$($picpath)+"$($timenow)-$($tcnumber)-$($tcstep)-$($action)-score.jpg"
   $scfile1=$checksave.FullName
  
-  #$resultfile=((gci -path "$env:USERPROFILE/Superposition/results")|sort LastWriteTime|select -last 1).fullname
+  #$resultfile=((Get-ChildItem -path "$env:USERPROFILE/Superposition/results")|sort LastWriteTime|select -last 1).fullname
  
   Copy-Item  $scfile1 -Destination $picfile1 -Force
 
@@ -1623,7 +1623,7 @@ $failcopy=""
 do{
 Start-Sleep -s 5
 $checktool=test-path $copytopath
-$bipath=(gci "$scriptRoot\BITools\$($bitype)\" -r -file |?{$_.name -match "exe"}).FullName
+$bipath=(Get-ChildItem "$scriptRoot\BITools\$($bitype)\" -r -file |?{$_.name -match "exe"}).FullName
 }until($checktool -and $bipath.Length -gt 0)
 
 ##>
@@ -1686,7 +1686,7 @@ Get-Process |   Where-Object { $_.MainWindowHandle -ne 0  } |
 }
 
 &$actionss  -para3 nonlog -para5 "3DMark_uninstall"
-$picfile=$picfile+@((gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "3DMark_uninstall" }).FullName)
+$picfile=$picfile+@((Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "3DMark_uninstall" }).FullName)
 
 }
 ##>
@@ -1770,7 +1770,7 @@ Get-Process |   Where-Object { $_.MainWindowHandle -ne 0  } |
 ## screenshot of desktop
 
 &$actionss  -para3 nonlog -para5 "installcheck"
-$picfile=$picfile+@((gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "installcheck" }).FullName)
+$picfile=$picfile+@((Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "installcheck" }).FullName)
 $picfile=$picfile|Out-String
 
   }
@@ -1836,7 +1836,7 @@ netdisk_connect -webpath \\192.168.2.249\srvprj\Inventec\Dell -username pctest -
  do{
 Start-Sleep -s 5
 $checktool=test-path $copytopath
-$bipath=(gci "$scriptRoot\BITools\$($bitype)\" -r -file |?{$_.name -match "PCMark8-setup.exe"}).FullName
+$bipath=(Get-ChildItem "$scriptRoot\BITools\$($bitype)\" -r -file |?{$_.name -match "PCMark8-setup.exe"}).FullName
 }until($checktool -and $bipath.Length -gt 0)
 
     }
@@ -1974,7 +1974,7 @@ if($resultNG -ne $null){$results=$resultNG}
 ######### write log #######
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

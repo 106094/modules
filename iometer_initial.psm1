@@ -28,16 +28,16 @@ function iometer_initial ([string]$para1,[string]$para2){
 
     $actionss="screenshot"
     Get-Module -name $actionss|remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
     $tcnumber=((get-content $tcpath).split(","))[0]
     $tcstep=((get-content $tcpath).split(","))[1]
 
-    $iometerpath=(gci "$Toolpath\IOMETER.exe").FullName
+    $iometerpath=(Get-ChildItem "$Toolpath\IOMETER.exe").FullName
 
-    $iometerpath2=(gci "$Toolpath\dynamo.exe").FullName
+    $iometerpath2=(Get-ChildItem "$Toolpath\dynamo.exe").FullName
 
     ## firewell open for auto tool ##
 
@@ -81,7 +81,7 @@ function iometer_initial ([string]$para1,[string]$para2){
 
     if($nolog_flag.length -eq 0){
         Get-Module -name "outlog"|remove-module
-        $mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+        $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
         Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
         #write-host "Do $action!"

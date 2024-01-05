@@ -81,7 +81,7 @@ $scriptRoot=$PSScriptRoot
 
 $actionss="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 
@@ -132,7 +132,7 @@ $playtypes= [string]::Join("_",$items)
 $action ="selenium_prepare"
 
 Get-Module -name $action|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$action\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$action\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 if($brstype -eq "chrome"){
@@ -157,7 +157,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 $width  = (([string]::Join("`n", (wmic path Win32_VideoController get CurrentHorizontalResolution))).split("`n") -match "\d{1,}")[0]
 $height  = (([string]::Join("`n", (wmic path Win32_VideoController get CurrentVerticalResolution))).split("`n") -match "\d{1,}")[0]
 
-gci  "C:\testing_AI\modules\selenium\WebDriver.dll" |Unblock-File 
+Get-ChildItem  "C:\testing_AI\modules\selenium\WebDriver.dll" |Unblock-File 
 Add-Type -Path "C:\testing_AI\modules\selenium\WebDriver.dll"
 
 
@@ -412,7 +412,7 @@ skipadds
 &$actionss -para2 showtaskbar -para3 nonlog -para5 "$($brstype)-$($action32)"
 
 if($playtype_pause.length -eq 0){
-gci -path $picpath -file -filter "*pause*"|Remove-Item
+Get-ChildItem -path $picpath -file -filter "*pause*"|Remove-Item
 }
 
 ### play next ##
@@ -475,7 +475,7 @@ $index="check screen shots"
 ######### write log #######
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

@@ -47,7 +47,7 @@ $tcstep=((get-content $tcpath).split(","))[1]
 $logpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
 if(-not(test-path $logpath)){new-item -ItemType directory -path $logpath -Force|Out-Null}
 
-$filecopyfrom=gci $logpath -Recurse |?{$_.name -match $filename}
+$filecopyfrom=Get-ChildItem $logpath -Recurse |?{$_.name -match $filename}
 
 
  if($filecopyfrom.length -ne 0){
@@ -63,8 +63,8 @@ $filecopyfrom=gci $logpath -Recurse |?{$_.name -match $filename}
  $copyfname=$filecopy.name
  copy-item $copyffullname -Destination  $copytofolder -Force
  $destifn=$copytofolder+ $copyfname
- $check1=( gci $copyffullname).Length
- $check2=( gci $destifn).Length
+ $check1=( Get-ChildItem $copyffullname).Length
+ $check2=( Get-ChildItem $destifn).Length
  if($check1 -ne $check2){
   $results="NG"
   $index=$index+@("$copyfname copy fail")
@@ -77,10 +77,10 @@ $filecopyfrom=gci $logpath -Recurse |?{$_.name -match $filename}
 
 $runaction="cmdline"
 Get-Module -name $runaction|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "^$runaction\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "^$runaction\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
-&$runaction  -para1 "gci $copytofolder" -para3 "powershell" -para5 "nolog"
+&$runaction  -para1 "Get-ChildItem $copytofolder" -para3 "powershell" -para5 "nolog"
 
 #comp
 $oripath = $copytofolder + $filename
@@ -130,7 +130,7 @@ else{$index="check logs"}
 if( $nonlog_flag.Length -eq 0){
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

@@ -282,7 +282,7 @@ Start-Sleep -Seconds 3
 
               ## screenshot ##
               &$actionss  -para3 nonlog -para5 "cmd_End"
-              #$picfile=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match $action }).FullName
+              #$picfile=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match $action }).FullName
               
               taskkill /PID $id2 /F  
       } 

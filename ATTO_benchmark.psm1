@@ -130,7 +130,7 @@ $logpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\step$($tcstep)_ATT
 
 $actionss="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 
@@ -156,7 +156,7 @@ write-host "Drive $diskid doesnot exist in $currentdiskstring or $currentdiskstr
   }
 
 else{
-$attoexe=(gci $scriptRoot\* -r -file "ATTODiskBenchmark.exe"|Sort-Object lastwritetime|select -Last 1).fullname
+$attoexe=(Get-ChildItem $scriptRoot\* -r -file "ATTODiskBenchmark.exe"|Sort-Object lastwritetime|select -Last 1).fullname
 if(!$attoexe){
 $results="NG"
 $index="fail to find ATTODiskBenchmark.exe in modules folder"
@@ -297,7 +297,7 @@ write-host "end $(get-date)"
      start-sleep -s 5
      (get-process -name ATTODiskBenchmark).CloseMainWindow()
 
-     $attofile=((gci $env:userprofile\documents\*.bmk)|sort lastwritetime|select -last 1).fullname
+     $attofile=((Get-ChildItem $env:userprofile\documents\*.bmk)|sort lastwritetime|select -last 1).fullname
     
 
      $results="OK"
@@ -317,7 +317,7 @@ write-host "$results, $index"
 
 if($nonlog_flag.Length -eq 0){
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

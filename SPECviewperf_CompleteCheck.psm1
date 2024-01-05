@@ -35,8 +35,8 @@ else{
  $doneflag=$null
 
  if($benchtype -eq "SPECviewperf13"){
- $startruntime=(gci C:\SPEC\SPECgpc\SPECviewperf13\vp13bench\gwpgRunBenchmark.js).LastWriteTime
- $resultfd=gci -Path C:\SPEC\SPECgpc\SPECviewperf13\results_*  -Directory|?{$_.CreationTime -gt $startruntime}
+ $startruntime=(Get-ChildItem C:\SPEC\SPECgpc\SPECviewperf13\vp13bench\gwpgRunBenchmark.js).LastWriteTime
+ $resultfd=Get-ChildItem -Path C:\SPEC\SPECgpc\SPECviewperf13\results_*  -Directory|?{$_.CreationTime -gt $startruntime}
  
 $setindex="C:\SPEC\SPECgpc\SPECviewperf13\vp13bench\index.html"
 $setindexb="C:\SPEC\SPECgpc\SPECviewperf13\vp13bench\index_0.html"
@@ -47,8 +47,8 @@ $mgntrbjsb="C:\SPEC\SPECgpc\SPECviewperf13\vp13bench\gwpgRunBenchmark_0.js"
 
  }
   if($benchtype -eq "SPECviewperf2020"){
- $startruntime=(gci C:\SPEC\SPECgpc\SPECviewperf2020\vpbench\gwpgRunBenchmark.js).LastWriteTime
- $resultfd=gci -Path C:\SPEC\SPECgpc\SPECviewperf2020\results_*  -Directory|?{$_.CreationTime -gt $startruntime}
+ $startruntime=(Get-ChildItem C:\SPEC\SPECgpc\SPECviewperf2020\vpbench\gwpgRunBenchmark.js).LastWriteTime
+ $resultfd=Get-ChildItem -Path C:\SPEC\SPECgpc\SPECviewperf2020\results_*  -Directory|?{$_.CreationTime -gt $startruntime}
  
 $setindex="C:\SPEC\SPECgpc\SPECviewperf2020\vpbench\index.html"
 $setindexb="C:\SPEC\SPECgpc\SPECviewperf2020\vpbench\index_0.html"
@@ -86,7 +86,7 @@ move-item $mgntrbjsb $mgntrbjs -Force
 ### write log ##
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

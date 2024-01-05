@@ -119,7 +119,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
  
 $actionss ="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $screen = [System.Windows.Forms.Screen]::PrimaryScreen
@@ -131,7 +131,7 @@ $height=$bounds.Height
 ##### screenshot *2 ###
 
 <##### screenshot *2 by F12###
- $pngfile=(gci -path "$env:USERPROFILE/valley/screenshots").fullname
+ $pngfile=(Get-ChildItem -path "$env:USERPROFILE/valley/screenshots").fullname
  $id2=(Get-Process -name Valley).Id
   $id2title=(Get-Process -name Valley).MainWindowTitle
  Get-Process -id $id2 | Set-WindowState -State MAXIMIZE
@@ -146,8 +146,8 @@ $height=$bounds.Height
   $timenow=get-date -format "yyMMdd_HHmmss"
    start-sleep -s 10
     $picfile2=$($picpath)+"$($timenow)-$($tcnumber)-$($tcstep)-$($action)-2.jpg"    
- $pngfile1=((gci -path "$env:USERPROFILE/valley/screenshots")|sort LastWriteTime|select -last 2|select -first 1).fullname
-  $pngfile2=((gci -path "$env:USERPROFILE/valley/screenshots")|sort LastWriteTime|select -last 1).fullname  
+ $pngfile1=((Get-ChildItem -path "$env:USERPROFILE/valley/screenshots")|sort LastWriteTime|select -last 2|select -first 1).fullname
+  $pngfile2=((Get-ChildItem -path "$env:USERPROFILE/valley/screenshots")|sort LastWriteTime|select -last 1).fullname  
   $picfile=""
   if( $pngfile -ne 0 -and  $pngfile1 -notin  $pngfile){ copy-item $pngfile1 $picfile1 -Force; $picfile=$picfile1}
   if( $pngfile -ne 0 -and  $pngfile2 -notin  $pngfile){ copy-item $pngfile2 $picfile2 -Force; $picfile=$picfile1+"`n"+$picfile2}
@@ -171,11 +171,11 @@ $height=$bounds.Height
 
 ##### screen shot by Windows ###
 &$actionss  -para3 nonlog -para5 "1"
-$picfile1=(gci $picpath |?{$_.name -match ".jpg"} |sort lastwritetime|select -Last 1).FullName
+$picfile1=(Get-ChildItem $picpath |?{$_.name -match ".jpg"} |sort lastwritetime|select -Last 1).FullName
 start-sleep -s 10
 
 &$actionss  -para3 nonlog -para5 "2"
-$picfile2=(gci $picpath |?{$_.name -match ".jpg"} |sort lastwritetime|select -Last 1).FullName 
+$picfile2=(Get-ChildItem $picpath |?{$_.name -match ".jpg"} |sort lastwritetime|select -Last 1).FullName 
 
 $picfile=[string]::join("`n",$picfile1,$picfile2)
 ### close unigine valley benchmark ###
@@ -229,7 +229,7 @@ start-sleep -s 2
 ### write log ##
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

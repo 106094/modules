@@ -33,7 +33,7 @@ exit
 else{
 start-sleep -s 10
 
-$pcairesult=(gci -path C:\testing_AI\modules\PC_AI_Tool_20221220\Main\Windows\Report\* -Directory|sort creationtime |select -last 1).fullname
+$pcairesult=(Get-ChildItem -path C:\testing_AI\modules\PC_AI_Tool_20221220\Main\Windows\Report\* -Directory|sort creationtime |select -last 1).fullname
 Move-Item $pcairesult $picpath -Force
 move-item C:\testing_AI\logs\*.png  $picpath -Force
 
@@ -44,7 +44,7 @@ move-item C:\testing_AI\logs\*.png  $picpath -Force
 ######### write log #######
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

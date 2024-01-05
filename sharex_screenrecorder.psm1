@@ -141,7 +141,7 @@ $newcontent|set-content $configpath -Force
 #region start recording
 
 $mp4logpath="$env:userprofile\Documents\ShareX\Screenshots\"
-$checklogbefore=(gci $mp4logpath -r -filter "*.mp4").count
+$checklogbefore=(Get-ChildItem $mp4logpath -r -filter "*.mp4").count
 
 &$exefilepath  -startscreenrecorder -silent
 
@@ -152,10 +152,10 @@ Start-Sleep -s $recordtime
 
 do{
 start-sleep -s 2
-$checklogafter=(gci $mp4logpath -r -filter "*.mp4").count
+$checklogafter=(Get-ChildItem $mp4logpath -r -filter "*.mp4").count
 }until($checklogafter -gt $checklogbefore)
 
-$logfile=(gci $mp4logpath -r -filter "*.mp4"|sort lastwritetime|select -Last 1).fullname
+$logfile=(Get-ChildItem $mp4logpath -r -filter "*.mp4"|sort lastwritetime|select -Last 1).fullname
 
 copy-item $logfile -Destination $reclog -Force
 
@@ -175,7 +175,7 @@ $index="fail to get mp4 file"
 if($nonlogflag.Length -eq 0){
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

@@ -33,8 +33,8 @@ else{
 
  $doneflag=$null
 
- $startruntime=(gci C:\SPEC\SPECgpc\SPECviewperf13\vp13bench\gwpgRunBenchmark.js).LastWriteTime
- $resultfd=gci -Path C:\SPEC\SPECgpc\SPECviewperf13\results_*  -Directory|?{$_.CreationTime -gt $startruntime}
+ $startruntime=(Get-ChildItem C:\SPEC\SPECgpc\SPECviewperf13\vp13bench\gwpgRunBenchmark.js).LastWriteTime
+ $resultfd=Get-ChildItem -Path C:\SPEC\SPECgpc\SPECviewperf13\results_*  -Directory|?{$_.CreationTime -gt $startruntime}
  
  if( $resultfd.count -eq 0){
  exit
@@ -55,7 +55,7 @@ else{
 ### write log ##
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"

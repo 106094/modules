@@ -38,7 +38,7 @@ function idrac_Storage_distribution ([string]$para1,[string]$para2,[string]$para
 
     $actionsln ="selenium_prepare"
     Get-Module -name $actionsln|remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
     
     &$actionsln  edge nonlog
@@ -48,7 +48,7 @@ function idrac_Storage_distribution ([string]$para1,[string]$para2,[string]$para
     $idracuser=$idracinfo[1]
     $idracpwd=$idracinfo[2]
 
-    gci  "C:\testing_AI\modules\selenium\WebDriver.dll" |Unblock-File 
+    Get-ChildItem  "C:\testing_AI\modules\selenium\WebDriver.dll" |Unblock-File 
 
     Add-Type -Path "C:\testing_AI\modules\selenium\WebDriver.dll"
 
@@ -628,11 +628,11 @@ try{
  if($checkflag.length -gt 0){
     $actiondpart="diskpart_cmdline"
     Get-Module -name $actiondpart |remove-module
-    $mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actiondpart\b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actiondpart\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
         
 &$actiondpart -para1 "det" -para5 "nolog"
-$diskpout=(gci -path $picpath -Filter "*_diskpart.txt"|sort lastwritetime|select -Last 1).fullname
+$diskpout=(Get-ChildItem -path $picpath -Filter "*_diskpart.txt"|sort lastwritetime|select -Last 1).fullname
 $contentdet=get-content $diskpout
 $raidcontent=get-content $raidmappinglog
 
@@ -676,7 +676,7 @@ write-host "$results,$index"
     
     if($nonlog_flag.Length -eq 0){
     Get-Module -name "outlog"|remove-module
-    $mdpath=(gci -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     #write-host "Do $action!"

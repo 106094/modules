@@ -331,7 +331,7 @@ $scriptRoot=$PSScriptRoot
 
 $actionss="screenshot"
 Get-Module -name $actionss|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 
@@ -413,7 +413,7 @@ if(-not($diffw -eq 0 -and $diffh -eq 0)){
 start-sleep -s 5
 
 
-$bipath=(gci "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match "exe"}).FullName
+$bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match "exe"}).FullName
    
  get-process nw -ErrorAction SilentlyContinue|stop-process -Force
  get-process viewperf -ErrorAction Silent|stop-process  -Force
@@ -482,7 +482,7 @@ if($installspec13 -eq $false){
 
 if($bitconfig.Length -ne 0){
 $viewsets=$bitconfig.split("+")
- $folders=gci -Directory C:\SPEC\SPECgpc\SPECviewperf13\viewsets\ 
+ $folders=Get-ChildItem -Directory C:\SPEC\SPECgpc\SPECviewperf13\viewsets\ 
  
  foreach ($folder in $folders){
  if($folder.Name -notin $viewsets){
@@ -610,7 +610,7 @@ start-sleep -s 10
 
 &$actionss  -para3 nonlog -para5 "$action-start"
     
-$picfile1=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-start" }).FullName
+$picfile1=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-start" }).FullName
  
  stop-process -name nw
 
@@ -663,14 +663,14 @@ else{
 
  &$actionss  -para3 nonlog -para5 "$action-running"
    
-$picfile2=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-running" }).FullName
+$picfile2=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-running" }).FullName
 
  start-sleep -s 5
 
  &$actionss  -para3 nonlog -para5 "$action-running2"
  
 
-$picfile3=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-running2\b" }).FullName
+$picfile3=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-running2\b" }).FullName
 ### assign task schedule ####
 
 ### assign task schedule ####
@@ -766,7 +766,7 @@ if(-not($diffw -eq 0 -and $diffh -eq 0)){
 start-sleep -s 5
 
 
-$bipath=(gci "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match "exe"}).FullName
+$bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match "exe"}).FullName
    
  get-process nw -ErrorAction SilentlyContinue|stop-process -Force
  get-process RunViewperf -ErrorAction Silent|stop-process  -Force
@@ -965,7 +965,7 @@ start-sleep -s 10
        
 &$actionss  -para3 nonlog -para5 "$action-start"
    
-$picfile1=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-start" }).FullName
+$picfile1=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-start" }).FullName
  
   stop-process -name nw
 
@@ -1023,9 +1023,9 @@ else{
 
  &$actionss  -para3 nonlog -para5 "$action-running2"
    
-$picfile2=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-running\b" }).FullName
+$picfile2=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-running\b" }).FullName
 
-$picfile3=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-running2\b" }).FullName
+$picfile3=(Get-ChildItem $picpath |?{$_.name -match ".jpg" -and $_.name -match "$action-running2\b" }).FullName
 ### assign task schedule ####
 
 start-process cmd -ArgumentList '/c schtasks /delete /TN "Auto_Run" -f' 
@@ -1114,7 +1114,7 @@ write-host "$benchzip unzip to $copytopath"
     
 start-sleep -s 5
 
-$bipath=(gci "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match "Cinebench" -and $_.name -match "exe"}).FullName
+$bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |?{$_.name -match "Cinebench" -and $_.name -match "exe"}).FullName
 
 if($bipath){
 
@@ -1178,7 +1178,7 @@ else{
 $down_num=[int]$bitconfig
 }
 
-$bipath=(gci "$scriptRoot\BITools\Batch32\" -r -file |?{$_.name -match "batch32" -and $_.name -match "exe"}).FullName
+$bipath=(Get-ChildItem "$scriptRoot\BITools\Batch32\" -r -file |?{$_.name -match "batch32" -and $_.name -match "exe"}).FullName
 
 if(!$bipath){
 $results="NG"
@@ -1187,7 +1187,7 @@ $index="batch32.exe not found"
 else{
 $actioncmd="cmdline"
 Get-Module -name $actioncmd|remove-module
-$mdpathcmd=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actioncmd\b" -and $_.name -match "psm1"}).fullname
+$mdpathcmd=(Get-ChildItem -path $scriptRoot -r -file |?{$_.name -match "^$actioncmd\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpathcmd -WarningAction SilentlyContinue -Global
 
 
@@ -1404,7 +1404,7 @@ write-host "$results, $index"
 ######### write log #######
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"
