@@ -40,7 +40,7 @@ $index="no internet, bypassed"
 }
 else{
 
-$pcaipath=(gci C:\testing_AI\modules\PC_AI_Tool*\AutoTool.exe).FullName
+$pcaipath=(Get-ChildItem C:\testing_AI\modules\PC_AI_Tool*\AutoTool.exe).FullName
 
 $rule1=Get-NetFirewallRule -DisplayName "AutoTool"
 if($rule1){Remove-NetFirewallRule -DisplayName "AutoTool"}
@@ -70,7 +70,7 @@ add-content C:\Windows\System32\drivers\etc\hosts -value "172.16.21.249	swtool.a
 
 $modname="net_connecting"
 Get-Module -name $modname|remove-module -ErrorAction SilentlyContinue
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$modname\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-Object{$_.name -match "^$modname\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 &$modname -para2 nolog
@@ -88,12 +88,12 @@ $results="OK"
 $index="check screenshot"
 
 Get-Module -name screenshot|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^screenshot\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-Object{$_.name -match "^screenshot\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
  screenshot -para1 20 -para3 nolog -para5 "PCAI_initial"
 
- (get-process -Name "AutoTool"　-ea SilentlyContinue).CloseMainWindow()
+ (get-process -Name "AutoTool" -ea SilentlyContinue).CloseMainWindow()
 }
 
 else{
@@ -109,7 +109,7 @@ $index="fail to open PCAI autotool"
 if($nolog_flag.length -eq 0){
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-Object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"
