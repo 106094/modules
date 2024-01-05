@@ -238,13 +238,13 @@ $index=$daver_path
 
 $actionmd ="screenshot"
 Get-Module -name $actionmd|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(get-childitem -path $scriptRoot -r -file |where-object{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
-$screen = [System.Windows.Forms.Screen]::PrimaryScreen
-$bounds = $screen.Bounds
-$width  = $bounds.Width
-$height = $bounds.Height
+#$screen = [System.Windows.Forms.Screen]::PrimaryScreen
+#$bounds = $screen.Bounds
+#$width  = $bounds.Width
+#$height = $bounds.Height
 
 Add-Type -AssemblyName System.Windows.Forms,System.Drawing
 
@@ -267,7 +267,7 @@ ShowWindow( $hwnd ) |Out-Null
   
   $desid=(Get-TimeZone *).id -match $id
 
-   $timezone=(Get-TimeZone -ListAvailable|?{$_.id -match "$id" }).id
+   $timezone=(Get-TimeZone -ListAvailable|where-object{$_.id -match "$id" }).id
     Set-TimeZone -id $timezone |Out-Null
  
     $line2 ="Good day! Let's Setup up the sytem time first."
@@ -340,7 +340,7 @@ $BIOS=(Get-CimInstance -ClassName Win32_BIOS).SMBIOSBIOSVersion
  $sysline= [string]::Join("`n","------------",$BIOS )
     $syslines= [string]::Join("`n",$syslines,$sysline)
     
-Get-CimInstance -ClassName Win32_Processor|%{
+Get-CimInstance -ClassName Win32_Processor|foreach-object{
  $cpu=$_.DeviceID +" : "+ $_.Name
  $cpus=  $cpus+@($cpu) 
 
@@ -360,7 +360,7 @@ $RAM2=$RAM/1024
        $syslines= [string]::Join("`n",$syslines,$sysline)
 
       
-$disks=  (Get-WmiObject Win32_PnPSignedDriver|?{$_.DeviceClass -match "disk"}).FriendlyName
+$disks=  (Get-WmiObject Win32_PnPSignedDriver|where-object{$_.DeviceClass -match "disk"}).FriendlyName
 
   $sysline= [string]::Join("`n", "------------","DiskInfo: ",[string]::Join("`n",$disks))
     $syslines= [string]::Join("`n",$syslines,$sysline)
@@ -395,7 +395,7 @@ $name=(Get-WmiObject Win32_OperatingSystem).caption
    
  New-Item -Path  $systeminfolog -value  $syslines -Force | out-null
 
- $checksys_words= (get-content $systeminfolog  | measure -Line -Character -Word -IgnoreWhiteSpace).Words
+ $checksys_words= (get-content $systeminfolog  | Measure-Object -Line -Character -Word -IgnoreWhiteSpace).Words
 
  $inisys++
 
@@ -421,7 +421,7 @@ $name=(Get-WmiObject Win32_OperatingSystem).caption
 
   ###########  Check Yellow Bang ########
 
-$ye=Get-WmiObject Win32_PnPEntity|?{ $_.ConfigManagerErrorCode -ne 0}|select Name,Description, DeviceID, Manufacturer
+$ye=Get-WmiObject Win32_PnPEntity|where-object{ $_.ConfigManagerErrorCode -ne 0}|Select-Object Name,Description, DeviceID, Manufacturer
 # Get-PnpDevice -InstanceId *|?{$_.Status -match "error" }
 
 if($ye.count -gt 0){
@@ -488,8 +488,8 @@ else{
 
 ### hide cmd window ##
 
- if((get-process "cmd" -ea SilentlyContinue) -ne $Null){ 
-$lastid=  (Get-Process cmd |sort StartTime -ea SilentlyContinue |select -last 1).id
+ if((get-process "cmd" -ea SilentlyContinue)){ 
+$lastid=  (Get-Process cmd |Sort-Object StartTime -ea SilentlyContinue |Select-Object -last 1).id
  Get-Process -id $lastid  | Set-WindowState -State MINIMIZE
   }
 
@@ -509,7 +509,7 @@ powercfg /SETDCVALUEINDEX SCHEME_CURRENT SUB_NONE CONSOLELOCK 0
 ### DM screentshot ###
 
 Get-Module -name "checkDM"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "checkDM" -and $_.name -match "psm1"}).fullname
+$mdpath=(get-childitem -path "C:\testing_AI\modules\"  -r -file |where-object{$_.name -match "checkDM" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 
@@ -550,17 +550,17 @@ stop-process -name winver
 $modname="ossettings_check"
 
 Get-Module -name $modname|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match $modname -and $_.name -match "psm1"}).fullname
+$mdpath=(get-childitem -path "C:\testing_AI\modules\"  -r -file |where-object{$_.name -match $modname -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"
-&$modname -para1 "windowsupdate" -para2 "nonlog"
-&$modname -para1 "coreiso" -para2 "nonlog"
+&$modname -para1 "windowsupdate" -para3 "nonlog"
+&$modname -para1 "coreiso" -para3 "nonlog"
 
 
 ### msinfo32 screentshot ###
 
- start msinfo32 
+ Start-Process msinfo32 
 
  start-sleep -s 5
    
@@ -595,14 +595,14 @@ if(Test-Path $powerlog2 -ea SilentlyContinue){move-item $powerlog2 -Destination 
 
 if($nonlog_flag.length -eq 0){
 
-$picfiles=(gci $daver_path |?{$_.name -match ".jpg" }).FullName
+$picfiles=(get-childitem $daver_path |where-object{$_.name -match ".jpg" }).FullName
 $picfile=[string]::join("`n",$picfiles)
 
 $results="check files and screenshots"
 $index="$picfile"
 
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\" -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(get-childitem -path "C:\testing_AI\modules\" -r -file |where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 

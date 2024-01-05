@@ -1,5 +1,5 @@
 ﻿
-function　ossettings_check ([string]$para1,[string]$para2,[string]$para3){
+function ossettings_check ([string]$para1,[string]$para2,[string]$para3){
       
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     $wshell=New-Object -ComObject wscript.shell
@@ -102,7 +102,7 @@ $action="ossettings_check-$checkosset"
 
 $actionmd ="screenshot"
 Get-Module -name $actionmd|remove-module
-$mdpath=(gci -path $scriptRoot -r -file |?{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
+$mdpath=(get-childitem -path $scriptRoot -r -file |where-object{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 if($checkosset -match "coreiso"){
@@ -131,7 +131,7 @@ $explorerpath="ms-settings:yourinfo"
 Start-Process $explorerpath -Verb Open -WindowStyle Maximized
 start-sleep -s 10
 
-$wid=(Get-Process ApplicationFrameHost |sort starttime|select -Last 1 ).Id
+$wid=(Get-Process ApplicationFrameHost |Sort-Object starttime|Select-Object -Last 1 ).Id
 $wshell.AppActivate($wid)
 
  Get-Process -id $wid  | Set-WindowState -State MAXIMIZE
@@ -149,7 +149,7 @@ start-sleep -s 3
 
 ### screenshot""
 
-$timenow=get-date -format "yyMMdd_HHmmss"
+#$timenow=get-date -format "yyMMdd_HHmmss"
 #$picpath=(Split-Path -Parent $scriptRoot)+"\logs\screenshot\"
 $picpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
 if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-null}
@@ -160,7 +160,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 
 stop-process  -name $processname -Force
 
-$picfile=(gci $picpath |?{$_.name -match ".jpg" -and $_.name -match $checkosset }).FullName
+$picfile=(get-childitem $picpath |where-object{$_.name -match ".jpg" -and $_.name -match $checkosset }).FullName
 
 if($picfile ){$results="OK"} else{$results="NG"}
  
@@ -169,7 +169,7 @@ if($picfile ){$results="OK"} else{$results="NG"}
 
 if($nonlog_flag.Length -eq 0){
 Get-Module -name "outlog"|remove-module
-$mdpath=(gci -path "C:\testing_AI\modules\"  -r -file |?{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+$mdpath=(get-childitem -path "C:\testing_AI\modules\"  -r -file |where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"
