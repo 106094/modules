@@ -34,16 +34,20 @@ function idrac_Storage_check ([string]$para1,[string]$para2){
 
     Get-ChildItem "C:\testing_AI\modules\selenium\*.dll" |Unblock-File 
     
-    Add-Type -Path "C:\testing_AI\modules\selenium\Newtonsoft.Json.dll"
-    Add-Type -Path "C:\testing_AI\modules\selenium\WebDriver.dll"
+    Add-Type -Path "C:\testing_AI\modules\selenium\Newtonsoft.Json.dll" -ErrorAction SilentlyContinue
+    Add-Type -Path "C:\testing_AI\modules\selenium\WebDriver.dll" 
 
         try{
             $edgeOptions = New-Object OpenQA.Selenium.Edge.EdgeOptions
             $driver = New-Object OpenQA.Selenium.Edge.EdgeDriver("C:\testing_AI\modules\selenium\msedgedriver.exe", $edgeOptions)
         }
-            catch{
-            $results="NG"
-            $index="fail to install web driver"
+            catch{   
+               try{$driver = New-Object OpenQA.Selenium.Edge.EdgeDriver
+                }
+               catch{
+                $results="NG"
+                $index="fail to install web driver"
+            }
             }
 
     if($results -ne "NG"){
