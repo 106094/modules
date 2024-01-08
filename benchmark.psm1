@@ -302,7 +302,7 @@ if($bitconfig -match "volume"){
 $text1=($bitconfig -split "volume")[1]
 $diskid=$text1.Substring(0,1)
 
-$currentdisks= ((Get-WmiObject -Class Win32_LogicalDisk | ?{$_.providername -notlike "\\*"}).name).replace(":","")
+$currentdisks= ((Get-WmiObject -Class Win32_LogicalDisk |Where-Object{$_.providername -notlike "\\*"}).name).replace(":","")
 $currentdiskstring=$currentdisks|Out-String
 write-host "current all disks:$currentdiskstring"
 
@@ -347,12 +347,14 @@ $bcount=($bitp.id).Count
   start-sleep -s 5
 
   
-  ##### pcaui delete ###
+  ##### pcaui delete for windows 11 new pcaui mesasge tab once (old versoin tab twice) ###
   $checkpcaui= ((get-process pcaui -ErrorAction SilentlyContinue).id).count
+  $checkpcauiids= ((get-process pcaui -ErrorAction SilentlyContinue).id)
   if($checkpcaui -gt 0){
-    [Microsoft.VisualBasic.Interaction]::AppActivate("program")
-    Start-Sleep -s 1
-      [System.Windows.Forms.SendKeys]::SendWait("{tab 2}")
+     foreach($checkpcauiid in $checkpcauiids){
+    [Microsoft.VisualBasic.Interaction]::AppActivate($checkpcauiid)
+    Start-Sleep -s 2
+      [System.Windows.Forms.SendKeys]::SendWait("{tab}")
       Start-Sleep -s 1
        [System.Windows.Forms.SendKeys]::SendWait(" ")
        Start-Sleep -s 1
@@ -360,8 +362,11 @@ $bcount=($bitp.id).Count
         Start-Sleep -s 1
        [System.Windows.Forms.SendKeys]::SendWait(" ")
        Start-Sleep -s 1
-       (get-process pcaui)|Stop-Process -Force
        }
+       }
+  
+  (get-process pcaui -ea SilentlyContinue)|Stop-Process -Force -ErrorAction SilentlyContinue
+
 
   start-sleep -s 3
   
@@ -759,7 +764,7 @@ $GotWindowRect = [Window]::GetWindowRect($Handle, [ref]$WindowRect)
 #Write-Host $WindowRect.Left $WindowRect.Top $WindowRect.Right $WindowRect.Bottom
 
 ##scale
-$bdh=(([System.Windows.Forms.Screen]::AllScreens|select Bounds).Bounds).Bottom 
+$bdh=(([System.Windows.Forms.Screen]::AllScreens|Select-Object Bounds).Bounds).Bottom 
 $height  = ([string]::Join("`n", (wmic path Win32_VideoController get CurrentVerticalResolution))).split("`n") -match "\d{1,}"
 #$sacle=$height[0]/$bdh[0]
 $sacle=1 ## for command use, no need to divided with scale ( don't know the reason yet)
@@ -1659,7 +1664,7 @@ set-location "$scriptRoot\BITools\$uninstallf\"
  .\3dmark-setup.exe /uninstall /silent
  #>
 
-$3dmarkexe=Get-Item "C:\ProgramData\Package Cache\*\3DMARK-setup.exe"|sort lastwritetime|select -Last 1
+$3dmarkexe=Get-Item "C:\ProgramData\Package Cache\*\3DMARK-setup.exe"|Sort-Object lastwritetime|Select-Object -Last 1
 if($3dmarkexe.count -ne 0){
 $3dmarkexefull=($3dmarkexe).fullname
 $3dmarkexeversion=($3dmarkexe.VersionInfo).ProductVersion
@@ -1797,7 +1802,7 @@ $noexit_flag="noexit"
 
 #$currentdisks= (get-psdrive -psprovider filesystem).name
 
-$currentdisks= ((Get-WmiObject -Class Win32_LogicalDisk | ?{$_.providername -notlike "\\*"}).name).replace(":","")
+$currentdisks= ((Get-WmiObject -Class Win32_LogicalDisk |Where-Object{$_.providername -notlike "\\*"}).name).replace(":","")
 $currentdiskstring=$currentdisks|Out-String
 write-host "current all disks:$currentdiskstring"
 
@@ -1878,14 +1883,14 @@ Get-Process |   Where-Object { $_.MainWindowHandle -ne 0  } |
 
 ## screenshot of desktop
 
-start "C:\Program Files\Futuremark\PCMark 8\bin\pcmark8.exe" -WindowStyle Maximized
+Start-Process "C:\Program Files\Futuremark\PCMark 8\bin\pcmark8.exe" -WindowStyle Maximized
 Start-Sleep -s 60
 
 stop-process -name PCMark8 -Force
 Start-Sleep -s 2
  New-ItemProperty -Path HKCU:Software\Futuremark\PCMark8 -Name KeyCode -Type String -Value PCM8-PRO-244FK-XLEW5-KSLT7-Y9HLA -Force
  Start-Sleep -s 2
-start "C:\Program Files\Futuremark\PCMark 8\bin\pcmark8.exe" -WindowStyle Maximized
+start-process "C:\Program Files\Futuremark\PCMark 8\bin\pcmark8.exe" -WindowStyle Maximized
 Start-Sleep -s 60
 &$actionss  -para3 nonlog -para5 "PCMARK8_Install_Check"
   
@@ -1896,7 +1901,7 @@ $GotWindowRect = [Window]::GetWindowRect($Handle, [ref]$WindowRect)
 #Write-Host $WindowRect.Left $WindowRect.Top $WindowRect.Right $WindowRect.Bottom
 
 ##scale
-$bdh=(([System.Windows.Forms.Screen]::AllScreens|select Bounds).Bounds).Bottom 
+$bdh=(([System.Windows.Forms.Screen]::AllScreens|Select-Object Bounds).Bounds).Bottom 
 $height  = ([string]::Join("`n", (wmic path Win32_VideoController get CurrentVerticalResolution))).split("`n") -match "\d{1,}"
 #$sacle=$height[0]/$bdh[0]
 $sacle=1 ## for command use, no need to divided with scale ( don't know the reason yet)
