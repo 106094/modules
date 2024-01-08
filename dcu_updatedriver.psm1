@@ -1,6 +1,4 @@
-
-
-function dcu_updatedriver ([string]$para1 , [string]$para2 , [string]$para3 , [string]$para4){
+function dcu_updatedriver ([string]$para1 , [string]$para2 , [string]$para3 , [string]$para4,[string]$para5){
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     Add-Type -AssemblyName System.Windows.Forms
 
@@ -23,11 +21,14 @@ function dcu_updatedriver ([string]$para1 , [string]$para2 , [string]$para3 , [s
     $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
     $tcnumber=((get-content $tcpath).split(","))[0]
     $tcstep=((get-content $tcpath).split(","))[1]
+    $results="OK"
+    $index="check screenshots"
 
     #Change txt
     #necessary item : XmlPath , DUPPath , releaseID(packageID) , vendorVersion
     $XmlPath = $para1
     $DUPPath = $para2
+    $installflag = $para5
     
     $firstBackslashIndex = $DUPPath.IndexOf('\')
     $diskPath = $DUPPath.Substring(0, $firstBackslashIndex+1)
@@ -92,15 +93,52 @@ function dcu_updatedriver ([string]$para1 , [string]$para2 , [string]$para3 , [s
     [System.Windows.Forms.SendKeys]::Sendwait("{TAB 8}")
     Start-Sleep -s 5
     [System.Windows.Forms.SendKeys]::Sendwait("{ENTER}")
-
-    #4 + 4
-    #Get-Process NVMUP + DUP
+    Start-Sleep -s 5
+     
+     &$actionss -para3 "nonlog" -para5 "check"
+   
+     if($installflag.Length -gt 0){  
+    # do loop of hit+enter+escape
     
+    $drivernaem=(get-childitem $DUPPath -filter *.exe).BaseName
+  
+    $n=0
+    while($n -lt 10 -or $checkinstall){
+      $n++
+    [System.Windows.Forms.SendKeys]::Sendwait("{tab}")
+    Start-Sleep -s 2
+    [System.Windows.Forms.SendKeys]::Sendwait("{ENTER}")
+    Start-Sleep -s 5
+    [System.Windows.Forms.SendKeys]::Sendwait("{esc}")
+    
+     $k=0
+     do{
+     $k++
+     start-sleep -s 5
+     $checkinstall=get-process -name $drivernaem -ErrorAction SilentlyContinue
+     }until ($checkinstall -or $k -gt 10)
 
-    #Loading XML
-    Start-Sleep -s 60
-    &$actionss -para3 "nonlog" -para5 "XMLFileLoad"
+     if($checkinstall){
+     
+      &$actionss -para3 "nonlog" -para5 "startinstall"
 
+     do{
+     start-sleep -s 5
+     $checkinstall2=get-process -name $drivernaem  -ErrorAction SilentlyContinue
+      } until(!$checkinstall2)
+
+     break
+     }
+     
+    }
+    }
+
+      (get-process -name dellcommandupdate).CloseMainWindow()
+
+      if($installflag.Length -gt 0 -and !$checkinstall){
+      $results="NG"
+      $index="fail to install"
+      }
 
     ######### write log #######
     Get-Module -name "outlog"|remove-module
@@ -111,4 +149,5 @@ function dcu_updatedriver ([string]$para1 , [string]$para2 , [string]$para3 , [s
     outlog $action $results $tcnumber $tcstep $index
 }
 
-Export-ModuleMember -Function dcu_updatedriver
+Export-ModuleMember -Function
+ dcu_updatedriver
