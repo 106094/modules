@@ -374,12 +374,14 @@ $bcount=($bitp.id).Count
 
    start-sleep -s 10
   
-  ##### pcaui delete ###
+  ##### pcaui delete for windows 11 new pcaui mesasge tab once (old versoin tab twice) ###
   $checkpcaui= ((get-process pcaui -ErrorAction SilentlyContinue).id).count
+  $checkpcauiids= ((get-process pcaui -ErrorAction SilentlyContinue).id)
   if($checkpcaui -gt 0){
-    [Microsoft.VisualBasic.Interaction]::AppActivate("program")
-    Start-Sleep -s 1
-      [System.Windows.Forms.SendKeys]::SendWait("{tab 2}")
+     foreach($checkpcauiid in $checkpcauiids){
+    [Microsoft.VisualBasic.Interaction]::AppActivate($checkpcauiid)
+    Start-Sleep -s 2
+      [System.Windows.Forms.SendKeys]::SendWait("{tab}")
       Start-Sleep -s 1
        [System.Windows.Forms.SendKeys]::SendWait(" ")
        Start-Sleep -s 1
@@ -387,10 +389,10 @@ $bcount=($bitp.id).Count
         Start-Sleep -s 1
        [System.Windows.Forms.SendKeys]::SendWait(" ")
        Start-Sleep -s 1
-       (get-process pcaui)|Stop-Process -Force
-
-
-  }
+       }
+       }
+  
+  (get-process pcaui -ea SilentlyContinue)|Stop-Process -Force -ErrorAction SilentlyContinue
 
    Start-Sleep -s 20
 
