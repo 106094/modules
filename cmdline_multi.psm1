@@ -102,7 +102,7 @@ $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 
- if($cmdline.Length -eq 0 -or $cmdtype.Length -ne 0){
+ if($cmdline.Length -eq 0 -or $cmdtype.Length -eq 0){
     
     $results="NG"
     if($cmdline.Length -eq 0){
