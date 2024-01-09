@@ -160,10 +160,7 @@ foreach($cmdline in $cmdlines){
     Start-Sleep -Seconds 3
     $wshell.SendKeys("~") 
 
- ### copy text in window  ###
- if ($exitflag -ne "runexit"){
-
-    do{   
+     do{   
     start-sleep -s 2
     [Microsoft.VisualBasic.interaction]::AppActivate($id2)|out-null
     start-sleep -s 1
@@ -192,10 +189,8 @@ foreach($cmdline in $cmdlines){
     }until($checkend.length -gt 0  -and ($endcheck -eq ">" -or $endcheck -eq ":"))
     
     &$actionss  -para3 nonlog -para5 $indexcmd
-   
-    }
-
-        
+    
+ } 
         if($cmdtype -match "cmd"){
           Set-Clipboard -value "echo %errorlevel%"
           Start-Sleep -s 5
@@ -232,7 +227,7 @@ foreach($cmdline in $cmdlines){
               #$picfile=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match $action }).FullName
               
               taskkill /PID $id2 /F  
-      } 
+      
  ###>
   }
 
