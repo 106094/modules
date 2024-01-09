@@ -156,8 +156,17 @@ if($usenameinp.TagName -eq "input" ) {
         $screenshot = $driver.GetScreenshot()
         $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
         #endregion  
+       
+        #collect info from cmd line #
+        Get-Module -name "cmdline_multi"|remove-module
+        $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "cmdline_multi" -and $_.name -match "psm1"}).fullname
+        Import-Module $mdpath -WarningAction SilentlyContinue -Global
+        #write-host "Do $action!"
+        cmdline_multi -para1 "ssh #idracusr@#idracip|#idracpwd|get storage.controller|exit" -para3 "cmd" -para5 "nonlog"
+
       $results="NG"
       $index="iDRAC fail to read the disks"
+      
       }
 
 else{      

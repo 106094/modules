@@ -115,6 +115,20 @@ Import-Module $mdpath -WarningAction SilentlyContinue -Global
   }
   else {
     
+    
+    $idracinfo=(get-content -path "C:\testing_AI\settings\idrac.txt").split(",")
+    $idracip=$idracinfo[0]
+    $idracuser=$idracinfo[1]
+    $idracpwd=$idracinfo[2]
+     if($cmdline -match "#idracip"){
+       $cmdline=$cmdline.Replace("#idracip",$idracip)
+       }    
+     if($cmdline -match "#idracusr"){
+        $cmdline=$cmdline.Replace("#idracusr",$idracuser)
+       }    
+     if($cmdline -match "#idracpwd"){
+        $cmdline=$cmdline.Replace("#idracpwd",$idracpwd)
+       }
    ## setlocation
 
    if($cmdpath.length -ne 0){
@@ -147,46 +161,22 @@ Start-Sleep -Seconds 2
 
 $cmdlines=$cmdline.split("|")
 $k=0
+
 foreach($cmdline in $cmdlines){
+    write-host "now send : $cmdline"
     $k++
-    $indexcmd="sendcomment_$($k)"
     Set-Clipboard -value $cmdline
     Start-Sleep -Seconds 5
-    [Microsoft.VisualBasic.interaction]::AppActivate($id2)|out-null
-    start-sleep -s 2
-    [Clicker]::LeftClickAtPoint(50, 1)
-    Start-Sleep -Seconds 3
-    $wshell.SendKeys("^v")
-    Start-Sleep -Seconds 3
-    $wshell.SendKeys("~") 
-
-     do{   
-    start-sleep -s 2
     [Microsoft.VisualBasic.interaction]::AppActivate($id2)|out-null
     start-sleep -s 1
     [Clicker]::LeftClickAtPoint(1,1)
     $wshell.SendKeys("E")
     start-sleep -s 1
-    $wshell.SendKeys("S")
-    start-sleep -s 1
-    $wshell.SendKeys("~")
-    start-sleep -s 1
-    $cmdcheck=Get-Clipboard
-    start-sleep -s 2
-    $checkend=$cmdcheck[-1]
-    if($checkend -match "Press any key to continue"){
-    $wshell.SendKeys("~")
-    start-sleep -s 1
-    }
-
-    if($checkend.length -gt 0){
-        $endcheck=$checkend.Substring($checkend.length-1,1)
-    }
-    else{
-     $endcheck=""
-     }
-
-    }until($checkend.length -gt 0  -and ($endcheck -eq ">" -or $endcheck -eq ":"))
+    $wshell.SendKeys("p")
+    start-sleep -s 1 
+    Start-Sleep -Seconds 3
+    $wshell.SendKeys("~") 
+    Start-Sleep -Seconds 3 
     
     &$actionss  -para3 nonlog -para5 $indexcmd
     
