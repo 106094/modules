@@ -200,14 +200,14 @@ else{
     $storage_pdisks.Click()
      start-sleep -s 10
 
-#region screenshot
-   $timenow=get-date -format "yyMMdd_HHmmss"
-   $savepic=$picpath+"$($timenow)_step$($tcstep)_storageInfo_start.jpg"
-   $screenshot = $driver.GetScreenshot()
-   $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
-#endregion
+   #region screenshot
+    $timenow=get-date -format "yyMMdd_HHmmss"
+    $savepic=$picpath+"$($timenow)_step$($tcstep)_storageInfo_start.jpg"
+    $screenshot = $driver.GetScreenshot()
+    $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
+   #endregion
 
-# check if slot = 8
+ # check if slot = 8
 
 function checkfr{
   
