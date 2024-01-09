@@ -133,9 +133,15 @@ if($usenameinp.TagName -eq "input" ) {
     $idsetby=$driver.FindElement([OpenQA.Selenium.By]::Id("storage"))
     $idsetby.Click()
      start-sleep -s 10
-      
+      #region screenshot
+      $timenow=get-date -format "yyMMdd_HHmmss"
+      $savepic=$picpath+"$($timenow)_step$($tcstep)_fail_to_read_the_disks.jpg"
+      $screenshot = $driver.GetScreenshot()
+      $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
+      #endregion  
       $checkalert=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("[translate='RAC0501.Message']"))
       if($checkalert.text -match "There are no physical disks to be displayed"){
+
       $results="NG"
       $index="iDRAC fail to read the disks"
       }
