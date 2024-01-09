@@ -1,11 +1,11 @@
-﻿function cmdline ([string]$para1,[string]$para2,[string]$para3,[string]$para4,[string]$para5){
+﻿function cmdline_multi ([string]$para1,[string]$para2,[string]$para3,[string]$para4,[string]$para5){
       
-    Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
+  Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     $wshell=New-Object -ComObject wscript.shell
       Add-Type -AssemblyName Microsoft.VisualBasic
        Add-Type -AssemblyName System.Windows.Forms
         Add-Type -AssemblyName System.Windows.Forms,System.Drawing    
-
+        
     $cmdline=$para1
     $cmdline = $cmdline.Replace("，",",")
     $cmdpath=$para2
@@ -102,96 +102,25 @@ $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 
- if($cmdline.Length -eq 0){
-  
- $results="NG"
- $index="No command line is found"
+ if($cmdline.Length -eq 0 -or $cmdtype.Length -ne 0){
+    
+    $results="NG"
+    if($cmdline.Length -eq 0){
+    $index="No command line is found"
+    }
+    if($cmdtype.Length -ne 0){
+        $index="need cmd or powershell"
+    }
 
   }
   else {
     
-    Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
-    $wshell=New-Object -ComObject wscript.shell
-      Add-Type -AssemblyName Microsoft.VisualBasic
-      Add-Type -AssemblyName System.Windows.Forms
-    
-
-## setlocation ###
-
-  #### py  cmdline (pip install prepare) ####
-
-    if($cmdline -match "pip\s" -and $cmdline -match "install"){
-      #$packname=((($cmdline.split(" "))[-1]).split("-"))[0]
-
-      $pypath=split-path ((get-command python).Source)
-      $pypath
-     copy-item C:\testing_AI\modules\py\csg\* -Destination $pypath -Force
-     set-location $pypath
-     
-     <#### uninstall#####
-      $piplist=& invoke-Expression "pip list"
-        $check= $piplist|Where-object{$_ -match "csg"}
-        if  ($check.count -eq 1){ 
-         $cmdline2="pip uninstall  -y $packname"  ### -y force uninstall without Proceed (Y/n)? ###
-         &$cmdline2
-         
-     #### uninstall#####>
-     
-    }
-
-    if($cmdline -match "nvidia-smi"){
-        $checkgfx=(Get-WmiObject -Class Win32_VideoController | Select-Object Name,AdapterCompatibility).name
-        
-         #$logpath_amd=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\step-$($tcstep)_dxdresult.txt" 
-        if($checkgfx -match "amd"){
-          #$cmdline = "dxdiag /t $logpath_amd"
-         $cmdline_skip = "skip"
-         }
-          }
-  
-  if( $cmdline_skip -ne "skip"){
-    
-## setlocation
+   ## setlocation
 
    if($cmdpath.length -ne 0){
       Set-Location $cmdpath
      }
-    
-        
-    #### quiet  ##
-
-if($cmdtype.Length -eq 0){
-
-     $results="OK"
-        try{           
-             $index=& invoke-Expression "$cmdline" -ErrorAction SilentlyContinue | Out-String
-             write-host "cmd execute result: $?"
-
-            }
-            catch{
-            $results="NG"
-            }
-
-      if( $results -eq "NG"){
-      $index = $error[-1]
-        }
- if ( $results -eq "OK"){
-     Start-Sleep -s 5
-    $skipscrnst="screenshot"
-    $bypasscmd=@("echo","copy","pip","python","write","dxdiag","clipboard","remove","closemainwindow")
-    $bypasscmd|foreach-object{
-      if($cmdline -match $_){
-        $skipscrnst="skip"
-        }   
-   }
-  if($skipscrnst -eq "screenshot"){
-  Start-Sleep -s 5
-    &$actionss  -para3 nonlog
-    }
-  }
-
- }
- 
+            
   #### cmd / powershell ##
 if($cmdtype.Length -ne 0){
     
@@ -208,9 +137,6 @@ $id2= (Get-Process -name $cmdtype|Sort-Object StartTime -ea SilentlyContinue |Se
 
 ### click cmd window ###
 
-Set-Clipboard -value $cmdline
-Start-Sleep -Seconds 5
-
 [Microsoft.VisualBasic.interaction]::AppActivate($id2)|out-null
 start-sleep -s 2
 
@@ -218,37 +144,58 @@ start-sleep -s 2
 Start-Sleep -Seconds 2
 $wshell.SendKeys("~") 
 Start-Sleep -Seconds 2
-$wshell.SendKeys("^v")
-Start-Sleep -Seconds 2
-$wshell.SendKeys("~")
-Start-Sleep -Seconds 3
 
-&$actionss  -para3 nonlog -para5 "cmd_Sent"
+$cmdlines=$cmdline.split("|")
+$k=0
+foreach($cmdline in $cmdlines){
+    $k++
+    $indexcmd="sendcomment_$($k)"
+    Set-Clipboard -value $cmdline
+    Start-Sleep -Seconds 5
+    [Microsoft.VisualBasic.interaction]::AppActivate($id2)|out-null
+    start-sleep -s 2
+    [Clicker]::LeftClickAtPoint(50, 1)
+    Start-Sleep -Seconds 3
+    $wshell.SendKeys("^v")
+    Start-Sleep -Seconds 3
+    $wshell.SendKeys("~") 
 
-### copy text in window  ###
-    if ($exitflag -ne "runexit"){
-        do{ 
-        start-sleep -s 2
-        [Microsoft.VisualBasic.interaction]::AppActivate($id2)|out-null
-        start-sleep -s 1
-        [Clicker]::LeftClickAtPoint(1,1)
-        $wshell.SendKeys("E")
-        start-sleep -s 1
-        $wshell.SendKeys("S")
-        start-sleep -s 1
-        $wshell.SendKeys("~")
-        start-sleep -s 1
-        $index=Get-Clipboard
-        start-sleep -s 2
-        $checkend=$index[-1]
-        if($checkend -match "Press any key to continue"){
-        $wshell.SendKeys("~")
-        start-sleep -s 1
-        }
-        if($checkend.length -gt 0){$endcheck=$checkend.Substring($checkend.length-1,1)}
-        else{$endcheck=""}
-        }until($endcheck -eq ">" -and $checkend.length -gt 0 )
+ ### copy text in window  ###
+ if ($exitflag -ne "runexit"){
 
+    do{   
+    start-sleep -s 2
+    [Microsoft.VisualBasic.interaction]::AppActivate($id2)|out-null
+    start-sleep -s 1
+    [Clicker]::LeftClickAtPoint(1,1)
+    $wshell.SendKeys("E")
+    start-sleep -s 1
+    $wshell.SendKeys("S")
+    start-sleep -s 1
+    $wshell.SendKeys("~")
+    start-sleep -s 1
+    $cmdcheck=Get-Clipboard
+    start-sleep -s 2
+    $checkend=$cmdcheck[-1]
+    if($checkend -match "Press any key to continue"){
+    $wshell.SendKeys("~")
+    start-sleep -s 1
+    }
+
+    if($checkend.length -gt 0){
+        $endcheck=$checkend.Substring($checkend.length-1,1)
+    }
+    else{
+     $endcheck=""
+     }
+
+    }until($checkend.length -gt 0  -and ($endcheck -eq ">" -or $endcheck -eq ":"))
+    
+    &$actionss  -para3 nonlog -para5 $indexcmd
+   
+    }
+
+        
         if($cmdtype -match "cmd"){
           Set-Clipboard -value "echo %errorlevel%"
           Start-Sleep -s 5
@@ -297,12 +244,6 @@ Start-Sleep -Seconds 3
   set-content $logpath -Value  " $cmdline : command succeeded"
  }
  $index="check logs"
- }
- 
- else{
- $results="na"
- $index="command skip"
- }
 
  }
   
@@ -322,4 +263,4 @@ outlog $action $results $tcnumber $tcstep $index
 
   }
 
-    export-modulemember -Function cmdline
+    export-modulemember -Function cmdline_multi
