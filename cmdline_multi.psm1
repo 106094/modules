@@ -108,7 +108,7 @@ Import-Module $mdpath -WarningAction SilentlyContinue -Global
     if($cmdline.Length -eq 0){
     $index="No command line is found"
     }
-    if($cmdtype.Length -ne 0){
+    if($cmdtype.Length -eq 0){
         $index="need cmd or powershell"
     }
 
