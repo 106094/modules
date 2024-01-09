@@ -141,7 +141,21 @@ if($usenameinp.TagName -eq "input" ) {
       #endregion  
       $checkalert=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("[translate='RAC0501.Message']"))
       if($checkalert.text -match "There are no physical disks to be displayed"){
+        $Sysbtn=$driver.FindElement([OpenQA.Selenium.By]::Id("system"))
+        $Sysbtn.Click()
 
+        $InventoryBtn = $driver.FindElement([OpenQA.Selenium.By]::XPath("/html/body/div[2]/div[2]/div[1]/div/ul/li[3]/a"))
+        $InventoryBtn.Click()
+
+        $firmwareList = $driver.FindElement([OpenQA.Selenium.By]::XPath("/html/body/div[2]/div[2]/div[2]/div[1]/div/div[1]/span[2]/label"))
+        $firmwareList.Click()
+        
+        #region screenshot
+        $timenow=get-date -format "yyMMdd_HHmmss"
+        $savepic=$picpath+"$($timenow)_step$($tcstep)_check_PercCard_Status.jpg"
+        $screenshot = $driver.GetScreenshot()
+        $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
+        #endregion  
       $results="NG"
       $index="iDRAC fail to read the disks"
       }
