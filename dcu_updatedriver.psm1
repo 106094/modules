@@ -149,5 +149,4 @@ function dcu_updatedriver ([string]$para1 , [string]$para2 , [string]$para3 , [s
     outlog $action $results $tcnumber $tcstep $index
 }
 
-Export-ModuleMember -Function
- dcu_updatedriver
+Export-ModuleMember -Function dcu_updatedriver
