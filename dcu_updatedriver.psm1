@@ -131,6 +131,8 @@ Add-Type -TypeDefinition $clickSource -ReferencedAssemblies System.Windows.Forms
     &$actionsa -para1 "dell command" -para3 "nonlog"
 
     Start-Sleep -s 20
+    [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
+    Start-Sleep -s 5
     [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
     Start-Sleep -s 5
     [System.Windows.Forms.SendKeys]::Sendwait("{ENTER}")
