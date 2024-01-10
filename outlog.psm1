@@ -15,7 +15,7 @@ $scriptRoot=$PSScriptRoot
 
 
 $logspath=(Split-Path -Parent $scriptRoot)+"\logs\logs_timemap.csv" 
-$checknewlog=get-content $logspath|select -First 1
+$checknewlog=get-content $logspath|Select-Object -First 1
 
 $time=get-date -Format "yyyy/M/d HH:mm:ss"
 $timenowfm=get-date -format "yyMMdd_HHmmss"
