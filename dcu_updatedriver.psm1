@@ -155,7 +155,15 @@ Add-Type -TypeDefinition $clickSource -ReferencedAssemblies System.Windows.Forms
     Start-Sleep -s 5
     [System.Windows.Forms.SendKeys]::Sendwait("{-}")
     Start-Sleep -s 5
-    [Clicker3]::LeftClickAtPoint("60%", "70%")
+    $screen = [System.Windows.Forms.Screen]::PrimaryScreen
+    $bounds = $screen.Bounds
+    $width  = $bounds.Width
+    $height = $bounds.Height
+
+    $percentwidth = (60.5/100)*$width
+    $percentheight = (68/100)*$height
+
+    [Clicker]::LeftClickAtPoint($percentwidth,$percentheight)
    # [System.Windows.Forms.SendKeys]::Sendwait("{TAB 10}")
    # Start-Sleep -s 5
    # [System.Windows.Forms.SendKeys]::Sendwait("{ENTER}")

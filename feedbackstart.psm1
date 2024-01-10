@@ -216,33 +216,33 @@ foreach($list in $hashfortabcount.Keys){
     }
 }
 ##>
-    start-sleep -s 2
+    start-sleep -s 5
     [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
-    start-sleep -s 2
+    start-sleep -s 5
     [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
-    start-sleep -s 2
+    start-sleep -s 5
     [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
-    start-sleep -s 2
+    start-sleep -s 5
     [System.Windows.Forms.SendKeys]::SendWait("$para1")
-    start-sleep -s 2
+    start-sleep -s 5
     [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
-    start-sleep -s 2
+    start-sleep -s 5
     [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
-    start-sleep -s 2
+    start-sleep -s 5
     [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
-    start-sleep -s 2
+    start-sleep -s 5
     [System.Windows.Forms.SendKeys]::SendWait("$para2")
-    start-sleep -s 2
+    start-sleep -s 5
     [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
-    start-sleep -s 2
+    start-sleep -s 5
     [System.Windows.Forms.SendKeys]::SendWait("{TAB}")
     #choose type of problem
     if($para3.Length -ne 0){    
-    start-sleep -s 2
+    start-sleep -s 5
     [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
-    start-sleep -s 2
+    start-sleep -s 5
     [System.Windows.Forms.SendKeys]::SendWait("$para3")
-    start-sleep -s 2
+    start-sleep -s 5
     [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
     }
    
