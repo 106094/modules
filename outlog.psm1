@@ -35,11 +35,12 @@ Set-Content -path $indextxt -value $index -Force
 $index="check $($indextxt)"
 }
 
-if($checknewlog -match "program"){
+if($checknewlog -match "TC_step"){
 
 $settings=import-csv C:\testing_AI\settings\flowsettings.csv
 $current_settins=$settings|Where-object{$_.TC -eq $tcnumber -and $_.Step_No -eq $tcstep}
 $prgname=$current_settins.programs
+$tcstep0=$current_settins.TC_step
 $mustfg=$current_settins.must
 $para1=$current_settins.para1
 $para2=$current_settins.para2
@@ -52,6 +53,7 @@ $logs=$logs+@(
        
        Time=$time       
        TC=$tcnumber
+       TC_step=$tcstep0
        Step_No=$tcstep
        Actions=$action
        Results=$results     
@@ -74,12 +76,19 @@ else{
 $logs=$logs+@( 
    [pscustomobject]@{
        
-       Time=$time       
-       TC=$tcnumber
-       Step_No=$tcstep
-       Actions=$action
-       Results=$results     
-       Index=$index
+      Time=$time       
+      TC=$tcnumber
+      Step_No=$tcstep
+      Actions=$action
+      Results=$results     
+      Index=$index
+      program=$prgname
+      must=$mustfg
+      para1=$para1
+      para2=$para2
+      para3=$para3
+      para4=$para4
+      para5=$para5
 
        }
        )
