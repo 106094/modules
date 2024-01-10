@@ -173,7 +173,7 @@ Add-Type -TypeDefinition $clickSource -ReferencedAssemblies System.Windows.Forms
     [System.Windows.Forms.SendKeys]::Sendwait("{TAB 8}")
     Start-Sleep -s 5
     [System.Windows.Forms.SendKeys]::Sendwait("{ENTER}")
-    Start-Sleep -s 5
+    Start-Sleep -s 60
      
      &$actionss -para3 "nonlog" -para5 "check"
    
