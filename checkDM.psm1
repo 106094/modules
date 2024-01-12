@@ -1,5 +1,4 @@
-﻿
-function checkDM([string]$para1,[string]$para2,[string]$para3,[string]$para4) {
+﻿function checkDM([string]$para1,[string]$para2,[string]$para3,[string]$para4) {
     
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     $shell=New-Object -ComObject shell.application
@@ -141,8 +140,8 @@ public static void LeftClickAtPoint(int x, int y)
 Add-Type -TypeDefinition $cSource -ReferencedAssemblies System.Windows.Forms,System.Drawing
 
 #endregion
- 
- Add-Type @"
+<## 
+Add-Type @"
 using System;
 using System.Runtime.InteropServices;
 public class PInvoke {
@@ -156,9 +155,8 @@ $curheight = [PInvoke]::GetDeviceCaps($hdc, 117) # height
 
 $screen = [System.Windows.Forms.Screen]::PrimaryScreen
 $bounds = $screen.Bounds
- 
- 
-   
+##>
+
 if($PSScriptRoot.length -eq 0){
 $scriptRoot="C:\testing_AI\modules"
 }
@@ -209,13 +207,13 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 ## before driver install collect DRV info
 if ($expand_flag -match "display"){
 
-#Get-WmiObject Win32_PnPSignedDriver|select DeviceName, DriverVersion, HardwareID, Signer, IsSigned, DriverProviderName, InfName,Description,Location,DeviceClass |Where-object{$_.DeviceClass -match "display"}|out-string|set-content  "$picpath\$($dd)_step$($tcstep)_DisplayDeviceManager.txt"
-$applist=Get-AppxPackage  |Where-object{$_.Name -match "AMD" -or $_.Name -match "NVIDIA"}| Select-object Name,Version,Vendor,InstallDate,PackageFullName|out-string
+#Get-WmiObject Win32_PnPSignedDriver|select-object DeviceName, DriverVersion, HardwareID, Signer, IsSigned, DriverProviderName, InfName,Description,Location,DeviceClass |Where-object{$_.DeviceClass -match "display"}|out-string|set-content  "$picpath\$($dd)_step$($tcstep)_DisplayDeviceManager.txt"
+$applist=Get-AppxPackage  |Where-object{$_.Name -match "AMD" -or $_.Name -match "NVIDIA"}| select-object -object Name,Version,Vendor,InstallDate,PackageFullName|out-string
 if(!$applist){$applist="na"}
 $applist|set-content  "$picpath\$($dd)_step$($tcstep)_Display_AppInfo.txt"
 
 $ye=Get-WmiObject Win32_PnPEntity | Where-Object { $_.ConfigManagerErrorCode -ne 0 -and $_.Name -match "display|monitor" }|`
-      select Name,Description, DeviceID, @{Name="HardwareID";Expression={$_.HardwareID -join "; "}}, Manufacturer
+      Select-Object Name,Description, DeviceID, @{Name="HardwareID";Expression={$_.HardwareID -join "; "}}, Manufacturer
 
 $results="OK"
 $index="check logs"
@@ -230,7 +228,7 @@ $index=$yefile
 
 $dxdinfo="$picpath\$($dd)_step$($tcstep)_DxDiag.txt"
 
-$inidrv=(Get-ChildItem "C:\testing_AI\logs\ini*" -r -Filter "*DriverVersion.csv"|Sort-Object lastwritetime|select -last 1).FullName
+$inidrv=(Get-ChildItem "C:\testing_AI\logs\ini*" -r -Filter "*DriverVersion.csv"|Sort-Object lastwritetime|select-object -last 1).FullName
 $checktype=(import-csv $inidrv|Where-object{$_.DeviceClass -match "DISPLAY"}).devicename
 
 dxdiag /t $dxdinfo
@@ -248,20 +246,20 @@ catch{set-content $nvsmiinfo -value "no install a NV Display driver"}
 }
 
 else{
-Get-WmiObject Win32_PnPSignedDriver|select DeviceName, DriverVersion, HardwareID, Signer, IsSigned, DriverProviderName, InfName,Description,Location,DeviceClass |Where-object{$_.InfName -match "oem"}|Export-Csv "$picpath\$($dd)_step$($tcstep)_DriverVersion.csv" -Encoding UTF8 -NoTypeInformation
-Get-WmiObject Win32_PnPSignedDriver|select DeviceName, DriverVersion, HardwareID, Signer, IsSigned, DriverProviderName, InfName,Description,Location,DeviceClass |Export-Csv "$picpath\$($dd)_step$($tcstep)_DriverVersion_all.csv" -Encoding UTF8 -NoTypeInformation
-Get-Package | select name, Version,ProviderName,Source,FastPackageReference |Export-Csv -Path  "$picpath\$($dd)_step$($tcstep)_packages.csv" -Encoding UTF8  -NoTypeInformation
-Get-CimInstance win32_product | Select-object Name,Version,Vendor,InstallDate,PackageFullName | Export-csv "$picpath\$($dd)_step$($tcstep)_AppVersion.csv" -Encoding UTF8 -NoTypeInformation 
-Get-AppxPackage | Select-object Name,Version,Vendor,InstallDate,PackageFullName | Export-csv "$picpath\$($dd)_step$($tcstep)_AppVersion.csv"  -Append  -Encoding UTF8  -NoTypeInformation
-Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Select-Object DisplayName, DisplayVersion, Publisher, InstallDate|export-csv "$picpath\$($dd)_step$($tcstep)_controlpanel_programs.csv" -Encoding UTF8  -NoTypeInformation
+Get-WmiObject Win32_PnPSignedDriver|select-object DeviceName, DriverVersion, HardwareID, Signer, IsSigned, DriverProviderName, InfName,Description,Location,DeviceClass |Where-object{$_.InfName -match "oem"}|Export-Csv "$picpath\$($dd)_step$($tcstep)_DriverVersion.csv" -Encoding UTF8 -NoTypeInformation
+Get-WmiObject Win32_PnPSignedDriver|select-object DeviceName, DriverVersion, HardwareID, Signer, IsSigned, DriverProviderName, InfName,Description,Location,DeviceClass |Export-Csv "$picpath\$($dd)_step$($tcstep)_DriverVersion_all.csv" -Encoding UTF8 -NoTypeInformation
+Get-Package | select-object  name, Version,ProviderName,Source,FastPackageReference |Export-Csv -Path  "$picpath\$($dd)_step$($tcstep)_packages.csv" -Encoding UTF8  -NoTypeInformation
+Get-CimInstance win32_product | select-object -object Name,Version,Vendor,InstallDate,PackageFullName | Export-csv "$picpath\$($dd)_step$($tcstep)_AppVersion.csv" -Encoding UTF8 -NoTypeInformation 
+Get-AppxPackage | select-object -object Name,Version,Vendor,InstallDate,PackageFullName | Export-csv "$picpath\$($dd)_step$($tcstep)_AppVersion.csv"  -Append  -Encoding UTF8  -NoTypeInformation
+Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | select-object -Object DisplayName, DisplayVersion, Publisher, InstallDate|export-csv "$picpath\$($dd)_step$($tcstep)_controlpanel_programs.csv" -Encoding UTF8  -NoTypeInformation
 start-sleep -s 5
-$ye=Get-WmiObject Win32_PnPEntity|Where-object{ $_.ConfigManagerErrorCode -ne 0}|select Name,Description, DeviceID, @{Name="HardwareID";Expression={$_.HardwareID -join "; "}},Manufacturer
+$ye=Get-WmiObject Win32_PnPEntity|Where-object{ $_.ConfigManagerErrorCode -ne 0}|select-object Name,Description, DeviceID, @{Name="HardwareID";Expression={$_.HardwareID -join "; "}},Manufacturer
 $results="OK"
 $index="check logs"
 if($ye.DeviceID.count -gt 0){
 $yefile= "$picpath\$($dd)_step$($tcstep)_yellowbang.csv"
 $ye|Export-Csv $yefile -Encoding UTF8 -NoTypeInformation
-Get-WmiObject Win32_PnPEntity|select Name,Description, DeviceID, @{Name="HardwareID";Expression={$_.HardwareID -join "; "}}, `
+Get-WmiObject Win32_PnPEntity|select-object Name,Description, DeviceID, @{Name="HardwareID";Expression={$_.HardwareID -join "; "}}, `
         Manufacturer |Export-Csv "$picpath\$($dd)_step$($tcstep)_Driver2.csv" -Encoding UTF8 -NoTypeInformation
 
 $results="NG (with yellow bangs)"
@@ -278,7 +276,7 @@ if($noncapt_flag.Length -eq 0){
  
   start-sleep -s 5
 
- $dmid=  (Get-Process mmc |sort starttime |select -last 1).id
+ $dmid=  (Get-Process mmc |sort-object starttime |Select-Object -last 1).id
  
  $wshell.AppActivate('Device Manager') 
 
@@ -305,13 +303,11 @@ Start-Sleep -Seconds 2
 
 if($expand_flag.Length -eq 0){
 &$actionss  -para3 nonlog -para5 "DevicecManager"
-$picfile=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "DeviceManager" }).FullName
-  start-sleep -s 2
+#$picfile=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "DeviceManager" }).FullName
   }
 
 if($expand_flag.length -gt 0){
  
-
 if ($expand_flag -match "display"){$ccatg="Win32_VideoController"}  
 if ($expand_flag -match "network"){$ccatg="Win32_NetworkAdapter"} 
 if ($expand_flag -match "storage controllers"){$ccatg="Win32_SCSIController"}  #Win32_IDEController
@@ -322,7 +318,7 @@ $datenow=get-date -format "yyMMdd_HHmmss"
  new-item $dirverinfo -Force |Out-Null
 
   $catdrivers = Get-WmiObject $ccatg  | Where-Object { $_.ConfigManagerErrorCode -eq 0 }
-   $catcount=$catdrivers.count
+   $catcount=$catdrivers.Caption.count
 
 foreach ($catdriver in $catdrivers) {
 
@@ -344,14 +340,18 @@ foreach ($catdriver in $catdrivers) {
 
 }
 
-
  $wshell.AppActivate('Device Manager') 
    start-sleep -s 2
-     $wshell.sendkeys($expand_flag)
+   if($expand_flag -match "display"){
+     $wshell.sendkeys("display")
+   }
+   else{
+    $wshell.sendkeys($expand_flag)
+   }
      start-sleep -s 2
       $wshell.sendkeys("{right}")
 
-#$catcount=(((Get-PnpDevice -InstanceId *)|select Class).class|sort|Get-Unique).count
+#$catcount=(((Get-PnpDevice -InstanceId *)|select-object Class).class|sort|Get-Unique).count
 
 $i=0
 do{
@@ -364,13 +364,25 @@ Set-Clipboard " "
        $wshell.sendkeys("~")
        start-sleep -s 5
         $wshell.sendkeys("+{tab}")
-         start-sleep -s 1
+           &$actionss  -para3 nonlog -para5 "$($expand_flag)_$($i)"
            $wshell.sendkeys("{right}")
-            start-sleep -s 1
-                &$actionss  -para3 nonlog -para5 "$($expand_flag)_$($i)_1"
+                &$actionss  -para3 nonlog -para5 "$($expand_flag)_$($i)_drivertab"
+            
+                if ($expand_flag -match "display_resources"){
+                  start-sleep -s 5
+                   $wshell.sendkeys("{right 3}")
+                   start-sleep -s 1
+                   $wshell.sendkeys("{tab}")
+                   start-sleep -s 1
+                   &$actionss  -para3 nonlog -para5 "$($expand_flag)_$($i)_resourcestab1"
+                   $wshell.sendkeys("{down 3}")
+                   &$actionss  -para3 nonlog -para5 "$($expand_flag)_$($i)_resourcestab2"
+                   start-sleep -s 2
+                  
+                }    
 
                 if ($expand_flag -match "disk"){
-                start-sleep -s 5
+                 start-sleep -s 5
                  $wshell.sendkeys("{TAB}")
                  start-sleep -s 1
                   $wshell.sendkeys("{+}")
@@ -385,13 +397,13 @@ Set-Clipboard " "
 
                   start-sleep -s 3
                  if((Get-Clipboard) -match "write-caching"){
-                    echo "Match"
+                    Write-Output "Match"
                     &$actionss  -para3 nonlog -para5 "$($expand_flag)_$($i)_1_Not support write-caching"
                     $wshell.sendkeys("~")
                    start-sleep -s 5
                        
                  }else{
-                    echo "Not Match"
+                    Write-Output "Not Match"
                     $wshell.sendkeys("~")
                        start-sleep -s 5
                         $wshell.sendkeys("+{tab}")
@@ -399,18 +411,18 @@ Set-Clipboard " "
                            $wshell.sendkeys("{right}")
                             start-sleep -s 2
                             &$actionss  -para3 nonlog -para5 "$($expand_flag)_$($i)_1_After Enable write-caching"
-                 }
+                  }
 
                  
-            }
+                 }
 
 ## for advance settings
 
-   if($dkeyword.Length -ne 0){        
+if($dkeyword.Length -ne 0){        
    
 #region Lan SpeedDuplex/SoftwareTimestamp config 
 
-$landevs=(import-csv "$picpath\$($dd)_step$($tcstep)_DriverVersion_all.csv"|Where-object{$_.DeviceClass -match "Net" -and $_.location -ne ""}).InfName|sort name|Get-Unique
+$landevs=(import-csv "$picpath\$($dd)_step$($tcstep)_DriverVersion_all.csv"|Where-object{$_.DeviceClass -match "Net" -and $_.location -ne ""}).InfName|Sort-Object name|Get-Unique
 foreach($landev in $landevs){
 $setinfo=get-content C:\Windows\INF\$landev 
 
@@ -419,7 +431,6 @@ $countss=$true
 }
 
 }
-
 #endregion
 
         $wshell.sendkeys("{tab}")
@@ -442,11 +453,7 @@ $countss=$true
            
            }
          
-         start-sleep -s 1
-           $wshell.sendkeys("{right}")
-        
-         &$actionss  -para3 nonlog -para5 "$($expand_flag)_$($i)_2"
-
+         
         start-sleep -s 1 
            $wshell.sendkeys("%{F4}")
 
