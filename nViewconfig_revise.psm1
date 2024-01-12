@@ -32,7 +32,7 @@ if($configcontent -match $keywords){
     $k=0
 }
 if($k -eq 1){
-    $configcontent=$configcontent.replace("false","true")
+    $configcontent=$configcontent.replace("False","True")
 }
 $configcontent
 }
