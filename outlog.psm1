@@ -35,7 +35,6 @@ Set-Content -path $indextxt -value $index -Force
 $index="check $($indextxt)"
 }
 
-if($checknewlog -match "TC_step"){
 
 $settings=import-csv C:\testing_AI\settings\flowsettings.csv
 $current_settins=$settings|Where-object{$_.TC -eq $tcnumber -and $_.Step_No -eq $tcstep}
@@ -48,6 +47,7 @@ $para3=$current_settins.para3
 $para4=$current_settins.para4
 $para5=$current_settins.para5
 
+if($checknewlog -match "TC_step"){
 $logs=$logs+@( 
    [pscustomobject]@{
        
