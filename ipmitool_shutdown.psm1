@@ -6,7 +6,7 @@ function ipmitool_shutdown ([int]$para1,[int]$para2,[int]$para3,[string]$para4) 
       Add-Type -AssemblyName Microsoft.VisualBasic
       Add-Type -AssemblyName System.Windows.Forms
       Add-Type -AssemblyName System.Windows.Forms,System.Drawing
-      $psObject = New-Object psobject
+      #$psObject = New-Object psobject
         
  $paracheck=$PSBoundParameters.ContainsKey('para1')
  $paracheck2=$PSBoundParameters.ContainsKey('para2')
@@ -126,7 +126,26 @@ if(!(test-path $inifd_tcnumber)){ new-item -ItemType directory -path  $inifd_tcn
   
 $timenow2=get-date
 
- ### disable windows update ###
+#region check oobe
+$checkoobe1=get-process -name *|Where-object{$_.name -match "WWAHost"}
+$checkoobe2=get-process -name *|Where-object{$_.name -match "WebExperienceHostApp"}
+
+if($checkoobe1 -or $checkoobe2){
+
+$actionss="screenshot"
+Get-Module -name $actionss|remove-module
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+Import-Module $mdpath -WarningAction SilentlyContinue -Global
+
+&$actionss  -para3 nonlog -para5 "oobe"
+stop-process -name WWAHost -Force -ErrorAction SilentlyContinue
+stop-process -name WebExperienceHostApp -Force -ErrorAction SilentlyContinue
+&$actionss  -para3 nonlog -para5 "oobe_close"
+
+}
+
+
+### disable windows update ###
 
 Get-Module -name "disable_wu"|remove-module
 $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-object{$_.name -match "disable_wu" -and $_.name -match "psm1"}).fullname
@@ -173,10 +192,10 @@ start-Sleep -s $waitossec
 if((Get-ChildItem $sysfd -file).count -gt 0){
 $errorfoler=(Get-ChildItem $sysfd -file).fullname
 $errorfolername=(Get-ChildItem $sysfd -file).name 
-$lastfolder=(Get-ChildItem $sysfd -Directory|sort creationtime|select -Last 1).name
+$lastfolder=(Get-ChildItem $sysfd -Directory|Sort-Object creationtime|Select-Object -Last 1).name
 if(($lastfolder -$errorfolername) -eq 1){
 remove-item $errorfoler -Force
-rename-item (Get-ChildItem $sysfd -Directory|sort creationtime|select -Last 1).fullname -NewName $($errorfolername)
+rename-item (Get-ChildItem $sysfd -Directory|Sort-Object creationtime|Select-Object -Last 1).fullname -NewName $($errorfolername)
 }
 
 else{
@@ -191,12 +210,12 @@ write-host "folder count $($countcb) ; error folder $($countname)"
 
 if(($countcb-$countname) -eq 1 ){
 remove-item $errorfoler -Force
-rename-item (Get-ChildItem $sysfd -Directory|sort creationtime|select -Last 1).fullname -NewName $($countname)
+rename-item (Get-ChildItem $sysfd -Directory|Sort-Object creationtime|Select-Object -Last 1).fullname -NewName $($countname)
 
 }
 
 
-}until((gi -path $errorfoler).PSisContainer -and $countname -eq $countcb)
+}until((Get-Item -path $errorfoler).PSisContainer -and $countname -eq $countcb)
 write-host "folder $errorfoler missing, re-create ok "
 }
 }
@@ -264,15 +283,15 @@ write-host "Cycle $countcb finished"
 
 add-content -path $logspath -value "cycle,time_start,time_end,Sys_Check,DRV_Check,YB_Check,APP_Check,Dump_Check"
 
-$cyfoldes=Get-ChildItem -Path $sysfd -directory -Exclude "ini" |sort {[int]$_.Name}
+$cyfoldes=Get-ChildItem -Path $sysfd -directory -Exclude "ini" |Sort-Object {[int]$_.Name}
 
 ### compare results ###
 $driverfilename1=(Get-ChildItem $inifd_ini\*DriverVersion.csv |Sort-Object lastwritetime |Select-Object -Last 1|Where-object{$_.name -notmatch "all"}).FullName
-$old_drivercsv=import-csv -path $driverfilename1|sort InfName
+$old_drivercsv=import-csv -path $driverfilename1|Sort-Object InfName
 $old_sysfile= (Get-ChildItem -path $inifd_ini\*SystemInfo.txt|Sort-Object lastwritetime |Select-Object -Last 1).fullname
-$old_sys=get-content -path $old_sysfile |select  -Skip  1  
+$old_sys=get-content -path $old_sysfile |Select-Object  -Skip  1  
 $old_appfile=(Get-ChildItem $inifd_ini\*AppVersion*.csv|Sort-Object lastwritetime |Select-Object -Last 1).FullName
-$old_appcsv=import-csv -path $old_appfile|sort Name
+$old_appcsv=import-csv -path $old_appfile|Sort-Object Name
 $old_yb=test-path "$inifd_ini\*yellowbang.csv"
 
 foreach($cyfolde in $cyfoldes){
@@ -285,7 +304,7 @@ write-host " check $inifd_sysct"
 
 $fd_count=$cyfolde.name
 $driverfilename2=(Get-ChildItem $inifd_sysct\*DriverVersion.csv|Sort-Object lastwritetime |Select-Object -Last 1 |Where-object{$_.name -notmatch "all"}).FullName
-$new_drivercsv=import-csv -path $driverfilename2|sort InfName
+$new_drivercsv=import-csv -path $driverfilename2|Sort-Object InfName
 $old_yb=test-path "$inifd_ini\*yellowbang.csv"
 $drvcheck="FAIL"
 $drvdiffc=((Compare-Object $old_drivercsv $new_drivercsv|Where-object{$_.SideIndicator -eq "<=" -or $_.SideIndicator -eq "=>" }).SideIndicator).count
@@ -306,14 +325,14 @@ if($ybdiffc -eq 0){$ybcheck="PASS"}
 
 ### system ##
 $new_sysfile= (Get-ChildItem $inifd_sysct\*SystemInfo.txt |Sort-Object lastwritetime |Select-Object -Last 1 ).fullname
-$new_sys=get-content -path $new_sysfile |select  -Skip  1  
+$new_sys=get-content -path $new_sysfile |Select-Object  -Skip  1  
 $syscheck="FAIL"
 $sysdiffc=((Compare-Object $old_sys $new_sys|Where-object{$_.SideIndicator -eq "<=" -or $_.SideIndicator -eq "=>" }).SideIndicator).count
 if($sysdiffc -eq 0){$syscheck="PASS"}
 
 ## APP ##
 $new_appfile=(Get-ChildItem -path $inifd_sysct\*AppVersion*.csv|Sort-Object lastwritetime |Select-Object -Last 1).fullname
-$new_appcsv=import-csv -path $new_appfile|sort Name
+$new_appcsv=import-csv -path $new_appfile|Sort-Object Name
 $appcheck="FAIL"
 $appdiffc=((Compare-Object $old_appcsv $new_appcsv|Where-object{$_.SideIndicator -eq "<=" -or $_.SideIndicator -eq "=>" }).SideIndicator).count
 if($appdiffc -eq 0){$appcheck="PASS"}
@@ -366,7 +385,7 @@ if(test-path $faillogspath){Copy-Item$faillogspath  $logspath_end2 -Force}
 
 $results="OK"
 
-$failcsv=import-csv $logspath | ?{$_.DRV_Check -match "Fail" -or $_.Sys_Check -match "Fail" -or $_.YB_Check -match "Fail" -or $_.APP_Check -match "Fail" -or $_.Dump_Check -match "Fail"}
+$failcsv=import-csv $logspath | Where-Object{$_.DRV_Check -match "Fail" -or $_.Sys_Check -match "Fail" -or $_.YB_Check -match "Fail" -or $_.APP_Check -match "Fail" -or $_.Dump_Check -match "Fail"}
 if(($failcsv.Cycle).count -gt 0){$results="NG"}
 
 $index="check $logspath"
@@ -404,8 +423,8 @@ do{
 start-sleep -s 1
 if(test-path $inifd1){remove-item $inifd1 -Recurse -Force -ea SilentlyContinue}
 new-item -ItemType directory -Path $inifd1 -Force |out-null
-$pathnew=(gi -path $inifd1).FullName
-}until((gi -path $inifd1).PSisContainer)
+$pathnew=(get-item -path $inifd1).FullName
+}until((get-item -path $inifd1).PSisContainer)
 
 write-host "create folder $($pathnew) done"
 
@@ -419,7 +438,7 @@ write-host "create folder $($pathnew) done"
 $timeset=[double]1
 $TimeSpan = New-TimeSpan -Minutes $timeset
 $trigger = New-JobTrigger -AtLogOn -RandomDelay $TimeSpan #00:05:00
-$trigger2 = New-JobTrigger -AtStartup -RandomDelay $TimeSpan #00:05:00
+#$trigger2 = New-JobTrigger -AtStartup -RandomDelay $TimeSpan #00:05:00
 
 $taskaction = New-ScheduledTaskAction -Execute "C:\testing_AI\AutoRun.bat"
 $Stset = New-ScheduledTaskSettingsSet -Priority 0 -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries

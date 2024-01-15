@@ -69,7 +69,7 @@ function ConvertTo-Hashtable {
 $wshash=$wtsettings | ConvertFrom-Json | ConvertTo-HashTable
 $guidcmd=($wshash.profiles.list|Where-object{$_.name -match "command"}).guid
 
-$wtsettings|%{
+$wtsettings|ForEach-Object{
 
 if($_ -match "defaultProfile"){
 $_= """defaultProfile"": ""$guidcmd"","
@@ -484,6 +484,8 @@ $scriptRoot="C:\testing_AI\modules"
 else{
 $scriptRoot=$PSScriptRoot
 }
+
+
 
 ### s4 tool prepare ##
 
