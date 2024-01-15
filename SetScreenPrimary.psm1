@@ -2,7 +2,7 @@
 function SetScreenPrimary ([string]$para1,[string]$para2){
     
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
-    $wshell=New-Object -ComObject wscript.shell
+    #$wshell=New-Object -ComObject wscript.shell
       Add-Type -AssemblyName Microsoft.VisualBasic
       Add-Type -AssemblyName System.Windows.Forms
  
@@ -37,7 +37,7 @@ $paracheck=$PSBoundParameters.ContainsKey('para1')
 $paracheck2=$PSBoundParameters.ContainsKey('para2')
 
 
-if( $paracheck1 -eq $false -or $para1.length -eq 0 ){
+if( $paracheck -eq $false -or $para1.length -eq 0 ){
 $para1=""
 }
 $nonlog=$para1
@@ -46,7 +46,8 @@ $para2=""
 }
 
 $showonlypri=$para1
-$nonlog=$para2
+$reversesetting=$para2
+$nonlog=$para3
 
 if($PSScriptRoot.length -eq 0){
 $scriptRoot="C:\testing_AI\modules"
@@ -92,6 +93,8 @@ Start-Sleep -s 5
 Start-Sleep -s 5
 
 $moninfodata=import-csv  $moninfo|Where-object{$_.Active -eq "Yes"}
+
+if($reversesetting.Length -eq 0){
 $maxr=0
 foreach($mondata in $moninfodata){
 $rex=((($mondata."Maximum Resolution").split("X"))[0]).trim()
@@ -102,6 +105,20 @@ $maxname=$mondata.Name
 }
 
 &$mtool /SetPrimary $maxname
+}
+
+if($reversesetting.Length -gt 0){
+    $minr=9999999
+    foreach($mondata in $moninfodata){
+    $rex=((($mondata."Maximum Resolution").split("X"))[0]).trim()
+    if($rex -lt $minr){
+      $minr=$rex
+    $minname=$mondata.Name
+    }
+    }
+
+    &$mtool /SetPrimary $minname
+}
 
 Start-Sleep -s 20
 
