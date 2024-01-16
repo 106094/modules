@@ -2,11 +2,10 @@
 function screenshot_multiscreen([int]$para1,[string]$para2,[string]$para3,[string]$para4,[string]$para5){
 
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
-    $wshell=New-Object -ComObject wscript.shell
-       Add-Type -AssemblyName System.Windows.Forms,System.Drawing,Microsoft.VisualBasic
-       
+    #$wshell=New-Object -ComObject wscript.shell
+       Add-Type -AssemblyName System.Windows.Forms,System.Drawing,Microsoft.VisualBasic     
 
-  $source = @"
+$source = @"
 using System;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
@@ -32,6 +31,14 @@ namespace KeySends
 "@
 Add-Type -TypeDefinition $source -ReferencedAssemblies "System.Windows.Forms"
 
+$monitors = Get-WmiObject -Class Win32_DesktopMonitor
+$numberOfMonitors = $monitors.Count
+$index= "$($numberOfMonitors) display is connected. check screenshots"
+if ($numberOfMonitors -gt 1) {
+    $results="OK"
+} else {
+    $results="NG"
+    }
 function screenshotmulti ($path) {
 
     [void] [Reflection.Assembly]::LoadWithPartialName("System.Drawing")
@@ -84,11 +91,9 @@ if($paracheck1 -eq $false -or  $para1 -eq 0){
 $para1=  [int]3
 }
 
-if($para2 -match "show"){
-$para2= "showtaskbar"
-}
-else{
 $para2= ""
+if($paracheck2 -or $para2 -match "show"){
+$para2= "showtaskbar"
 }
 
 if($paracheck3 -eq $false -or  $para3.Length -eq 0){
@@ -115,7 +120,6 @@ $scriptRoot=$PSScriptRoot
 }
 
 $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
-
 $tcnumber=((get-content $tcpath).split(","))[0]
 $tcstep=((get-content $tcpath).split(","))[1]
 $action2=((get-content $tcpath).split(","))[2]
@@ -126,7 +130,6 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 
    $picfile=$picpath+"$($timenow)_step$($tcstep)_$($action2).jpg"
    if($picnameindex.length -gt 0){$picfile=$picpath+"$($tcstep)_$($action2)_$($picnameindex).jpg"}
-
 
  function Set-WindowState {
 	<#
@@ -221,10 +224,8 @@ Start-Sleep -s 2
 
 <#
 
-
    $picfile="$($tcstep)_$($action2)"
    if($picnameindex.length -gt 0){$picfile="$($tcstep)_$($action2)_$($picnameindex)"}
-
 
 $load1=[void] [Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 $load2=[Reflection.Assembly]::LoadWithPartialName("System.Drawing")
@@ -260,16 +261,6 @@ foreach($screen in $screens){
 #>
 
 screenshotmulti $picfile
-
-Start-Sleep -s 2
-
-$results="NG"
-$Index="check screenshots"
-
-if(test-path $picfile){
-$results="OK"
-$Index=$picfile
-}
 
 if($nonlog_flag.Length -eq 0){
 
