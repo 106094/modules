@@ -1,5 +1,5 @@
 ﻿
-function　controlpanel ([string]$para1,[string]$para2,[string]$para3){
+function controlpanel ([string]$para1,[string]$para2,[string]$para3){
       
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     $wshell=New-Object -ComObject wscript.shell
