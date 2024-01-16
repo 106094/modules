@@ -79,8 +79,7 @@
 
     }until( $usenameinp.TagName -eq "input"  -or $timepass -gt 120)
 
-    
-if($usenameinp.TagName -eq "input" ) {
+    if($usenameinp.TagName -eq "input" ) {
     start-sleep -s 5    
     $usenameinp.click()
     start-sleep -s 2
