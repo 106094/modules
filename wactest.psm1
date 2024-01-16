@@ -2,10 +2,9 @@
 function wactest ([string]$para1,[string]$para2){
     
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
-    $wshell=New-Object -ComObject wscript.shell
+    #$wshell=New-Object -ComObject wscript.shell
       Add-Type -AssemblyName Microsoft.VisualBasic
-      Add-Type -AssemblyName System.Windows.Forms
-   
+      Add-Type -AssemblyName System.Windows.Forms   
 
 $paracheck=$PSBoundParameters.ContainsKey('para1')
 
