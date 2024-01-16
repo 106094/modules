@@ -129,6 +129,7 @@
         try{
         $resselection = $driver.FindElement([OpenQA.Selenium.By]::Id("IntegratedDevicesRef.PcieResizBar"))
         $resselection_option = $resselection.GetAttribute("value")
+        $resselection.Click()
         }
         catch{
          #region screenshot
