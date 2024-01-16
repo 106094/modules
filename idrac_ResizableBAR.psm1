@@ -59,7 +59,7 @@
     do{
     start-sleep -s 5
      $detailbt=$driver.FindElement([OpenQA.Selenium.By]:: ID("details-button"))
-      $timepass= (New-TimeSpan -start $nowtime -end (get-date)).TotalMinutes
+      $timepass= (New-TimeSpan -start $nowtime -end (get-date)).TotalSeconds
          }until($detailbt.Enabled -eq $true -or $timepass -gt 120)
 
     if($detailbt.Enabled -eq $true){
@@ -75,14 +75,15 @@
     do{
         start-sleep -s 2
         $usenameinp=$driver.FindElement([OpenQA.Selenium.By]::ClassName("cui-start-screen-username"))
-         $timepass= (New-TimeSpan -start $nowtime -end (get-date)).TotalMinutes
+         $timepass= (New-TimeSpan -start $nowtime -end (get-date)).TotalSeconds
 
     }until( $usenameinp.TagName -eq "input"  -or $timepass -gt 120)
 
     
 if($usenameinp.TagName -eq "input" ) {
-
-    start-sleep -s 5
+    start-sleep -s 5    
+    $usenameinp.click()
+    start-sleep -s 2
     $usenameinp.SendKeys($idracuser)
      start-sleep -s 2
     $passwordinp=$driver.FindElement([OpenQA.Selenium.By]::ClassName("cui-start-screen-password"))
