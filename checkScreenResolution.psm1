@@ -29,7 +29,6 @@ else{
 $scriptRoot=$PSScriptRoot
 }
 
-
 $action="check ScreenResolution supports $($resx) x $($resy)"
 
 $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
