@@ -195,6 +195,9 @@ $axerun=get-process -name $apppname2
 
 if(!$axerun){
 
+#remove old results
+Get-ChildItem -path "$env:USERPROFILE\Documents\Assessment Results\JobResults*"|remove-item -force -recurse
+
 &$actionapp -para1 $appname  -para3 "nonlog"
 start-sleep -s 20
 
