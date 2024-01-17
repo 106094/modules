@@ -1,5 +1,4 @@
-﻿
-function　create_systemimage ([string]$para1){
+﻿function create_systemimage ([string]$para1){
       
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     $wshell=New-Object -ComObject wscript.shell
@@ -387,12 +386,12 @@ Add-Type -MemberDefinition $signature -Name MyType -Namespace MyNamespace
  $sname=$env:COMPUTERNAME
  do{
   start-sleep -s 10
-   $backuppath2=(Get-ChildItem -path "$backuppath\WindowsImageBackup\$($sname)\Backup*" -directory).FullName
+   $backuppath2=(Get-ChildItem -path "$backuppath\WindowsImageBackup\$($sname)*\*Backup*" -directory).FullName
  }until( $backuppath2.Length -gt 0)
 
 
 Write-Host "open folder of  $backuppath2"
- start explorer  "$backuppath2"  -WindowStyle Maximized
+ Start-Process explorer  "$backuppath2"  -WindowStyle Maximized
 
   start-sleep -s 10
 
@@ -431,13 +430,13 @@ foreach ($window in $windows) {
  $shell.Windows() |Where-object{$_.name -eq "File Explorer"}| ForEach-Object { $_.Quit() }
 
 
- $reesults="wait check"
+ $results="wait check"
  $index="check backup image at $backuppath2"
 
  }
  else{
  
- $reesults="NG"
+ $results="NG"
  $index="fail to backup image"
  }
 
