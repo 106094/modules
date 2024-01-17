@@ -12,7 +12,8 @@ function cmdline_endless ([string]$para1,[string]$para2,[string]$para3,[string]$
     $cmdtype=$para3
     $calltool=$para4
     $nonlog_flag=$para5
-
+    
+    
 $cSource = @'
 using System;
 using System.Drawing;
@@ -91,6 +92,8 @@ $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
 $tcnumber=((get-content $tcpath).split(","))[0]
 $tcstep=((get-content $tcpath).split(","))[1]
 $action=((get-content $tcpath).split(","))[2]
+$cmdline = $cmdline.Replace("step##","step$($tcstep)")
+$cmdline = $cmdline.Replace("TC##","$($tcnumber)")
 
 $picpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
 if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-null}
@@ -100,7 +103,6 @@ $actionss="screenshot"
 Get-Module -name $actionss|remove-module
 $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
-
 
  if($cmdline.Length -eq 0){
   
