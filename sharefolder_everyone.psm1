@@ -2,7 +2,7 @@
 function sharefolder_everyone() {
 
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
-    $wshell=New-Object -ComObject wscript.shell
+    #$wshell=New-Object -ComObject wscript.shell
       Add-Type -AssemblyName Microsoft.VisualBasic
       Add-Type -AssemblyName System.Windows.Forms
  
@@ -11,16 +11,12 @@ Get-Module -name $actionss|remove-module
 $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
        
-      
-
 if($PSScriptRoot.length -eq 0){
 $scriptRoot="C:\testing_AI\modules\"
 }
 else{
 $scriptRoot=$PSScriptRoot
 }
-
-
 
 <#
 #Remove-LocalUser -name "user001"
@@ -40,7 +36,7 @@ $mainuser=$env:username
 #Get-NetFirewallRule -DisplayGroup ‘Network Discovery’|Set-NetFirewallRule -Profile ‘Private, Domain’ -Enabled true.
 $netname= "C"
 
-if( ((get-SmbShare　-name $netname -ea SilentlyContinue).name) -eq $null){
+if( !((get-SmbShare -name $netname -ea SilentlyContinue).name)){
 
 $acl = Get-Acl "C:\"
 $acl2 = Get-Acl "C:\users\$env:USERname"
@@ -65,7 +61,7 @@ New-SmbShare -name  $netname  -path  "C:\"  -FullAccess 'Everyone'
 
 
 ## 　Adds an allow access
-Grant-SmbShareAccess -Name $netname -AccountName 'Everyone'　-AccessRight Full -Force
+Grant-SmbShareAccess -Name $netname -AccountName 'Everyone' -AccessRight Full -Force
 
 ### setting turn off passwd protection ##
 #explorer.exe shell:::{8E908FC9-BECC-40f6-915B-F4CA0E70D03D}
