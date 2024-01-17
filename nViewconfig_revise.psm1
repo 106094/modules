@@ -20,7 +20,7 @@ $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
 $tcnumber=((get-content $tcpath).split(","))[0]
 $tcstep=((get-content $tcpath).split(","))[1]
 
-$configpath=(Get-ChildItem -path "C:\Users\Win11_NV_A6000\AppData\Local\nViewCpl1\nvwdmcpl.exe_Url_*\" -Recurse -Filter "user.config").fullname
+$configpath=(Get-ChildItem -path "$env:userprofile\AppData\Local\nViewCpl1\nvwdmcpl.exe_Url_*\" -Recurse -Filter "user.config").fullname
 
 $keywords="HideTipsAtLaunch"
 $configcontents=get-content $configpath
