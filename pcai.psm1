@@ -177,7 +177,7 @@ if($checkrun){
   taskkill /F /IM AutoTool.exe
  }
 
- $scriptname=$scriptname.replace(".ScriptAction","")
+$scriptname=$scriptname.replace(".ScriptAction","")
 
 $action="pcai-$scriptname"
 
@@ -419,7 +419,7 @@ Import-Module $mdpath -WarningAction SilentlyContinue -Global
 outlog $action $results $tcnumber $tcstep $index
 }
 
-if($exit_flag.length -ne 0){
+if($pcaioption.length -match "exit"){
 exit
 }
 
