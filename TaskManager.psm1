@@ -131,7 +131,7 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
         [System.Windows.Forms.SendKeys]::SendWait("~")
     }
 
-    Stop-Process -Id  $taskid.Id
+    
 
     
     $actionss ="screenshot"
@@ -143,6 +143,8 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
     ##screenshot##
     &$actionss  -para3 nonlog -para5 $selectTab
 
+
+    Stop-Process -Id  $taskid.Id
     ### save logs ##  
     $action = "TaskManager-Tabselect"
     $results = "-"
