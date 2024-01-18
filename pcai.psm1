@@ -255,8 +255,10 @@ function runpcai ([string]$option){
 
 Set-Clipboard -value "$pcaipath $scriptfull /n /c"
 
-if($option.Length -eq 0){
-  
+if($option -match "silent"){
+  &$pcaipath $scriptfull /n /c
+}
+else{ 
 start-process cmd -WindowStyle Maximized
 $id2= (Get-Process -name cmd|Sort-Object StartTime -ea SilentlyContinue |Select-Object -last 1).id
 $checkrun=(get-process -Name "AutoTool" -ErrorAction SilentlyContinue).Id
@@ -278,9 +280,7 @@ $wshell.SendKeys("~")
 
 (Get-Process -id $id2).CloseMainWindow()
 }
-else{
-  &$pcaipath $scriptfull /n /c
-}
+
 ####  check if running ###
 Start-Sleep -Seconds 2
 $checkrun=(get-process -Name "AutoTool").Id
