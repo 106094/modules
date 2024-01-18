@@ -9,7 +9,7 @@ $paracheck=$PSBoundParameters.ContainsKey('para1')
 
 if( $paracheck -eq $false -or $para1.length -eq 0 ){
 #write-host "no defined, setting 1 min after login"
-$para1="hybernate"
+$para1="Hibernate"
 }
 
 if($PSScriptRoot.length -eq 0){
