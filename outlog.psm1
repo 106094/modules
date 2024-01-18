@@ -1,5 +1,6 @@
 function outlog ([string] $para1,[string] $para2, [string] $para3, [string] $para4, [string] $para5 ){
 
+   start-sleep -s 3
    $action = [string] $para1
    $results = [string] $para2
    $tcnumber = [string] $para3
