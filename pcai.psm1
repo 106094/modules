@@ -120,7 +120,7 @@ if($paracheck3 -eq $false -or $para3.Length -eq 0){
 $para3=""
 }
 if($paracheck4 -eq $false -or $para4.Length -eq 0){
-$para4="nc"
+$para4=""
 }
 if($paracheck5 -eq $false -or $para5.Length -eq 0){
 $para5=""
@@ -139,7 +139,7 @@ $tcstep=((get-content $tcpath).split(","))[1]
 
 if($groupname.Length -ne 0){
 $picpath0=(Split-Path -Parent $scriptRoot)+"\logs\$tcnumber\"
-$picpath=(Split-Path -Parent $scriptRoot)+"\logs\$tcnumber\$groupname\"
+#$picpath=(Split-Path -Parent $scriptRoot)+"\logs\$tcnumber\$groupname\"
 $scriptpath=(Split-Path -Parent $scriptRoot)+"\logs\$tcnumber\$groupname\step_$($tcstep)_$scriptname\"
 }
 else{
@@ -152,8 +152,8 @@ $scriptpath=(Split-Path -Parent $scriptRoot)+"\logs\$tcnumber\step$($tcstep)_pca
 #if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath  -Force |out-null}
 if(-not(test-path $scriptpath)){new-item -ItemType directory -path $scriptpath  -Force |out-null}
 
-$width  = ([string]::Join("`n", (wmic path Win32_VideoController get CurrentHorizontalResolution))).split("`n") -match "\d{1,}"
-$height  = ([string]::Join("`n", (wmic path Win32_VideoController get CurrentVerticalResolution))).split("`n") -match "\d{1,}"
+#$width  = ([string]::Join("`n", (wmic path Win32_VideoController get CurrentHorizontalResolution))).split("`n") -match "\d{1,}"
+#$height  = ([string]::Join("`n", (wmic path Win32_VideoController get CurrentVerticalResolution))).split("`n") -match "\d{1,}"
 
 ### start to run pcai ##
 
@@ -173,7 +173,7 @@ if($scriptname -ne "no_define"){
 
 (get-process -name msedge -ea SilentlyContinue).CloseMainWindow()
 $checkrun=(get-process -Name "AutoTool"　-ea SilentlyContinue).Id
-if($checkrun -ne $null){
+if($checkrun){
   taskkill /F /IM AutoTool.exe
  }
 
@@ -198,7 +198,7 @@ $3dmarkwdopentime=(New-TimeSpan -start $3dmarkwdopenstart -end (get-date)).Total
 }
 
 $pcaipath=(Get-ChildItem C:\testing_AI\modules\PC_AI_Tool*\AutoTool.exe).FullName
-$pcaifpath=split-path $pcaipath
+#$pcaifpath=split-path $pcaipath
 
 ### revise pcai settings ### 
 
@@ -251,24 +251,19 @@ $sacle=1 ## for command use, no need to divided with scale ( don't know the reas
 #Set-Clipboard -value "$pcaipath $scriptfull" 
 #>
 
-function runpcai{
+function runpcai ([string]$option){
 
+Set-Clipboard -value "$pcaipath $scriptfull /n /c"
+
+if($option.Length -eq 0){
+  
 start-process cmd -WindowStyle Maximized
-$id2= (Get-Process -name cmd|sort StartTime -ea SilentlyContinue |select -last 1).id
+$id2= (Get-Process -name cmd|Sort-Object StartTime -ea SilentlyContinue |Select-Object -last 1).id
 $checkrun=(get-process -Name "AutoTool" -ErrorAction SilentlyContinue).Id
 if($checkrun){
   taskkill /F /IM AutoTool.exe
  }
- 
-if($pcaioption.Length -eq 0){
-Set-Clipboard -value "$pcaipath $scriptfull" 
-}
-else{
-Set-Clipboard -value "$pcaipath $scriptfull /n /c"
-}
-
-Start-Sleep -Seconds 5
-
+ Start-Sleep -Seconds 5
 [Microsoft.VisualBasic.interaction]::AppActivate($id2)|out-null
 Start-Sleep -Seconds 2
 [Clicker]::LeftClickAtPoint(50, 1)
@@ -282,7 +277,10 @@ $wshell.SendKeys("~")
 &$actionss  -para3 nonlog  -para5 "pcai_run"
 
 (Get-Process -id $id2).CloseMainWindow()
-
+}
+else{
+  &$pcaipath $scriptfull /n /c
+}
 ####  check if running ###
 Start-Sleep -Seconds 2
 $checkrun=(get-process -Name "AutoTool").Id
@@ -290,10 +288,13 @@ $checkrun
 
 }
 
-$runpcai=runpcai   ## tool fail to execute ##
+$runpcai=runpcai -option $pcaioption   ## tool fail to execute ##
+
+<#
 if(!$runpcai){
-$runpcai=runpcai
+$runpcai=runpcai -option $pcaioption
 }
+#>
 
 if($runpcai){
  $results="OK"
@@ -311,19 +312,20 @@ $runtimemin= (New-TimeSpan -start $startpcaitime -End (Get-Date)).TotalMinutes
 ## if fail to get result, run again 
 
 if(($newresult - $oldresult) -eq 0){
-$runpcai=runpcai   ## tool fail to execute ##
+$runpcai=runpcai -option $pcaioption   ## tool fail to execute ##
+<#
 if(!$runpcai){
 $runpcai=runpcai
 }
-$startpcaitime=Get-Date
+#>
 
+$startpcaitime=Get-Date
 do{
 start-sleep -s 60
 $newresult=(Get-ChildItem C:\testing_AI\modules\PC_AI_Tool*\Main\Windows\Report\*\*.html).count
 $runtimemin= (New-TimeSpan -start $startpcaitime -End (Get-Date)).TotalMinutes
 }until (($newresult - $oldresult) -gt 0 -or $runtimemin -gt $waitlimit)
 }
-
 
 start-sleep -s 5
 $checkfinish=((get-process -Name msedge|Where-object{($_.MainWindowTitle) -match "allion"}).id).Count
@@ -341,7 +343,7 @@ if($checkrun){
 #remove-item C:\testing_AI\modules\PC_AI_Tool*\Token*.xml -Force
 if(($newresult - $oldresult) -gt 0){
 start-sleep -s 5
-$pcairesult=(Get-ChildItem -path C:\testing_AI\modules\PC_AI_Tool*\Main\Windows\Report\* -Directory|sort creationtime |select -last 1).fullname
+$pcairesult=(Get-ChildItem -path C:\testing_AI\modules\PC_AI_Tool*\Main\Windows\Report\* -Directory|Sort-Object creationtime |Select-Object -last 1).fullname
 Move-Item $pcairesult $scriptpath -Force
 move-item C:\testing_AI\logs\*.png  $picpath0 -Force ## merge all pic
 start-sleep -s 5
@@ -385,7 +387,7 @@ start-sleep -s 30
    if(-not($taskExists)){ Write-Host "taskschedule delete OK"} else{ Write-Host "taskschedule delete NG"}  
     }
     else{
-      Write-Host "no ""PC AI Tool"" task is found"
+      Write-Host "there is no ""PC AI Tool"" task is found now"
     }
 
  }
