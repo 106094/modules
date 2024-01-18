@@ -121,7 +121,7 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
         Start-Sleep -Seconds 10
     }else{
         
-        [System.Windows.Forms.SendKeys]::SendWait("^+{ESC}")
+       # [System.Windows.Forms.SendKeys]::SendWait("^+{ESC}")
         Start-Sleep -s 10
         [System.Windows.Forms.SendKeys]::SendWait("{tab}")
         Start-Sleep -s 10
