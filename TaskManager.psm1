@@ -110,7 +110,7 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
 
     Start-Sleep -Seconds 10
 
-    $taskid = Get-Process -id (get-process -name taskmgr).Id | Set-WindowState -State MAXIMIZE
+    $taskid = Get-Process -id (get-process -name "*Taskmgr*").Id | Set-WindowState -State MAXIMIZE
 
 
     if((Get-WmiObject -Class Win32_OperatingSystem).Caption -match "Windows 10"){        
@@ -131,7 +131,7 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
         [System.Windows.Forms.SendKeys]::SendWait("~")
     }
 
-    Stop-Process -Id  $taskid
+    Stop-Process -Id  $taskid.Id
 
     
     $actionss ="screenshot"
