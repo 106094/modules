@@ -198,6 +198,38 @@
           $results="NG"
           $index="fail to change settings"
         }
+        try {
+        $applyandrebootbt=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[translate='apply_reboot']"))
+        if($applyandrebootbt.Displayed -eq $true){
+         $applyandrebootbt.Click()
+        #region screenshot
+        $timenow=get-date -format "yyMMdd_HHmmss"
+        $savepic=$picpath+"$($timenow)_step$($tcstep)_applyandreboot.jpg"
+        $screenshot = $driver.GetScreenshot()
+        $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
+        #endregion
+        }
+        Start-Sleep -s 2
+        $okbutton=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[translate='ok']"))
+         if($okbutton.Displayed -eq $true){
+
+            ### write to log first ###
+               if($nonlog_flag.Length -eq 0){
+                Get-Module -name "outlog"|remove-module
+                $mdpath=(get-childitem -path "C:\testing_AI\modules\" -r -file |where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+                Import-Module $mdpath -WarningAction SilentlyContinue -Global
+                outlog $action $results $tcnumber $tcstep $index
+                }
+            
+            $okbutton.Click()
+        }  
+
+        }
+        catch {
+            $results="NG"
+            $index="fail to change settings"
+        }
+
         }
         }
                 
