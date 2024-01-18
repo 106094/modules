@@ -1,8 +1,7 @@
-﻿
-function textfile_check ([string]$para1,[string]$para2,[string]$para3){
+﻿function textfile_check ([string]$para1,[string]$para2,[string]$para3){
      
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
-    $wshell=New-Object -ComObject wscript.shell
+    #$wshell=New-Object -ComObject wscript.shell
       Add-Type -AssemblyName Microsoft.VisualBasic
       Add-Type -AssemblyName System.Windows.Forms
 
