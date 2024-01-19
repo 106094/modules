@@ -28,7 +28,7 @@ $k=999
 $newconfigcontents=foreach($configcontent in $configcontents){
    $k++
 if($configcontent -match $keywords){
-    $l=$k
+    $l=$k-999
     $k=0
 }
 if($k -eq 1){
@@ -42,7 +42,7 @@ $newconfigcontents|set-content $configpath -Force
 $configcontents=get-content $configpath
 $results="NG"
 $index="setting fail"
-if( $configcontents[$l+1] -match "true"){
+if( $configcontents[$l] -match "true"){
  $results="OK"
  $index="setting ok"
 }
