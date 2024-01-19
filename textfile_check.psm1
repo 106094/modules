@@ -75,15 +75,19 @@ if($checkfilefull.count -eq 1 -and  $cc -le 20 ){
     }
 
     $results= $resultfail
-    
-    if($m -gt 0){$results= $resultpass}
+    if($m -eq 0){
+      $mats=$mats+" No Matches !"
+    }
+    if($m -gt 0){
+      $results= $resultpass
+      $mats=$mats
+    }
      $mats=$mats+@("--- End ---")
 
     }
     }
     
  $index=[string]::Join("`n",$mats)
-
  
 ## out-result as txt file ##
 
