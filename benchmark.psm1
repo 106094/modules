@@ -827,12 +827,13 @@ $picfile=[string]::join("`n",$picfile1,$picfile2)
   if($bitype -match "Unigine_Heaven"){
 
     $action="Unigine Heaven burnin"
-   
+    $appname="Heaven"
+
    $bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |Where-object{$_.name -match $bitype -and $_.name -match "exe"}).FullName
      
      $checkprocessing1=((get-process -name Valley -ea SilentlyContinue).Id).count 
      if( $checkprocessing1 -gt 0){
-     taskkill /IM Valley.exe /F 
+     taskkill /IM "$appname.exe" /F 
       start-sleep -s 20
       }
    
@@ -870,7 +871,7 @@ $picfile=[string]::join("`n",$picfile1,$picfile2)
    [System.Windows.Forms.SendKeys]::SendWait("~")
     start-sleep -s 10
      
-    if( $wshell.AppActivate("Unigine Valley Benchmark Uninstall")){
+    if( $wshell.AppActivate("Unigine Heaven Benchmark Uninstall")){
      start-sleep -s 2
     [System.Windows.Forms.SendKeys]::SendWait("Y")
     start-sleep -s 10
@@ -905,7 +906,7 @@ $picfile=[string]::join("`n",$picfile1,$picfile2)
     
     do{
     start-sleep -s 10
-      $checkins=get-process -name "Unigine_Valley-1.0" -ea SilentlyContinue
+      $checkins=get-process -name "Unigine_Heaven-4.0" -ea SilentlyContinue
       }until(!$checkins)
    
     write-host "install completed"
@@ -924,9 +925,12 @@ $picfile=[string]::join("`n",$picfile1,$picfile2)
    
    ## brower window screen js move###
    
-   copy-item "C:\testing_AI\modules\BITools\Unigine_Valley\browser.js" -Destination "C:\Program Files (x86)\Unigine\Valley Benchmark 1.0\data\launcher\js\" -Force
- 
-  
+   $brwjsfrom="C:\testing_AI\modules\BITools\Unigine_Heaven\browser.js"
+   $brwjsto="C:\Program Files (x86)\Unigine\Heaven Benchmark 4.0\data\launcher\js"
+   $brwjsfile="C:\Program Files (x86)\Unigine\Valley Benchmark 1.0\data\launcher\js\browser.js"
+
+   copy-item $brwjsfrom -Destination $brwjsto -Force
+   
    $vedioset0="direct3d11:""DirectX 11"",direct3d9:""DirectX 9"",opengl:""OpenGL"""
    
    if($bitconfig -match "opengl"){
@@ -941,12 +945,10 @@ $picfile=[string]::join("`n",$picfile1,$picfile2)
       #$videoset="direct3d9:""DirectX 9"",direct3d11:""DirectX 11"",opengl:""OpenGL"""
       $videoset="direct3d9:""DirectX 9"""
    }
-   
-   
+      
    ### revise browser js ###
    
-    (get-content "C:\Program Files (x86)\Unigine\Valley Benchmark 1.0\data\launcher\js\browser.js").replace($vedioset0, $videoset) `
-     |set-content "C:\Program Files (x86)\Unigine\Valley Benchmark 1.0\data\launcher\js\browser.js" -Force
+    (get-content $brwjsfile).replace($vedioset0, $videoset) |set-content $brwjsfile -Force
    
    
    ### start UI & screenshot ###
@@ -961,10 +963,10 @@ $picfile=[string]::join("`n",$picfile1,$picfile2)
    
    remove-item $env:HOMEPATH\Valley\log.html -Force
    
-   $runcommand="C:\Program Files (x86)\Unigine\Valley Benchmark 1.0\valley.bat"
+   $runcommand="C:\Program Files (x86)\Unigine\Heaven Benchmark 4.0\heaven.bat"
    
     $id0=(Get-Process cmd).Id
-    set-location "C:\Program Files (x86)\Unigine\Valley Benchmark 1.0\"
+    set-location "C:\Program Files (x86)\Unigine\Heaven Benchmark 4.0\
      
    start-process cmd -WindowStyle Maximized
    start-sleep -s 3
@@ -993,9 +995,9 @@ $picfile=[string]::join("`n",$picfile1,$picfile2)
     ## screenshot for settings ###
           
    &$actionss  -para3 nonlog -para5 "$action-settings"
-      
-   $picfile1=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "$action-settings" }).FullName
-   
+        
+   $checkbenchresult=Get-ChildItem -path "$env:USERPROFILE\documents\Unigine_Heaven_Benchmark_4.0*.html"
+
       ## close settings ###
    
     $checkprocessing2=((get-process -name browser_x86 -ea SilentlyContinue).Id).count 
@@ -1003,68 +1005,61 @@ $picfile=[string]::join("`n",$picfile1,$picfile2)
      taskkill /IM browser_x86.exe /F 
       start-sleep -s 5
       }
-   
-      
-   
-   ## AutoRun ###
+        
+      ## AutoRun ###
    
    ### backup original js ###
    
-   copy-item "C:\Program Files (x86)\Unigine\Valley Benchmark 1.0\data\launcher\js\valley-ui-logic.js" -destination "C:\testing_AI\settings\" -Force
+   $jsstartfile="C:\Program Files (x86)\Unigine\Heaven Benchmark 4.0\data\launcher\js\heaven-ui-logic.js"
+   $runbatfile="C:\Program Files (x86)\Unigine\Heaven Benchmark 4.0\heaven.bat"
+   $runpath="C:\Program Files (x86)\Unigine\Heaven Benchmark 4.0\"
+
+   copy-item $jsstartfile -destination "C:\testing_AI\settings\" -Force
+   $uicontent= get-content $jsstartfile
+   ### revise autostart js ###
    
-    $uicontent= get-content "C:\Program Files (x86)\Unigine\Valley Benchmark 1.0\data\launcher\js\valley-ui-logic.js"
-   
-    ### revise autostart js ###
-   
-    $cmdadd="EngineLauncher.launch(OptionsBuilder.getCommandLine());"
-     
-     $lineafter="OptionsBuilder.build"
-   
-   $newcontent= foreach($uiline in $uicontent){
+    #$cmdadd="EngineLauncher.launch(OptionsBuilder.getCommandLine());"
+    $cmdadd="setTimeout(function() {EngineLauncher.launch(OptionsBuilder.getCommandLine\(\));}, 20000); "
+    $lineafter="OptionsBuilder.build"
+    $newcontent= foreach($uiline in $uicontent){
     $uiline
     if($uiline -match  $lineafter){
     $cmdadd
     }
     }
-   $newcontent|set-content "C:\Program Files (x86)\Unigine\Valley Benchmark 1.0\data\launcher\js\valley-ui-logic.js" -Force
-   
-   $runcommand="C:\Program Files (x86)\Unigine\Valley Benchmark 1.0\valley.bat"
+   $newcontent|set-content $jsstartfile -Force
    
    do{
    
     $id0=(Get-Process cmd).Id
-    set-location "C:\Program Files (x86)\Unigine\Valley Benchmark 1.0\"
-     
-   start-process cmd -WindowStyle Maximized
-   start-sleep -s 3
-   
-   $id3=(Get-Process cmd).Id|Where-object{$_ -notin $id0}
-   [Microsoft.VisualBasic.interaction]::AppActivate($id3)|out-null
-   start-sleep -s 3
-   
-   ### click cmd window and hit enter###
-   [Clicker]::LeftClickAtPoint(50, 1)
+    set-location $runpath
+    start-process cmd -WindowStyle Maximized
+    start-sleep -s 3
+    $id3=(Get-Process cmd).Id|Where-object{$_ -notin $id0}
+    [Microsoft.VisualBasic.interaction]::AppActivate($id3)|out-null
+    start-sleep -s 3
+    ### click cmd window and hit enter###
+    [Clicker]::LeftClickAtPoint(50, 1)
      start-sleep -s 3
     $wshell.SendKeys("~") 
    
     ### send command ## 
     
-    Set-Clipboard """$runcommand"""
+    #screenshot
+
+    Set-Clipboard """$runbatfile"""
     start-sleep -s 5
    [System.Windows.Forms.SendKeys]::SendWait("^v")
     start-sleep -s 2
    [System.Windows.Forms.SendKeys]::SendWait("~")
     start-sleep -s 10
-     
       taskkill /F /PID $id3
-   
-      $valleyid=(get-process -Name Valley -ErrorAction SilentlyContinue).id
-   
-      }until($valleyid -ne $null)
+      $runid=(get-process -Name $appname -ErrorAction SilentlyContinue).id
+
+     }until($runid)
    
    #### check if fail to open##
-   
-   
+      
     if( (get-process -Name Valley).MainWindowTitle -match "Can't set video mode"){
     
     taskkill /IM Valley.exe /F 
