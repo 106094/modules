@@ -498,9 +498,9 @@ $id2=(Get-Process cmd).Id|Where-object{$_ -notin $id0}
  start-sleep -s 2
  [System.Windows.Forms.SendKeys]::SendWait("~")
   start-sleep -s 2
-  
+  $i=0
   do{
-  
+    $i++
     Set-Clipboard -Value " "
    [Clicker]::LeftClickAtPoint(1,1)
     start-sleep -s 1
@@ -515,8 +515,34 @@ $id2=(Get-Process cmd).Id|Where-object{$_ -notin $id0}
     $lastline=$contents[-1]
     $lastline2=$lastline.ToString()
     $lastline3=$lastline2.Substring($lastline2.length-1,1)
+    
+    if($i -gt 10){
+
+      taskkill /F /PID $id2
+      start-process cmd -WindowStyle Maximized
+      start-sleep -s 2
+      $id2=(Get-Process cmd).Id|Where-object{$_ -notin $id0}
+      [Microsoft.VisualBasic.interaction]::AppActivate($id2)|out-null
+      
+      ### click cmd window and hit enter###
+      [Clicker]::LeftClickAtPoint(50, 1)
+        start-sleep -s 2
+       $wshell.SendKeys("~") 
+      
+      ### send command ## 
+       Set-Clipboard "$cmdline"
+         start-sleep -s 5
+      [System.Windows.Forms.SendKeys]::SendWait("^v")
+       start-sleep -s 2
+       [System.Windows.Forms.SendKeys]::SendWait("~")
+        start-sleep -s 2
+        $i=0
+
+    }
 
     }until( $lastline3 -eq ">")
+
+
 
 if($contents -like "*Error*"){
 
