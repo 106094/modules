@@ -1,5 +1,5 @@
 
-function AutoClick() {
+function AutoClick([int]$para1) {
     
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     #$wshell=New-Object -ComObject wscript.shell
@@ -30,11 +30,13 @@ $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 
+$Autocount = $para1
+
 #--------------------------------------------------------------------------------
 
 C:\testing_AI\modules\Auto-Click\Auto-Click.exe
 
-[System.Windows.Forms.SendKeys]::Sendwait("100")
+[System.Windows.Forms.SendKeys]::Sendwait($Autocount)
 
 &actionss -para3 "nonlog" -para5 "CountSetting"
 
