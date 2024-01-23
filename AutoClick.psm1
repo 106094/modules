@@ -46,7 +46,7 @@ C:\testing_AI\modules\Auto-Click\Auto-Click.exe
 
 [System.Windows.Forms.SendKeys]::Sendwait($Autocount)
 
-&actionss -para3 "nonlog" -para5 "CountSetting"
+&$actionss -para3 "nonlog" -para5 "CountSetting"
 
 [System.Windows.Forms.SendKeys]::Sendwait("{Enter}")
 
@@ -57,7 +57,7 @@ while(!($backgroundProcesses)){
     $backgroundProcesses = Get-Process -Name "actexec" | Where-Object { $_.MainWindowTitle -ne "" }
 }
 
-&actionss -para3 "nonlog" -para5 "Auto-Click-Complete"
+&$actionss -para3 "nonlog" -para5 "Auto-Click-Complete"
 
 [System.Windows.Forms.SendKeys]::Sendwait("{Enter}")
 
