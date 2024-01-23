@@ -144,7 +144,7 @@
 
         start-sleep -s 5
         if($resselection_option){
-        if($resselection_option -match $changeto){
+        if($resselection_option -match $switches){
           
         #region screenshot
         $timenow=get-date -format "yyMMdd_HHmmss"
@@ -158,10 +158,10 @@
         else{
                 
         Start-Sleep -s 5
-        if($changeto -eq "enable"){
+        if($switches -match "enable"){
             $resselection.SendKeys("e")
         }
-        if($changeto -eq "disable"){
+        if($switches -match "disable"){
             $resselection.SendKeys("d")
         }
         Start-Sleep -s 5        
