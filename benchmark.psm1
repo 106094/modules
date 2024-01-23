@@ -1035,7 +1035,7 @@ $picfile=[string]::join("`n",$picfile1,$picfile2)
    
     ## revise autostart js ###
     $uicontent= get-content $jsstartfile
-    $cmdadd='setTimeout(function() {EngineLauncher.launch(OptionsBuilder.getCommandLine\(\));}, 20000); '
+    $cmdadd='setTimeout(function() {EngineLauncher.launch(OptionsBuilder.getCommandLine());}, 20000);'
     $lineafter="OptionsBuilder.build"
     $newcontent= foreach($uiline in $uicontent){
     $uiline
