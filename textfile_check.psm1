@@ -66,8 +66,8 @@ if($checkfilefull.count -eq 1 -and  $cc -le 20 ){
     $mats=@("Match Results:")
 
     foreach ($txtcontent in $txtcontents){
-    
-    if($txtcontent -match $checkline){
+
+    if($txtcontent -match ( ($checkline -split " " | Where-Object { $_.Length -gt 0 }) -join "[ \t]+") ){
      $mats=$mats+@($txtcontent)
      $m++
     }
