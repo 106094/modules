@@ -40,6 +40,8 @@ $Autocount = $para1
 
 #--------------------------------------------------------------------------------
 
+Start-Sleep -s 5
+
 C:\testing_AI\modules\Auto-Click\Auto-Click.exe
 
 [System.Windows.Forms.SendKeys]::Sendwait($Autocount)
@@ -62,6 +64,8 @@ while(!($backgroundProcesses)){
 Start-Sleep -s 5
 
 [System.Windows.Forms.SendKeys]::Sendwait("N")
+
+
 
 ######### write log #######
 Get-Module -name "outlog"|remove-module
