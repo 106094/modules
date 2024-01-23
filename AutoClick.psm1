@@ -24,14 +24,36 @@ $tcstep=((get-content $tcpath).split(","))[1]
 $picpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
 if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-null}
 
+$actionss ="screenshot"
+Get-Module -name $actionss|remove-module
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+Import-Module $mdpath -WarningAction SilentlyContinue -Global
+
+
 #--------------------------------------------------------------------------------
 
 C:\testing_AI\modules\Auto-Click\Auto-Click.exe
 
-[System.Windows.Forms.SendKeys]::Sendwait("100");
+[System.Windows.Forms.SendKeys]::Sendwait("100")
 
+&actionss -para3 "nonlog" -para5 "CountSetting"
 
+[System.Windows.Forms.SendKeys]::Sendwait("{Enter}")
 
+$backgroundProcesses = Get-Process -Name "actexec" | Where-Object { $_.MainWindowTitle -ne "" }
+
+while(!($backgroundProcesses)){
+    Start-Sleep -s 10
+    $backgroundProcesses = Get-Process -Name "actexec" | Where-Object { $_.MainWindowTitle -ne "" }
+}
+
+&actionss -para3 "nonlog" -para5 "Auto-Click-Complete"
+
+[System.Windows.Forms.SendKeys]::Sendwait("{Enter}")
+
+Start-Sleep -s 5
+
+[System.Windows.Forms.SendKeys]::Sendwait("N")
 
 ######### write log #######
 Get-Module -name "outlog"|remove-module
