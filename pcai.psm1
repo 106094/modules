@@ -1,29 +1,28 @@
 ﻿
 function pcai ([string]$para1,[int]$para2,[string]$para3,[string]$para4,[string]$para5){
     
-    Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
-    $wshell=New-Object -ComObject wscript.shell
-      Add-Type -AssemblyName Microsoft.VisualBasic
-       Add-Type -AssemblyName System.Windows.Forms
-        Add-Type -AssemblyName System.Windows.Forms,System.Drawing
-        
+  Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
+  $wshell=New-Object -ComObject wscript.shell
+    Add-Type -AssemblyName Microsoft.VisualBasic
+     Add-Type -AssemblyName System.Windows.Forms
+      Add-Type -AssemblyName System.Windows.Forms,System.Drawing
+try{    
 Add-Type @"
 using System;
 using System.Runtime.InteropServices;
 public class Window {
-    [DllImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+  [DllImport("user32.dll")]
+  [return: MarshalAs(UnmanagedType.Bool)]
+  public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 }
 public struct RECT
 {
-    public int Left;
-    public int Top;
-    public int Right;
-    public int Bottom;
+  public int Left;
+  public int Top;
+  public int Right;
+  public int Bottom;
 }
 "@
-
 $cSource = @'
 using System;
 using System.Drawing;
@@ -35,22 +34,22 @@ public class Clicker
 [StructLayout(LayoutKind.Sequential)]
 struct INPUT
 { 
-    public int        type; // 0 = INPUT_MOUSE,
-                            // 1 = INPUT_KEYBOARD
-                            // 2 = INPUT_HARDWARE
-    public MOUSEINPUT mi;
+  public int        type; // 0 = INPUT_MOUSE,
+                          // 1 = INPUT_KEYBOARD
+                          // 2 = INPUT_HARDWARE
+  public MOUSEINPUT mi;
 }
 
 //https://msdn.microsoft.com/en-us/library/windows/desktop/ms646273(v=vs.85).aspx
 [StructLayout(LayoutKind.Sequential)]
 struct MOUSEINPUT
 {
-    public int    dx ;
-    public int    dy ;
-    public int    mouseData ;
-    public int    dwFlags;
-    public int    time;
-    public IntPtr dwExtraInfo;
+  public int    dx ;
+  public int    dy ;
+  public int    mouseData ;
+  public int    dwFlags;
+  public int    time;
+  public IntPtr dwExtraInfo;
 }
 
 //This covers most use cases although complex mice may have additional buttons
@@ -75,21 +74,23 @@ extern static uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
 
 public static void LeftClickAtPoint(int x, int y)
 {
-    //Move the mouse
-    INPUT[] input = new INPUT[3];
-    input[0].mi.dx = x*(65535/System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width);
-    input[0].mi.dy = y*(65535/System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height);
-    input[0].mi.dwFlags = MOUSEEVENTF_MOVED | MOUSEEVENTF_ABSOLUTE;
-    //Left mouse button down
-    input[1].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
-    //Left mouse button up
-    input[2].mi.dwFlags = MOUSEEVENTF_LEFTUP;
-    SendInput(3, input, Marshal.SizeOf(input[0]));
+  //Move the mouse
+  INPUT[] input = new INPUT[3];
+  input[0].mi.dx = x*(65535/System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width);
+  input[0].mi.dy = y*(65535/System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height);
+  input[0].mi.dwFlags = MOUSEEVENTF_MOVED | MOUSEEVENTF_ABSOLUTE;
+  //Left mouse button down
+  input[1].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+  //Left mouse button up
+  input[2].mi.dwFlags = MOUSEEVENTF_LEFTUP;
+  SendInput(3, input, Marshal.SizeOf(input[0]));
 }
 }
 '@
 Add-Type -TypeDefinition $cSource -ReferencedAssemblies System.Windows.Forms,System.Drawing
-
+}catch{
+write-output "dummy"
+}
 if($PSScriptRoot.length -eq 0){
 $scriptRoot="C:\testing_AI\modules"
 }
@@ -157,31 +158,31 @@ if(-not(test-path $scriptpath)){new-item -ItemType directory -path $scriptpath  
 
 ### start to run pcai ##
 
- $runflag="run"
+$runflag="run"
 
 if($scriptname -ne "no_define"){
 
-  $checkgfx=(Get-WmiObject -Class Win32_VideoController | Select-Object Name,AdapterCompatibility).name
+$checkgfx=(Get-WmiObject -Class Win32_VideoController | Select-Object Name,AdapterCompatibility).name
 
-  if ($scriptname -match "nv_controlpanel" -and $checkgfx -match "AMD"){
-   $runflag="skip"
-   $results="na"
-   $index="AMD, skip"
-  }
+if ($scriptname -match "nv_controlpanel" -and $checkgfx -match "AMD"){
+ $runflag="skip"
+ $results="na"
+ $index="AMD, skip"
+}
 
-  if ($runflag -eq "run"){
+if ($runflag -eq "run"){
 
 (get-process -name msedge -ea SilentlyContinue).CloseMainWindow()
 $checkrun=(get-process -Name "AutoTool"　-ea SilentlyContinue).Id
 if($checkrun){
-  taskkill /F /IM AutoTool.exe
- }
+taskkill /F /IM AutoTool.exe
+}
 
 $scriptname=$scriptname.replace(".ScriptAction","")
 
 $action="pcai-$scriptname"
-
-$scriptfull=( Get-ChildItem "C:\testing_AI\modules\PC_AI_Tool*\Main\Windows\*\script\*"  -filter "*$($scriptname).ScriptAction").FullName
+$scriptname=$scriptname.replace(".ScriptAction","")
+$scriptfull=( Get-ChildItem "C:\testing_AI\modules\PC_AI_Tool*\Main\Windows\*\script\*" |Where-Object { $_.name -match "^$($scriptname)\." -and $_.name -match "\.ScriptAction"} ).FullName
 
 $oldresult=(Get-ChildItem C:\testing_AI\modules\PC_AI_Tool*\Main\Windows\Report\*\*.html).count
 
@@ -198,74 +199,18 @@ $3dmarkwdopentime=(New-TimeSpan -start $3dmarkwdopenstart -end (get-date)).Total
 }
 
 $pcaipath=(Get-ChildItem C:\testing_AI\modules\PC_AI_Tool*\AutoTool.exe).FullName
-#$pcaifpath=split-path $pcaipath
 
-### revise pcai settings ### 
-
-#$atconfig=get-content $pcaifpath\AutoTool.exe.Config
-#$atconfig1=$atconfig.replace("add key=""Launch with windows"" value=""True""","add key=""Launch with windows"" value=""False""")
-#$atconfig2=$atconfig1.replace("add key=""AutoLogin"" value=""Yes"" ","add key=""AutoLogin"" value=""No""")
-#set-content C:\testing_AI\modules\PC_AI_Tool*\AutoTool.exe.Config -Value $atconfig2
-#start-sleep -s 2
-
-#remove-item C:\testing_AI\modules\PC_AI_Tool*\Token_*.xml -Force
-#start-sleep -s 5
-
-<## firewell open for auto tool ##
-
-$checkrule=(Show-NetFirewallRule |select DisplayName |Where-object{$_.displayname -eq "AutoTool"}).count
-if($checkrule -eq 0){
-
-New-NetFirewallRule -DisplayName "AutoTool" -Direction Inbound -Program "$pcaipath" -Action Allow
-#Remove-NetFirewallRule -DisplayName "AutoTool"
-
-#netsh advfirewall firewall add rule name="AutoTool" dir=in action=allow program="$pcaipath" enable=yes   ## unblock firewell cmd
-#netsh advfirewall firewall Delete rule name="AutoTool"  #Remove Allowed App cmd
-
-start-sleep -s 5
-}
-
-##>
-
-#&$pcaipath $scriptfull N N
-
-<### click cmd window ###
-
-$id2= (Get-Process cmd |sort StartTime -ea SilentlyContinue |select -last 1).id
-$cmdwindowhd=(Get-Process cmd |sort StartTime -ea SilentlyContinue |select -last 1).MainWindowHandle 
-$Handle = Get-Process cmd| Where-Object { $_.MainWindowTitle -match $env:TITLE } | ForEach-Object { $_.MainWindowHandle }
-if ( $Handle -is [System.Array] ) { $Handle = $Handle[0] }
-$WindowRect = New-Object RECT
-$GotWindowRect = [Window]::GetWindowRect($Handle, [ref]$WindowRect)
-#Write-Host $WindowRect.Left $WindowRect.Top $WindowRect.Right $WindowRect.Bottom
-
-##scale
-$bdh=(([System.Windows.Forms.Screen]::AllScreens|select Bounds).Bounds).Bottom 
-$height  = ([string]::Join("`n", (wmic path Win32_VideoController get CurrentVerticalResolution))).split("`n") -match "\d{1,}"
-#$sacle=$height[0]/$bdh[0]
-$sacle=1 ## for command use, no need to divided with scale ( don't know the reason yet)
-
-#$x1=[math]::Round(($WindowRect.Left + $WindowRect.Right)/2/$sacle,0)
-#$y1=[math]::Round(($WindowRect.Top + $WindowRect.Bottom)/$sacle,0)
-
-#Set-Clipboard -value "$pcaipath $scriptfull" 
-#>
-
-function runpcai ([string]$option){
+function runpcai {
 
 Set-Clipboard -value "$pcaipath $scriptfull /n /c"
 
-if($option -match "silent"){
-  &$pcaipath $scriptfull /n /c
-}
-else{ 
 start-process cmd -WindowStyle Maximized
 $id2= (Get-Process -name cmd|Sort-Object StartTime -ea SilentlyContinue |Select-Object -last 1).id
 $checkrun=(get-process -Name "AutoTool" -ErrorAction SilentlyContinue).Id
 if($checkrun){
-  taskkill /F /IM AutoTool.exe
- }
- Start-Sleep -Seconds 5
+taskkill /F /IM AutoTool.exe
+}
+Start-Sleep -Seconds 5
 [Microsoft.VisualBasic.interaction]::AppActivate($id2)|out-null
 Start-Sleep -Seconds 2
 [Clicker]::LeftClickAtPoint(50, 1)
@@ -279,7 +224,6 @@ $wshell.SendKeys("~")
 &$actionss  -para3 nonlog  -para5 "pcai_run"
 
 (Get-Process -id $id2).CloseMainWindow()
-}
 
 ####  check if running ###
 Start-Sleep -Seconds 2
@@ -288,23 +232,18 @@ $checkrun
 
 }
 
-$runpcai=runpcai -option $pcaioption   ## tool fail to execute ##
-
-<#
-if(!$runpcai){
-$runpcai=runpcai -option $pcaioption
-}
-#>
+$startpcaitime=Get-Date
+$runpcai=runpcai  ## tool fail to execute ##
 
 if($runpcai){
- $results="OK"
- $index="PCAI running"
- $startpcaitime=Get-Date
+$results="OK"
+$index="PCAI running"
+$startpcaitime=Get-Date
 
- ###  collect results and screenshot -> close PCAI ##
- 
+###  collect results and screenshot -> close PCAI ##
+
 do{
-start-sleep -s 60
+start-sleep -s 30
 $newresult=(Get-ChildItem C:\testing_AI\modules\PC_AI_Tool*\Main\Windows\Report\*\*.html).count
 $runtimemin= (New-TimeSpan -start $startpcaitime -End (Get-Date)).TotalMinutes
 }until (($newresult - $oldresult) -gt 0 -or $runtimemin -gt $waitlimit)
@@ -312,14 +251,9 @@ $runtimemin= (New-TimeSpan -start $startpcaitime -End (Get-Date)).TotalMinutes
 ## if fail to get result, run again 
 
 if(($newresult - $oldresult) -eq 0){
-$runpcai=runpcai -option $pcaioption   ## tool fail to execute ##
-<#
-if(!$runpcai){
-$runpcai=runpcai
-}
-#>
-
 $startpcaitime=Get-Date
+$runpcai=runpcai   ## tool fail to execute ##
+
 do{
 start-sleep -s 60
 $newresult=(Get-ChildItem C:\testing_AI\modules\PC_AI_Tool*\Main\Windows\Report\*\*.html).count
@@ -328,17 +262,17 @@ $runtimemin= (New-TimeSpan -start $startpcaitime -End (Get-Date)).TotalMinutes
 }
 
 start-sleep -s 5
-$checkfinish=((get-process -Name msedge|Where-object{($_.MainWindowTitle) -match "allion"}).id).Count
+$checkfinish=((get-process -Name msedge -ErrorAction SilentlyContinue|Where-object{($_.MainWindowTitle) -match "allion"}).id).Count
 
 if($checkfinish -ge 1){
- (get-process -name msedge).CloseMainWindow()
- }
+(get-process -name msedge).CloseMainWindow()
+}
 
- $checkrun=(get-process -Name "AutoTool" -ErrorAction SilentlyContinue).Id
+$checkrun=(get-process -Name "AutoTool" -ErrorAction SilentlyContinue).Id
 
 if($checkrun){
-  taskkill /F /IM AutoTool.exe
- }
+taskkill /F /IM AutoTool.exe
+}
 
 #remove-item C:\testing_AI\modules\PC_AI_Tool*\Token*.xml -Force
 if(($newresult - $oldresult) -gt 0){
@@ -355,57 +289,50 @@ $datewrite=get-date((Get-ChildItem $renamepic.fullname).LastWriteTime) -format "
 $newname=$datewrite+"_"+$renamepic.Name
 rename-item $renamepic.fullname -NewName $newname ## rename as same date format
 }
-<##
-if($renamepic.basename -match "-\d{4}-"){
-$newname_0=(($renamepic.basename) -split "-\d{4}-")[0]
-$newname_1=(($renamepic.basename) -split "-\d{4}-")[1]
-$newname=$newname_1+"_"+$newname_0+".png"
-rename-item $renamepic.fullname -NewName $newname
-}
-##>
+
 }
 
- $results="OK"
- $index="check results folder and screenshots"
+$results="OK"
+$index="check results folder and screenshots"
 
 }
 else{
- $results="NG"
- $index="fail to collect results"
+$results="NG"
+$index="fail to collect results"
 }
 
 ## kill PCAI  taskschedule
 
-  $taskExists =Get-ScheduledTask | Where-Object {$_.TaskName -like "PC AI Tool" } 
+$taskExists =Get-ScheduledTask | Where-Object {$_.TaskName -like "PC AI Tool" } 
 
-  if($taskExists){
+if($taskExists){
 
 start-process cmd -ArgumentList '/c schtasks /delete /TN "PC AI Tool" -f' 
 start-sleep -s 30
 
-   $taskExists =Get-ScheduledTask | Where-Object {$_.TaskName -like "PC AI Tool" } 
-   if(-not($taskExists)){ Write-Host "taskschedule delete OK"} else{ Write-Host "taskschedule delete NG"}  
-    }
-    else{
-      Write-Host "there is no ""PC AI Tool"" task is found now"
-    }
-
- }
- else{
- 
- $results="NG"
- $index="PCAI fail to execute 2 times"
-
- }
-
+ $taskExists =Get-ScheduledTask | Where-Object {$_.TaskName -like "PC AI Tool" } 
+ if(-not($taskExists)){ Write-Host "taskschedule delete OK"} else{ Write-Host "taskschedule delete NG"}  
+  }
+  else{
+    Write-Host "there is no ""PC AI Tool"" task is found now"
   }
 
-  }
+}
+else{
+
+$results="NG"
+$index="PCAI fail to execute"
+
+}
+
+}
+
+}
 
 else{
- $results="NG"
- $index="PCAI script no define"
-  } 
+$results="NG"
+$index="PCAI script no define"
+} 
 
 ######### write log #######
 
@@ -424,6 +351,6 @@ exit
 }
 
 
-  }
+}
 
-    export-modulemember -Function pcai
+  export-modulemember -Function pcai
