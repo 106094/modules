@@ -972,14 +972,9 @@ $picfile=[string]::join("`n",$picfile1,$picfile2)
  &$actionss  -para3 nonlog -para5 "Resolution_check"
  [System.Windows.Forms.SendKeys]::SendWait(" ")
 
+  ## close settings capture ###
+  (get-process -name browser_x86).CloseMainWindow()|Out-Null
 
-      ## close settings capture ###
-   
-      $checkprocessing2=((get-process -name browser_x86 -ea SilentlyContinue).Id).count 
-      if( $checkprocessing2 -gt 0){
-      taskkill /IM browser_x86.exe /F 
-       start-sleep -s 5
-       }
 
 ## udpate settings
 
@@ -1055,15 +1050,12 @@ $picfile=[string]::join("`n",$picfile1,$picfile2)
    ## remove cashe##
    
    remove-item -path  "$env:USERPROFILE\AppData\Local\file__0.localstorage"  -Force
-   
+   remove-item -path $env:HOMEPATH\Heaven\log.html  -Force
    remove-item -path  "$env:USERPROFILE\documents\Unigine_Heaven_Benchmark_4.0*.html"  -Force
-   
-   start-sleep -s 5
-  
+     
    ## screenshot for settings ###
-          
-                
-      ## AutoRun ###
+                         
+    ## AutoRun ###
          
    do{
      &$actioncmd -para1 $runbatfile -para3 "cmd" -para5 "nolog"
@@ -1090,7 +1082,7 @@ $picfile=[string]::join("`n",$picfile1,$picfile2)
     start-sleep -s 30
       ### RUN benchmark ###
       [System.Windows.Forms.SendKeys]::SendWait("{F9}")
-   
+      start-sleep -s 5
       &$actionss  -para3 nonlog -para5 "run_benchmark"
       do{
        start-sleep -s 5
@@ -1110,6 +1102,12 @@ $picfile=[string]::join("`n",$picfile1,$picfile2)
           $checkbenchresult=Get-ChildItem -path "$env:USERPROFILE\documents\Unigine_Heaven_Benchmark_4.0*.html"
        } until ($checkbenchresult)
             
+        [System.Windows.Forms.SendKeys]::SendWait("%{F4}")
+        start-sleep -s 5
+
+        (get-process -name heaven -ErrorAction SilentlyContinue).CloseMainWindow()|Out-Null
+        (get-process -name browser_x86 -ErrorAction SilentlyContinue).CloseMainWindow()|Out-Null
+
        copy-item $env:HOMEPATH\Heaven\log.html -Destination  $picpath -Force
        move-item $checkbenchresult -destination $picpath -Force
        $logfile1=(get-chileitem -path $picpath -file $checkbenchresult.name).fullname
@@ -1121,7 +1119,6 @@ $picfile=[string]::join("`n",$picfile1,$picfile2)
    
      }    
    
-
 
 if($bitype -match "Unigine_Valley"){
 
