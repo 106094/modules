@@ -61,17 +61,7 @@ while(!($backgroundProcesses)){
 
 &$actionss -para3 "nonlog" -para5 "Auto-Click-Complete"
 
-if($Autocount % 2 -eq 0){
-  [System.Windows.Forms.SendKeys]::Sendwait("{ESC}")
-}
-
-Start-Sleep -s 5
-
-[System.Windows.Forms.SendKeys]::Sendwait("{Enter}")
-
-Start-Sleep -s 5
-
-[System.Windows.Forms.SendKeys]::Sendwait("N")
+Stop-Process  -Name "actexec" 
 
 
 
