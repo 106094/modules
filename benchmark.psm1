@@ -1042,7 +1042,12 @@ do{
   $index="Fail to run"
    }
   else{                              
-    ### RUN benchmark ###
+        ### RUN benchmark ###
+    [Microsoft.VisualBasic.interaction]::AppActivate($checkrunning.Id)|out-null
+    start-sleep -s 2
+    [Clicker]::LeftClickAtPoint($x1, $y1)
+    start-sleep -s 2
+
     [System.Windows.Forms.SendKeys]::SendWait("{F9}")
     start-sleep -s 5
     &$actionss  -para3 nonlog -para5 "run_benchmark"
