@@ -119,14 +119,14 @@ if($checkcudap -eq 0){
 ### if zip need uninstall ###
 
 if($drvfile -match "\.zip"){
-$drivername= (Get-ChildItem $scriptRoot\driver\$drivertype\* -Recurse -File|where{$_.name -eq $drvfile}).FullName
-$zipf=(Get-ChildItem $scriptRoot\driver\$drivertype\* -Recurse -File|where{$_.name -eq $drvfile}).BaseName
+$drivername= (Get-ChildItem $scriptRoot\driver\$drivertype\ -Recurse -File|where{$_.name -eq $drvfile}).FullName
+$zipf=(Get-ChildItem $scriptRoot\driver\$drivertype\ -Recurse -File|where{$_.name -eq $drvfile}).BaseName
  $driverfolder= "$scriptRoot\driver\$drivertype\$zipf\"
 if(-not(Test-Path $driverfolder)){new-item -ItemType directory $driverfolder -Force|out-null}
  $shell.NameSpace("$scriptRoot\driver\$drivertype\$zipf\").copyhere($shell.NameSpace($drivername).Items(),16)
  }
 else{
-$driverfullname= (Get-ChildItem $scriptRoot\driver\$drivertype\* -Recurse -File|where{$_.name -eq $drvfile}).FullName
+$driverfullname= (Get-ChildItem $scriptRoot\driver\$drivertype\ -Recurse -File|where{$_.name -eq $drvfile}).FullName
  $driverfolder= split-path -Parent $driverfullname
 }
   #### cmd / powershell ##
