@@ -890,11 +890,13 @@ if($bitype -match "Unigine_Heaven"){
  $backuppath="C:\testing_AI\modules\BITools\Unigine_Heaven\backup\"
  $brwjsfrom="C:\testing_AI\modules\BITools\Unigine_Heaven"
  $brwjsfolder="C:\Program Files (x86)\Unigine\Heaven Benchmark 4.0\data\launcher\js"
+ $jsstartfile="C:\Program Files (x86)\Unigine\Heaven Benchmark 4.0\data\launcher\js\heaven-ui-logic.js"
 
  if(! (test-path $backuppath)){
  new-item -ItemType Directory $backuppath |Out-Null
  }
 
+ copy-item $jsstartfile -destination $backuppath -Force
  Get-ChildItem -path $brwjsfolder -Filter "browser.js" |Copy-Item -Destination $backuppath -Force
  Get-ChildItem -path $brwjsfrom -Filter "browser.js" |Copy-Item -Destination $brwjsfolder -Force
 
@@ -906,6 +908,18 @@ if($bitype -match "Unigine_Heaven"){
  if(test-path  $cashe2){remove-item -path  $cashe2 -Force}
  if(test-path  $cashe3){remove-item -path  $cashe3 -Force}
  
+    ## revise autostart js ###
+    $uicontent= get-content $jsstartfile
+    $cmdadd='setTimeout(function() {EngineLauncher.launch(OptionsBuilder.getCommandLine());}, 90000);'
+    $lineafter="OptionsBuilder.build"
+    $newcontent= foreach($uiline in $uicontent){
+    $uiline
+    if($uiline -match  $lineafter){
+    $cmdadd
+    }
+    }
+  $newcontent|set-content $jsstartfile -Force
+
  ## start UI ##
  
  $runbatfile="C:\Program Files (x86)\Unigine\Heaven Benchmark 4.0\heaven.bat"
@@ -1012,24 +1026,21 @@ else{
 [System.Windows.Forms.SendKeys]::SendWait("~")
 }
 
-
 &$actionss  -para3 nonlog -para5 "allsettings"
 
-## start to Run ###
+## waiting auto Run ###
 
-[System.Windows.Forms.SendKeys]::SendWait("{tab}")
- Start-Sleep -s 1
-[System.Windows.Forms.SendKeys]::SendWait(" ")
-
-  start-sleep -s 30
+do{
+  Start-Sleep -s 10
+  $timepassed=(New-TimeSpan -start $opentime -end (get-date)).TotalSeconds
+  } until ($timepassed -gt 100)
 
   $checkrunning=Get-Process -name $appname -ErrorAction SilentlyContinue
   if(!$checkrunning){
    &$actionss  -para3 nonlog -para5 "run_fail"
   $results="NG"
   $index="Fail to run"
-  
-  }
+   }
   else{                              
     ### RUN benchmark ###
     [System.Windows.Forms.SendKeys]::SendWait("{F9}")
