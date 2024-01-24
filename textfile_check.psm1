@@ -46,13 +46,12 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
     }until($checkfilefull.lenth -ne 0 -or $cc -gt 20)
 
     if( $cc -gt 20){
-    $results= $resultfail
+    $results= "-"
     $index="no match file is found"
-
     }
     
     if($checkfilefull.count -gt 1){
-    $results="NG"
+    $results="-"
     $index="multi files found, need a specific file name"
     }
 
