@@ -904,9 +904,11 @@ if($bitype -match "Unigine_Heaven"){
  $cashe="$env:USERPROFILE\AppData\Local\file__0.localstorage"
  $cashe2="$env:HOMEPATH\Heaven\log.html"
  $cashe3="$env:USERPROFILE\documents\Unigine_Heaven_Benchmark_4.0*.html"
+ $cashe4="$env:USERPROFILE\Unigine_Heaven_Benchmark_4.0*.html"
  if(test-path  $cashe){remove-item -path  $cashe -Force}
  if(test-path  $cashe2){remove-item -path  $cashe2 -Force}
  if(test-path  $cashe3){remove-item -path  $cashe3 -Force}
+ if(test-path  $cashe4){remove-item -path  $cashe4 -Force}
  
     ## revise autostart js ###
     $uicontent= get-content $jsstartfile
@@ -1066,7 +1068,10 @@ do{
       Start-Sleep -s 5
       [System.Windows.Forms.SendKeys]::SendWait("~")
       start-sleep -s 10
-        $checkbenchresult=Get-ChildItem -path "$env:USERPROFILE\documents\Unigine_Heaven_Benchmark_4.0*.html"
+        $checkbenchresult=Get-ChildItem -path $cashe3
+        if(!$checkbenchresult){
+        $checkbenchresult=Get-ChildItem -path $cashe4
+        }
      } until ($checkbenchresult)
           
       [System.Windows.Forms.SendKeys]::SendWait("%{F4}")
@@ -1076,7 +1081,7 @@ do{
       (get-process -name browser_x86 -ErrorAction SilentlyContinue).CloseMainWindow()|Out-Null
 
      copy-item $env:HOMEPATH\Heaven\log.html -Destination  $picpath -Force
-     move-item $checkbenchresult -destination $picpath -Force
+     move-item $checkbenchresult.FullName -destination $picpath -Force
      $logfile1=(get-chileitem -path $picpath -file $checkbenchresult.name).fullname
      new-name -path $logfile1 -newname $logfilename
      
