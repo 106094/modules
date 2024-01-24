@@ -1083,10 +1083,10 @@ do{
 
      copy-item $env:HOMEPATH\Heaven\log.html -Destination  $picpath -Force
      move-item $checkbenchresult.FullName -destination $picpath -Force
-     $logfile1=(get-chileitem -path $picpath -file $checkbenchresult.name).fullname
-     $logfile2=(get-chileitem -path $picpath -file "log.html").fullname
-     new-name -path $logfile1 -newname $logfilename
-     new-name -path $logfile2 -newname $logfilename2
+     $logfile1=(get-chileitem -path $picpath -filter "$checkbenchresult.name").fullname
+     $logfile2=(get-chileitem -path $picpath -filter "log.html").fullname
+     new-name -path $logfile1 -newname $logfilename -force
+     new-name -path $logfile2 -newname $logfilename2 -force
      
      #recover settings  
      Get-ChildItem $backuppath -file| Copy-Item -Destination "C:\Program Files (x86)\Unigine\Heaven Benchmark 4.0\data\launcher\js\" -Force
