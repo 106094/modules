@@ -897,10 +897,12 @@ if($bitype -match "Unigine_Heaven"){
 
  ## remove cashe##
  $cashe="$env:USERPROFILE\AppData\Local\file__0.localstorage"
- if(test-path  $cashe){remove-item -path  "$env:USERPROFILE\AppData\Local\file__0.localstorage" -Force}
- remove-item -path $env:HOMEPATH\Heaven\log.html  -Force  -ErrorAction SilentlyContinue
- remove-item -path  "$env:USERPROFILE\documents\Unigine_Heaven_Benchmark_4.0*.html"  -Force  -ErrorAction SilentlyContinue
-
+ $cashe2="$env:HOMEPATH\Heaven\log.html"
+ $cashe3="$env:USERPROFILE\documents\Unigine_Heaven_Benchmark_4.0*.html"
+ if(test-path  $cashe){remove-item -path  $cashe -Force}
+ if(test-path  $cashe2){remove-item -path  $cashe2 -Force}
+ if(test-path  $cashe3){remove-item -path  $cashe3 -Force}
+ 
  ## start UI ##
  
  $runbatfile="C:\Program Files (x86)\Unigine\Heaven Benchmark 4.0\heaven.bat"
@@ -910,7 +912,6 @@ if($bitype -match "Unigine_Heaven"){
  
  &$runbatfile
   
-
  do{
   Start-Sleep -s 1
   $unigineid=(get-process -name * |Where-Object{$_.MainWindowTitle -match "Unigine Heaven Benchmark"}).Id
