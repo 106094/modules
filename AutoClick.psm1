@@ -44,7 +44,7 @@ Start-Sleep -s 5
 
 C:\testing_AI\modules\Auto-Click\Auto-Click.exe
 
-Start-Sleep -s 5
+Start-Sleep -s 20
 
 [System.Windows.Forms.SendKeys]::Sendwait($Autocount)
 
