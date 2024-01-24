@@ -4,8 +4,7 @@ function screenshot([int]$para1,[string]$para2,[string]$para3,[string]$para4,[st
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     #$wshell=New-Object -ComObject wscript.shell
        Add-Type -AssemblyName System.Windows.Forms,System.Drawing,Microsoft.VisualBasic
-       
-try{
+ 
 $source = @"
 using System;
 using System.Threading.Tasks;
@@ -30,11 +29,12 @@ namespace KeySends
     }
 }
 "@
-Add-Type -TypeDefinition $source -ReferencedAssemblies "System.Windows.Forms"
+try {
+    Add-Type -TypeDefinition $source -ReferencedAssemblies "System.Windows.Forms"
+} catch [System.Management.Automation.RuntimeException] {
+    Write-Output "add-type.e"
 }
-catch{
-#Write-Host "Error: $($_.Exception.Message)"
-}
+
 $paracheck1=$PSBoundParameters.ContainsKey('para1')
 #$paracheck2=$PSBoundParameters.ContainsKey('para2')
 $paracheck3=$PSBoundParameters.ContainsKey('para3')
