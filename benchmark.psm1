@@ -873,27 +873,30 @@ if($bitype -match "Unigine_Heaven"){
  
  ### install ###
    
+  write-host "start install $(get-date)"
+
    &$bipath /VERYSILENT
    #set-location "C:\Program Files (x86)\Unigine\Valley Benchmark 1.0\ 
    
   do{
-  Start-Sleep -s 5
+  Start-Sleep -s 10
   $checkins=get-process -name Unigine_Heaven-4.0 -ErrorAction SilentlyContinue        
   }until(!$checkins)
 
-    start-sleep -s 10
+  write-host "install cmplt $(get-date)"
+    start-sleep -s 30
  
 ## brower js move ###
  $backuppath="C:\testing_AI\modules\BITools\Unigine_Heaven\backup\"
- $brwjsfrom="C:\testing_AI\modules\BITools\Unigine_Heaven\browser.js"
- $brwjsfile="C:\Program Files (x86)\Unigine\Heaven Benchmark 4.0\data\launcher\js\browser.js"
+ $brwjsfrom="C:\testing_AI\modules\BITools\Unigine_Heaven"
+ $brwjsfolder="C:\Program Files (x86)\Unigine\Heaven Benchmark 4.0\data\launcher\js"
 
  if(! (test-path $backuppath)){
  new-item -ItemType Directory $backuppath |Out-Null
  }
 
- copy-item $brwjsfile -Destination $backuppath -Force
- copy-item $brwjsfrom -Destination $brwjsto -Force
+ Get-ChildItem -path $brwjsfolder -Filter "browser.js" |Copy-Item -Destination $backuppath -Force
+ Get-ChildItem -path $brwjsfrom -Filter "browser.js" |Copy-Item -Destination $brwjsfolder -Force
 
  ## remove cashe##
  $cashe="$env:USERPROFILE\AppData\Local\file__0.localstorage"
