@@ -31,7 +31,7 @@ Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $paracheck=$PSBoundParameters.ContainsKey('para1')
 
-if( $paracheck -eq $false -or $para1.length -eq 0 ){
+if($paracheck -eq $false -or  $para1 -eq 0 ){
     $para1= 100
 }
 
@@ -60,6 +60,12 @@ while(!($backgroundProcesses)){
 }
 
 &$actionss -para3 "nonlog" -para5 "Auto-Click-Complete"
+
+if($Autocount % 2 -eq 0){
+  [System.Windows.Forms.SendKeys]::Sendwait("{ESC}")
+}
+
+Start-Sleep -s 5
 
 [System.Windows.Forms.SendKeys]::Sendwait("{Enter}")
 
