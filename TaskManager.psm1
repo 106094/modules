@@ -110,7 +110,10 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
 
     Start-Sleep -Seconds 10
 
-    $taskid = Get-Process -id (get-process -name "*Taskmgr*").Id | Set-WindowState -State MAXIMIZE
+
+
+    Get-Process -id (get-process -name "*Taskmgr*").Id | Set-WindowState -State MAXIMIZE
+    $taskid = Get-Process -id (get-process -name "*Taskmgr*").Id
 
 
     if((Get-WmiObject -Class Win32_OperatingSystem).Caption -match "Windows 10"){        
