@@ -842,6 +842,7 @@ if($bitype -match "Unigine_Heaven"){
    $bitconfig_resy=($bitconfig_res.split("x"))[1]
   }
   $logfilename="Unigine_Heaven_Benchmark_4.0_"+$bitconfig.replace("|","_")+".html"
+  $logfilename2="step$($tcstep)_log.html"
   $bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |Where-object{$_.name -match $bitype -and $_.name -match "exe"}).FullName
    
    $checkprocessing1=((get-process -name Valley -ea SilentlyContinue).Id).count 
@@ -1083,7 +1084,9 @@ do{
      copy-item $env:HOMEPATH\Heaven\log.html -Destination  $picpath -Force
      move-item $checkbenchresult.FullName -destination $picpath -Force
      $logfile1=(get-chileitem -path $picpath -file $checkbenchresult.name).fullname
+     $logfile2=(get-chileitem -path $picpath -file "log.html").fullname
      new-name -path $logfile1 -newname $logfilename
+     new-name -path $logfile2 -newname $logfilename2
      
      #recover settings  
      Get-ChildItem $backuppath -file| Copy-Item -Destination "C:\Program Files (x86)\Unigine\Heaven Benchmark 4.0\data\launcher\js\" -Force
