@@ -267,7 +267,6 @@ do{
 
 }until($checkrun -or $timepassed -gt 30)
 }
-
 #collect log
 else{
   $starttime=(Get-ChildItem C:\testing_AI\logs\logs_timemap.csv).lastwritetime
@@ -276,7 +275,6 @@ else{
   $results="NG"
   $index="testing time over 60 minutes, please check"
   $teststatus="wactestovertime"
-
   }
   else{
     $xmlresult= get-childitem "$env:USERPROFILE\Documents\Assessment Results\JobResults*"
@@ -302,6 +300,9 @@ else{
   &$actionss -para3 "nolog" -para5 "wactestreport"
       
   (Get-Process -id $wacpid).CloseMainWindow()
+  
+   #remove tasks schedule
+  &$actiontask2 -para1 "nonlog"
 
    }
    else{
@@ -331,13 +332,9 @@ else{
     write-host "fail to move reuslt folder"
    copy-item $xmlresult -Destination $picpath -Recurse -Force
   }
+  }
   #>
-  }
-  
-  }
-    
-  #remove tasks schedule
-  &$actiontask2 -para1 "nonlog"
+    }
   }
 ######### write log #######
 if($nonlog_flag.Length -eq 0){
