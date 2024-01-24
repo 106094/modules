@@ -194,7 +194,6 @@ Process {
 $axerun=get-process -name $apppname2
 
 if(!$axerun){
-
 #remove old results
 Get-ChildItem -path "$env:USERPROFILE\Documents\Assessment Results\JobResults*"|remove-item -force -recurse
 
@@ -223,7 +222,6 @@ start-sleep -s 20
 
 $alpid=(get-process -name al).Id
 if($alpid){
-
 [Microsoft.VisualBasic.Interaction]::AppActivate($alpid)
 &$actionss -para3 "nolog" -para5 "launcher"
 start-sleep -s 2
@@ -247,22 +245,28 @@ start-sleep -s 2
 [Microsoft.VisualBasic.Interaction]::AppActivate($alpid)
  start-sleep -s 2  
 [System.Windows.Forms.SendKeys]::SendWait("{Enter}")
-
-Start-Sleep -s 10
-if(get-process -name axe){
-  &$actionss -para3 "nolog" -para5 "running"
-  
-  #set taskschedule time repeat after 30 min every 5 min
-  &$actiontask1 -para1 30 -para2 5 -para4 "nonlog"
-  
-  exit
-
-  }
-  else{
+$startruntime=get-date
+do{
+  Start-Sleep -s 2
+  $timepassed=(New-TimeSpan -start $startruntime -End (get-date)).TotalSeconds
+  $checkrun=get-process -name axe -ea SilentlyContinue
+  if($checkrun){
+    &$actionss -para3 "nolog" -para5 "running"
+    #set taskschedule time repeat after 30 min every 5 min
+    &$actiontask1 -para1 30 -para2 5 -para4 "nonlog"
+    exit
+    }
+ if($timepassed -gt 30){
   $results="NG"
   $index="fail to run"
+  $teststatus="wacteststartingovertime"
+  
+  &$actionss -para3 "nolog" -para5 $teststatus
+  (Get-Process -id $axecmd).CloseMainWindow()
   }
-  }
+
+}until($checkrun -or $timepassed -gt 30)
+}
 
 #collect log
 else{
@@ -275,6 +279,35 @@ else{
 
   }
   else{
+    $xmlresult= get-childitem "$env:USERPROFILE\Documents\Assessment Results\JobResults*"
+   if($xmlresult){
+     $teststatus="wactestfinish"
+    try{
+    move-item $xmlresult -Destination $picpath -Recurse -Force
+    }catch{
+      write-host "fail to move reuslt folder"
+     copy-item $xmlresult -Destination $picpath -Recurse -Force
+    }
+       
+  $axecmd=(get-process *|Where-Object {$_.MainWindowTitle -match "axe"}).Id
+  [Microsoft.VisualBasic.Interaction]::AppActivate($axecmd) |out-null
+  &$actionss -para3 "nolog" -para5 $teststatus
+  (Get-Process -id $axecmd).CloseMainWindow()
+  
+  &$actionss -para3 "nolog" -para5 $teststatus
+
+  $wacpid=(get-process -name $apppname).Id
+  [Microsoft.VisualBasic.Interaction]::AppActivate($wacpid)
+ 
+  &$actionss -para3 "nolog" -para5 "wactestreport"
+      
+  (Get-Process -id $wacpid).CloseMainWindow()
+
+   }
+   else{
+    exit
+   }
+  <#
   $axecmd=(get-process *|Where-Object {$_.MainWindowTitle -match "axe"}).Id
   [Microsoft.VisualBasic.Interaction]::AppActivate($axecmd) |out-null
   Get-Process -id $axecmd  | Set-WindowState -State MAXIMIZE
@@ -291,7 +324,6 @@ else{
   $contents=Get-Clipboard
   start-sleep -s 3
   if($contents -match "Press any key to finish"){
-  
   $xmlresult=split-path (($contents -match "\.xml") -match "JobResults")
   try{
   move-item $xmlresult -Destination $picpath -Recurse -Force
@@ -299,30 +331,11 @@ else{
     write-host "fail to move reuslt folder"
    copy-item $xmlresult -Destination $picpath -Recurse -Force
   }
-  
-  
-  $teststatus="wactestfinish"
-
-  }
-
-  else{
-  exit
+  #>
   }
   
   }
-  
-  &$actionss -para3 "nolog" -para5 $teststatus
-  (Get-Process -id $axecmd).CloseMainWindow()
-  
-  &$actionss -para3 "nolog" -para5 "wactestfinish"
-
-  $wacpid=(get-process -name $apppname).Id
-  [Microsoft.VisualBasic.Interaction]::AppActivate($wacpid)
- 
-  &$actionss -para3 "nolog" -para5 "wactestreport"
-      
-  (Get-Process -id $wacpid).CloseMainWindow()
-
+    
   #remove tasks schedule
   &$actiontask2 -para1 "nonlog"
   }
