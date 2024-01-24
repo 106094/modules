@@ -33,7 +33,7 @@ namespace KeySends
 Add-Type -TypeDefinition $source -ReferencedAssemblies "System.Windows.Forms"
 }
 catch{
-Write-Host "Error: $($_.Exception.Message)"
+#Write-Host "Error: $($_.Exception.Message)"
 }
 $paracheck1=$PSBoundParameters.ContainsKey('para1')
 #$paracheck2=$PSBoundParameters.ContainsKey('para2')

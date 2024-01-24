@@ -1023,7 +1023,7 @@ else{
 
   start-sleep -s 30
 
-  $checkrunning=Get-Process -name $appname
+  $checkrunning=Get-Process -name $appname -ErrorAction SilentlyContinue
   if(!$checkrunning){
    &$actionss  -para3 nonlog -para5 "run_fail"
   $results="NG"
