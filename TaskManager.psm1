@@ -1,5 +1,5 @@
 
-Function TaskManager([int]$para1,[string]$para2){
+Function TaskManager([int]$para1,[int]$para2,[string]$para3){
     #Processes
     #Performance
     #App history
@@ -24,8 +24,17 @@ Function TaskManager([int]$para1,[string]$para2){
         6 = "Services"
     }
 
+    $Performancelist = @{
+        0 = "CPU"
+        1 = "Memory"
+        2 = "Disk"
+        3 = "Ethernet"
+        4 = "GPU"
+    }
+
     $selectTab = $tablist[$para1]
-    $nonlog_flag=$para2
+    $selectTabPer = $Performancelist[$para2]
+    $nonlog_flag=$para3
   
     Add-Type -AssemblyName System.Windows.Forms
     
@@ -132,9 +141,16 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
         [System.Windows.Forms.SendKeys]::SendWait("{down $para1}")
         Start-Sleep -s 10
         [System.Windows.Forms.SendKeys]::SendWait("~")
-    }
 
-    
+        if($para1 -eq 1){
+            Start-Sleep -s 10
+            [System.Windows.Forms.SendKeys]::SendWait("{tab 8}")
+            Start-Sleep -s 10
+            [System.Windows.Forms.SendKeys]::SendWait("{down $para1}")
+            Start-Sleep -s 10
+            [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
+        }
+    }
 
     
     $actionss ="screenshot"
@@ -142,9 +158,14 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
     $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
-    
-    ##screenshot##
-    &$actionss  -para3 nonlog -para5 $selectTab
+    if($selectTabPer){
+        ##screenshot##
+        &$actionss  -para3 nonlog -para5 $selectTab_$selectTabPer
+    }else{
+        ##screenshot##
+        &$actionss  -para3 nonlog -para5 $selectTab
+    }
+
 
 
     Stop-Process -Id  $taskid.Id
