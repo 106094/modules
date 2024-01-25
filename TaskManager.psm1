@@ -11,10 +11,10 @@ Function TaskManager([int]$para1,[int]$para2,[string]$para3){
     $paracheck1=$PSBoundParameters.ContainsKey('para1')
     $paracheck2=$PSBoundParameters.ContainsKey('para2')
 
-    if($paracheck1 -eq $false -or $para1.Length -eq 0){
+    if($paracheck1 -eq $false -or $para1 -eq 0){
         $para1= 0
     }
-    if($paracheck2 -eq $false -or $para2.Length -eq 0){
+    if($paracheck2 -eq $false -or $para2 -eq 0){
         $para2= 0
     }
     
