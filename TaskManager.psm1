@@ -147,22 +147,27 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
         [System.Windows.Forms.SendKeys]::SendWait("~")
 
         if($para1 -eq 1){
+            Start-Sleep -s 5
             [System.Windows.Forms.SendKeys]::SendWait("^c")
-            while(!(Get-Clipboard -match "CPU")){
+            $clipb = Get-Clipboard
+
+            while(!($clipb -match "CPU")){         
                 [System.Windows.Forms.SendKeys]::SendWait("{UP}")
                 Start-Sleep -s 5
                 [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
                 Start-Sleep -s 5
                 [System.Windows.Forms.SendKeys]::SendWait("^c")
+                Start-Sleep -s 5
+                $clipb = Get-Clipboard
             }
-
+            
             Start-Sleep -s 10
             [System.Windows.Forms.SendKeys]::SendWait("{down $para2}")
             Start-Sleep -s 10
             [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
         }
     }
-
+    
     
     $actionss ="screenshot"
     Get-Module -name $actionss|remove-module
