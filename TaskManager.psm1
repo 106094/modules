@@ -151,9 +151,11 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
             while(!(Get-Clipboard -match "CPU")){
                 [System.Windows.Forms.SendKeys]::SendWait("{UP}")
                 Start-Sleep -s 5
+                [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
+                Start-Sleep -s 5
                 [System.Windows.Forms.SendKeys]::SendWait("^c")
             }
-            
+
             Start-Sleep -s 10
             [System.Windows.Forms.SendKeys]::SendWait("{down $para2}")
             Start-Sleep -s 10
