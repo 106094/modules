@@ -24,7 +24,7 @@
         }
     }
 
-   $nonlog_flag=$para2
+   $nonlog_flag=$para3
 
     $actionsln ="selenium_prepare"
     Get-Module -name $actionsln|remove-module
