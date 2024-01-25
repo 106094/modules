@@ -67,6 +67,9 @@ $picfile=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.nam
  
   $results="OK"
   $Index="$picfile"
+  
+  #remove task schedule
+  start-process cmd -ArgumentList '/c schtasks /delete /TN "Auto_Run" -f' 
 
   }
 
