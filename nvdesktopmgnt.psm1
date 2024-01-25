@@ -67,7 +67,7 @@ do{
     if($switches -eq "enable" ){
     &$actionpcai -para1 "NvDesktopMngEnableClick" -para5 "nolog"
     Start-Sleep -s 30
-    $actioncheck=(get-process -name "nviewMain64").Id
+    $actioncheck=(get-process -name "nviewMain64" -ea SilentlyContinue).Id
         if( $actioncheck.count -gt 0){ 
           $results="OK"
          }
@@ -75,7 +75,7 @@ do{
     if($switches -eq "disable" ){
     &$actionpcai -para1 "NvDesktopMngDisableClick" -para5 "nolog"
     Start-Sleep -s 30
-    $actioncheck=(get-process -name "nviewMain64").Id
+    $actioncheck=(get-process -name "nviewMain64" -ea SilentlyContinue).Id
         if( $actioncheck.count -eq 0){ 
           $results="OK"
          }
