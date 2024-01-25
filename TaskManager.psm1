@@ -125,8 +125,8 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
 
 
 
-    Get-Process -id (get-process -name "*Taskmgr*").Id | Set-WindowState -State MAXIMIZE
-    $taskid = Get-Process -id (get-process -name "*Taskmgr*").Id
+    #Get-Process -id (get-process -name "*Taskmgr*").Id | Set-WindowState -State MAXIMIZE
+    #$taskid = Get-Process -id (get-process -name "*Taskmgr*").Id
 
 
     if((Get-WmiObject -Class Win32_OperatingSystem).Caption -match "Windows 10"){        
@@ -172,7 +172,8 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
 
 
 
-    Stop-Process -Id  $taskid.Id
+    Stop-Process -Name "*taskmgr*"
+
     ### save logs ##  
     $action = "TaskManager-Tabselect"
     $results = "-"
