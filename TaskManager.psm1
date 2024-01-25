@@ -125,7 +125,7 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
 
 
 
-    #Get-Process -id (get-process -name "*Taskmgr*").Id | Set-WindowState -State MAXIMIZE
+    Get-Process -id (get-process -name "*Taskmgr*").Id | Set-WindowState -State MAXIMIZE
     #$taskid = Get-Process -id (get-process -name "*Taskmgr*").Id
 
 
