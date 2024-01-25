@@ -243,33 +243,34 @@ if($clicktime -gt 0){
 
 do{
 [Clicker3]::LeftClickAtPoint($dx, $dy)
+#$errorcodeis=$LASTEXITCODE
 $clicktime=$clicktime-1
-$errorcodeis=$LASTEXITCODE
 }until($clicktime -eq 0)
-
 }
 
 if($clicktime -eq -1){
 #left mouse down
 [W.U32]::mouse_event(2,0,0,0,0);
-$errorcodeis=$LASTEXITCODE
+#$errorcodeis=$LASTEXITCODE
 }
+
 if($clicktime -eq -2){
 #left mouse down
 [W.U32]::mouse_event(4,0,0,0,0);
-$errorcodeis=$LASTEXITCODE
+#$errorcodeis=$LASTEXITCODE
 }
 
+$errorcodeis=$?
+Write-Output "mouse click errorcode is $errorcodeis"
 start-sleep -s $waittime
 
 ## after mouse action screen shot ##
 
 &$actionmd  -para3 nonlog -para5 "mouseaction_after"
 
-
 ######### write log #######
 
-if($errorcodeis -eq 0){$results="OK"}
+if($errorcodeis -eq 1){$results="OK"}
 else{$results="NG"}
 
 #Write-Host "errorcode is $errorcodeis, $action, $results"
