@@ -267,11 +267,14 @@ if([int]$maxy1 -ge [int]$maxy){
   }
 
   $rnk++
+
+  write-host "X:$($maxx)"
+  write-host "X:$($maxy2)"
 }
 
 
 $resx=$maxx
-$resx=$maxy2
+$resy=$maxy2
  }
 
 
