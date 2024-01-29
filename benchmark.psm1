@@ -837,6 +837,7 @@ if($bitype -match "Unigine_Heaven"){
   $bitconfig_api=($bitconfig.split("|"))[0]
   $bitconfig_quality=($bitconfig.split("|"))[1]
   $bitconfig_res=($bitconfig.split("|"))[2]
+  $bitconfig_window=($bitconfig.split("|"))[3]
   if($bitconfig_res -match "x"){
    $bitconfig_resx=($bitconfig_res.split("x"))[0]
    $bitconfig_resy=($bitconfig_res.split("x"))[1]
@@ -921,8 +922,11 @@ if($bitype -match "Unigine_Heaven"){
     $cmdadd
     }
     }
-  $newcontent|set-content $jsstartfile -Force
-
+    if($bitconfig_window -match "window"){
+    $newcontent|set-content $jsstartfile -Force
+    (get-content  $brwjsfolder\browser.js).replace("""video_fullscreen"",""default"":true","""video_fullscreen"",""default"":false") `
+    |set-content  $brwjsfolder\browser.js
+    }
  ## start UI ##
  
  $runbatfile="C:\Program Files (x86)\Unigine\Heaven Benchmark 4.0\heaven.bat"

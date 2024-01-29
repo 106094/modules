@@ -103,7 +103,7 @@ $maxr=$rex
 $maxname=$mondata.Name
 }
 }
-
+$setname=$maxname
 &$mtool /SetPrimary $maxname
 }
 
@@ -116,7 +116,7 @@ if($reversesetting.Length -gt 0){
     $minname=$mondata.Name
     }
     }
-
+    $setname=$minname
     &$mtool /SetPrimary $minname
 }
 
@@ -159,9 +159,9 @@ $newprimary=(import-csv  $moninfo2|Where-object{$_.Active -eq "Yes" -and $_.Prim
 
 $results="NG"
 $index="Fail to setup primary display, need check"
-if($newprimary -eq $maxname ){
+if($newprimary -eq $setname ){
 $results="OK"
-$index="$maxname set as primary display"
+$index="$setname set as primary display"
 }
 
 ######### write log #######
