@@ -1,4 +1,4 @@
-﻿function dup_install2([string]$para1,[string]$para2,[string]$para3){
+﻿function dup_install2([string]$para1,[string]$para2,[string]$para3,[string]$para4){
     
    Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     #$wshell=New-Object -ComObject wscript.shell
@@ -103,13 +103,21 @@ Add-Type -TypeDefinition $cSource -ReferencedAssemblies System.Windows.Forms,Sys
 
 $duptype=$para1
 $extractorinstall=$para2
-$nonlog_flag=$para3
+$nversion=$para3
+$nonlog_flag=$para4
 
 if($PSScriptRoot.length -eq 0){
 $scriptRoot="C:\testing_AI\modules"
 }
 else{
 $scriptRoot=$PSScriptRoot
+}
+
+if($nversion.Length -eq 0 -or $nversion -match "^n\b"){
+    $nversion="n"
+}
+else{
+    $nversion="n-1"
 }
 
 $actionexp="filexplorer"
@@ -135,7 +143,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 
 #defaul dup filename collect
 
-$installfile=(Get-ChildItem ($scriptRoot+"\driver\$duptype\$($drvtype2)\N\") -File |Where-object{$_.name -match "\.exe"} |Sort-Object lastwritetime|Select-Object -first 1).fullname
+$installfile=(Get-ChildItem ($scriptRoot+"\driver\$($duptype)\$($nversion)\") -File |Where-object{$_.name -match "\.exe"} |Sort-Object lastwritetime|Select-Object -first 1).fullname
  $installfilebn=(split-path -Leaf $installfile) -replace "\.exe",""
 
  write-host "The Display Type is $($drvtype2)"
