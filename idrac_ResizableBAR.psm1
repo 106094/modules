@@ -17,8 +17,8 @@
         }
     }
     else{
-        $switches=""
         $chkstauts="Disabled"
+        $switches=""
         if($para2.length -eq 0 -or $para2 -match "enable"){
             $chkstauts="Enabled"
         }
@@ -31,7 +31,8 @@
     $mdpath=(get-childitem -path $scriptRoot -r -file |where-object{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
         
-    $action="idrac_ResizableBAR-$($switches)"
+    if($switches.Length -gt 0){$action="idrac_ResizableBAR-$($switches)"}
+    if($chkstauts.Length -gt 0){$action="idrac_ResizableBAR-check $($chkstauts)"}
     $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
     $tcnumber=((get-content $tcpath).split(","))[0]
     $tcstep=((get-content $tcpath).split(","))[1]
@@ -165,9 +166,11 @@
         $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
         #endregion
 
-        if($resselection_option -match $switches -or $resselection_option -match $chkstauts){       
+        if(($switches.Length -gt 0 -and $resselection_option -match $switches) -or  ($chkstauts.Length -gt 0 -and $resselection_option -match $chkstauts)){       
             
-        if($switches.Length -gt 0){$index="no need to change settings"}
+        if($switches.Length -gt 0){
+            $index="no need to change settings"
+        }
         if($chkstauts.Length -gt 0){
             $results="PASS"
             $index="$chkstauts check ok"
