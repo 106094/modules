@@ -838,6 +838,7 @@ if($bitype -match "Unigine_Heaven"){
   $bitconfig_quality=($bitconfig.split("|"))[1]
   $bitconfig_res=($bitconfig.split("|"))[2]
   $bitconfig_window=($bitconfig.split("|"))[3]
+  
   if($bitconfig_res -match "x"){
    $bitconfig_resx=($bitconfig_res.split("x"))[0]
    $bitconfig_resy=($bitconfig_res.split("x"))[1]
@@ -1040,9 +1041,11 @@ else{
 do{
   Start-Sleep -s 10
   $timepassed=(New-TimeSpan -start $opentime -end (get-date)).TotalSeconds
-  } until ($timepassed -gt 100)
-
   $checkrunning=Get-Process -name $appname -ErrorAction SilentlyContinue
+  } until ($checkrunning -or $timepassed -gt 100)
+  
+  Start-Sleep -s 30
+  
   if(!$checkrunning){
    &$actionss  -para3 nonlog -para5 "run_fail"
   $results="NG"
@@ -1053,9 +1056,12 @@ do{
     [Microsoft.VisualBasic.interaction]::AppActivate($checkrunning.Id)|out-null
     start-sleep -s 2
     [Clicker]::LeftClickAtPoint($x1, $y1)
-    start-sleep -s 2
-
+    start-sleep -s 5
     [System.Windows.Forms.SendKeys]::SendWait("{F9}")
+    start-sleep -s 5
+    [System.Windows.Forms.SendKeys]::SendWait("{F9}") #insurance
+    start-sleep -s 5
+    [System.Windows.Forms.SendKeys]::SendWait("{F9}") #insurance
     start-sleep -s 5
     &$actionss  -para3 nonlog -para5 "run_benchmark"
     do{
