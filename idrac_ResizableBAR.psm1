@@ -189,12 +189,16 @@
                 Start-Sleep -s 5
                 if($switches -match "enable"){
                     $resselection.SendKeys("e")
+                    Start-Sleep -s 1
+                    $resselection.SendKeys("{enter}")
                 }
                 if($switches -match "disable"){
                     $resselection.SendKeys("d")
+                    Start-Sleep -s 1
+                    $resselection.SendKeys("{enter}")
                 }
+
                 Start-Sleep -s 5
-                
                 #region screenshot
                 $timenow=get-date -format "yyMMdd_HHmmss"
                 $savepic=$picpath+"$($timenow)_step$($tcstep)_changesettings.jpg"
@@ -217,6 +221,7 @@
                 $okbutton=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[translate='ok']"))
                 if($okbutton.Displayed -eq $true){                     
                 $okbutton.Click() 
+                Start-Sleep -s 5
                 #region screenshot
                 $timenow=get-date -format "yyMMdd_HHmmss"
                 $savepic=$picpath+"$($timenow)_step$($tcstep)_okbutton.jpg"
