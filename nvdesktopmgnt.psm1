@@ -8,7 +8,7 @@ function nvdesktopmgnt ([string]$para1,[string]$para2,[string]$para3){
         Add-Type -AssemblyName Microsoft.VisualBasic
    
 
-if($para1.length -eq 0){
+if($para1.length -eq 0 -or $para1 -match "enable"){
 $para1= "enable"
 }
 else{
@@ -65,7 +65,7 @@ do{
     }
 
     if($switches -eq "enable" ){
-    &$actionpcai -para1 "NvDesktopMngEnableClick" -para5 "nolog"
+    &$actionpcai -para1 "NvDesktopMngEnableClick" -para2 10 -para5 "nolog"
     Start-Sleep -s 30
     $actioncheck=(get-process -name "nviewMain64" -ea SilentlyContinue).Id
         if( $actioncheck.count -gt 0){ 
@@ -73,7 +73,7 @@ do{
          }
         }
     if($switches -eq "disable" ){
-    &$actionpcai -para1 "NvDesktopMngDisableClick" -para5 "nolog"
+    &$actionpcai -para1 "NvDesktopMngDisableClick" -para2 10 -para5 "nolog"
     Start-Sleep -s 30
     $actioncheck=(get-process -name "nviewMain64" -ea SilentlyContinue).Id
         if( $actioncheck.count -eq 0){ 
