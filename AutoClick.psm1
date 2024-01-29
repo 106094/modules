@@ -64,6 +64,12 @@ while(!($backgroundProcesses)){
 Stop-Process  -Name "actexec" 
 
 
+&$actionss -para3 "nonlog" -para5 "Cancel_Startmenu_before"
+
+[System.Windows.Forms.SendKeys]::Sendwait("{ESC 2}")
+
+&$actionss -para3 "nonlog" -para5 "Cancel_Startmenu_after"
+
 
 ######### write log #######
 Get-Module -name "outlog"|remove-module
