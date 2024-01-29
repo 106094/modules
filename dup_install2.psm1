@@ -264,8 +264,6 @@ $enumerate_ibefore="$picpath$($datenow)_step$($tcstep)_enumerate_before_install.
 $enumd=pnputil /enum-drivers
 set-content $enumerate_ibefore -value $enumd -Force
 
- $cmdbf=(get-process -name cmd -ea SilentlyContinue).Id
-
 &$installfile 
 do{
 start-sleep -s 1
