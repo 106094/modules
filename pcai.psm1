@@ -172,7 +172,7 @@ if($checkgfx -match "AMD"){
 if($checkgfx -match "NVidia"){
   $drvtype="NV"
 }
-if (($scriptname -match "^nv_" -and $checkgfx -match "AMD") -or ($scriptname -match "^amd_" -and $checkgfx -match "NVIDIA")){
+if (($scriptname -match "^nv" -and $checkgfx -match "AMD") -or ($scriptname -match "^amd" -and $checkgfx -match "NVIDIA")){
  $runflag="skip"
  $results="na"
  $index="$($drvtype), skip"
