@@ -924,7 +924,7 @@ if($bitype -match "Unigine_Heaven"){
     }
     }
     $newcontent|set-content $jsstartfile -Force
-    
+
     if($bitconfig_window -match "window"){
     (get-content  $brwjsfolder\browser.js).replace("""video_fullscreen"",""default"":true","""video_fullscreen"",""default"":false") `
     |set-content  $brwjsfolder\browser.js
@@ -1048,7 +1048,15 @@ do{
   Start-Sleep -s 30
   
   if(!$checkrunning){
-   &$actionss  -para3 nonlog -para5 "run_fail"
+  $faillog=$($picpath)+"$($tcstep)_benchmark_runfail.log"
+  &$actionss  -para3 nonlog -para5 "run_fail"
+  [Clicker]::LeftClickAtPoint($x1, $y1)
+  start-sleep -s 2
+  [System.Windows.Forms.SendKeys]::SendWait("^c")
+  start-sleep -s 3
+  $failcontent=Get-Clipboard
+  start-sleep -s 3
+  $failcontent|set-content $faillog -Force
   $results="NG"
   $index="Fail to run"
    }
