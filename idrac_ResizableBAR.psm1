@@ -141,7 +141,7 @@
         $resselection = $driver.FindElement([OpenQA.Selenium.By]::Id("IntegratedDevicesRef.PcieResizBar"))
         $resselection_option = $resselection.GetAttribute("value")
         $currentsetting=$resselection_option.replace("string:","")
-        $resselection.Click()
+        #$resselection.Click()
         $driver.ExecuteScript("window.scrollTo(0, document.body.scrollHeight);")
         start-sleep -s 5
         }
