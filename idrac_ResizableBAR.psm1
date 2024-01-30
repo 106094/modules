@@ -161,7 +161,7 @@
         
         #region screenshot
         $timenow=get-date -format "yyMMdd_HHmmss"
-        $savepic=$picpath+"$($timenow)_step$($tcstep)_current_settings.jpg"
+        $savepic=$picpath+"$($timenow)_step$($tcstep)_current_settings_$($currentsetting).jpg"
         $screenshot = $driver.GetScreenshot()
         $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
         #endregion
