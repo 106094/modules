@@ -1048,15 +1048,21 @@ do{
   Start-Sleep -s 30
   
   if(!$checkrunning){
-  $faillog=$($picpath)+"$($tcstep)_benchmark_runfail.log"
-  &$actionss  -para3 nonlog -para5 "run_fail"
+    do{
+  $faillog=$($picpath)+"$($tcstep)_benchmark_runfail$($n).log"
+  &$actionss  -para3 nonlog -para5 "run_fail$($n)"
   [Clicker]::LeftClickAtPoint($x1, $y1)
   start-sleep -s 2
   [System.Windows.Forms.SendKeys]::SendWait("^c")
   start-sleep -s 3
   $failcontent=Get-Clipboard
   start-sleep -s 3
+  $faillog=$($picpath)+"$($tcstep)_benchmark_runfail.log"
   $failcontent|set-content $faillog -Force
+  [System.Windows.Forms.SendKeys]::SendWait("%{F4}")
+  start-sleep -s 3
+  $checkclose=get-process -name "browser_x86" -ea SilentlyContinue
+   }until(!$checkclose)
   $results="NG"
   $index="Fail to run"
    }
