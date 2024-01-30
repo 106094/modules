@@ -85,12 +85,13 @@ do{
       $index=" Desktop Management - $switches Passed"
     }
     else{
+      $index=" Desktop Management -  Failed $n over 30 seconds"
       (get-process -name nvwdmcpl).CloseMainWindow()
       Start-Sleep -s 10
     }
     
   
-}until($results -eq "OK" -or $n -gt 3)
+}until($results -eq "OK" -or $n -ge 3)
 
 
 ######### write log #######
