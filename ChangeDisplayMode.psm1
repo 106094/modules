@@ -2,7 +2,7 @@ function ChangeDisplayMode ([string]$para1){
 
     $paracheck1=$PSBoundParameters.ContainsKey('para1')
 
-    if($paracheck1 -eq $false -or  $para1 -eq 0 ){
+    if($paracheck1 -eq $false -or  $para1.length -eq 0 ){
         $para1= "internal"
     }
 

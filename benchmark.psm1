@@ -1069,12 +1069,15 @@ do{
   $results="NG"
   $index="Fail to run"
    }
-  else{                              
+  else{                      
+    start-sleep -s 5        
         ### RUN benchmark ###
+    if($bitconfig_window -match "window"){
     [Microsoft.VisualBasic.interaction]::AppActivate($checkrunning.Id)|out-null
     start-sleep -s 2
     [Clicker]::LeftClickAtPoint($x1, $y1)
     start-sleep -s 5
+    }
     [System.Windows.Forms.SendKeys]::SendWait("{F9}")
     start-sleep -s 5
     [System.Windows.Forms.SendKeys]::SendWait("{F9}") #insurance
