@@ -102,8 +102,24 @@ $picpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
 if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-null}
 $logpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\step$($tcstep)_cmd_output.txt"
 
+$logcsv=(Split-Path -Parent $scriptRoot)+"\logs\logs_timemap.csv"
+$starttime=(Get-ChildItem $logcsv).lastwritetime
+$timepassed=(New-TimeSpan -start $starttime -end (Get-Date)).TotalMinutes + 2
+
 $results="OK"
 $index="powerbox action ok"
+
+$actionts="taskschedule_atlogin"
+Get-Module -name $actionts|remove-module
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionts\b" -and $_.name -match "psm1"}).fullname
+Import-Module $mdpath -WarningAction SilentlyContinue -Global
+
+$actiontsd="taskschedule_delete"
+Get-Module -name $actiontsd|remove-module
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actiontsd\b" -and $_.name -match "psm1"}).fullname
+Import-Module $mdpath -WarningAction SilentlyContinue -Global
+
+if($timepassed -lt $cycletime -or $cycletime -eq 0){
 
 $actionss="screenshot"
 Get-Module -name $actionss|remove-module
@@ -111,15 +127,18 @@ $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #ping bix IP
-try{
-    ping $boxip /n 3
-}
-catch{
-    $results="NG"
-    $index="powerbox PIN FAIL"
-}
 
+    $testconnect=($ping.Send($boxip, 1000)).Status
+    if($testconnect -ne "Success"){
+        $results="NG"
+        $index="powerbox PIN FAIL"
+    }
+
+ #ping ok, start send command
 if($results -eq "OK"){
+    
+    &$actionts -para3 nonlog
+
     $cmdline_on="curl http://snmp:1234@$($boxip)/delay1.cgi?led=0,$($ontime),$($ontime),3,4,5,6,7,8"
     $cmdline_off="curl http://snmp:1234@$($boxip)/delayf1.cgi?led=0,$($offtime),$($offtime),3,4,5,6,7,8"
     $cmdport="curl http://snmp:1234@$($boxip)/offon.cgi?led=11000000"   
@@ -155,20 +174,26 @@ foreach($cmdline in $cmdlines){
      } 
 
      &$actionss -para1 1 -para3 nonlog -para5 "cmd_end"
-     taskkill /PID $id2 /F  
-      
- if($index2.length -gt 0){
- set-content $logpath -Value  $index2
- }
- else{
-  set-content $logpath -Value  " $cmdline : command succeeded"
- }
- $index="check logs"
+
+    if($cycletime -eq 0){
+        &$actiontsd -para1 nonlog
+        if($nonlog_flag.Length -eq 0){
+        Get-Module -name "outlog"|remove-module
+        $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+        Import-Module $mdpath -WarningAction SilentlyContinue -Global
+        #write-host "Do $action!"
+        outlog $action $results $tcnumber $tcstep $index
+        }
+    }
+     
+    taskkill /PID $id2 /F  
 
  }
-  
+}
 ######### write log #######
-
+if($timepassed -ge $cycletime){
+    #remove taskschedule
+    &$actiontsd -para1 nonlog
 if($nonlog_flag.Length -eq 0){
 Get-Module -name "outlog"|remove-module
 $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
@@ -177,10 +202,7 @@ Import-Module $mdpath -WarningAction SilentlyContinue -Global
 outlog $action $results $tcnumber $tcstep $index
 }
     
-  if($exitflag -match "exit"){
-     exit
-   }
-
   }
 
+}
     export-modulemember -Function powerbox
