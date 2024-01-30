@@ -923,8 +923,9 @@ if($bitype -match "Unigine_Heaven"){
     $cmdadd
     }
     }
-    if($bitconfig_window -match "window"){
     $newcontent|set-content $jsstartfile -Force
+    
+    if($bitconfig_window -match "window"){
     (get-content  $brwjsfolder\browser.js).replace("""video_fullscreen"",""default"":true","""video_fullscreen"",""default"":false") `
     |set-content  $brwjsfolder\browser.js
     }
