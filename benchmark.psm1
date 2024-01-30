@@ -1047,7 +1047,7 @@ do{
   
   Start-Sleep -s 30
   
-  if($checkrunning.mainwindowtitle -like "Unigine Heaven Benchmark 4.0*"){
+  if(!($checkrunning.mainwindowtitle -like "Unigine Heaven Benchmark 4.0*")){
     do{
   $faillog=$($picpath)+"$($tcstep)_benchmark_runfail$($n).log"
   &$actionss  -para3 nonlog -para5 "run_fail$($n)"
