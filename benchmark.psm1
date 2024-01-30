@@ -1050,6 +1050,8 @@ do{
   if(!($checkrunning.mainwindowtitle -like "Unigine Heaven Benchmark 4.0*")){
     do{
   $faillog=$($picpath)+"$($tcstep)_benchmark_runfail$($n).log"
+  $checkhavenalart=get-process -name heaven -ea SilentlyContinue
+  if($checkhavenalart){
   &$actionss  -para3 nonlog -para5 "run_fail$($n)"
   [Clicker]::LeftClickAtPoint($x1, $y1)
   start-sleep -s 2
@@ -1059,6 +1061,7 @@ do{
   start-sleep -s 3
   $faillog=$($picpath)+"$($tcstep)_benchmark_runfail.log"
   $failcontent|set-content $faillog -Force
+  }
   [System.Windows.Forms.SendKeys]::SendWait("%{F4}")
   start-sleep -s 3
   $checkclose=get-process -name "browser_x86" -ea SilentlyContinue
