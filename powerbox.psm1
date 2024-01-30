@@ -4,7 +4,8 @@
     $wshell=New-Object -ComObject wscript.shell
       Add-Type -AssemblyName Microsoft.VisualBasic
        Add-Type -AssemblyName System.Windows.Forms
-        Add-Type -AssemblyName System.Windows.Forms,System.Drawing    
+        Add-Type -AssemblyName System.Windows.Forms,System.Drawing
+        $ping = New-Object System.Net.NetworkInformation.Ping
         
 $cSource = @'
 using System;
@@ -79,6 +80,13 @@ else{
 $scriptRoot=$PSScriptRoot
 }
 
+if($para2 -le 30){
+$para2=30
+}
+if($para3 -eq 10){
+$para3=10
+}
+
 $boxip=$para1
 $ontime=$para2
 $offtime=$para3
@@ -103,64 +111,26 @@ $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #ping bix IP
-
-$testping= Invoke-WebRequest -Uri $boxip -UseBasicParsing 
-
-if(!$testping){
+try{
+    ping $boxip /n 3
+}
+catch{
     $results="NG"
     $index="powerbox PIN FAIL"
 }
 
-$cmdline_on=""
-
- if($cmdline.Length -eq 0 -or $cmdtype.Length -eq 0){
+if($results -eq "OK"){
+    $cmdline_on="curl http://snmp:1234@$($boxip)/delay1.cgi?led=0,$($ontime),$($ontime),3,4,5,6,7,8"
+    $cmdline_off="curl http://snmp:1234@$($boxip)/delayf1.cgi?led=0,$($offtime),$($offtime),3,4,5,6,7,8"
+    $cmdport="curl http://snmp:1234@$($boxip)/offon.cgi?led=11000000"   
     
-    $results="NG"
-    if($cmdline.Length -eq 0){
-    $index="No command line is found"
-    }
-    if($cmdtype.Length -eq 0){
-        $index="need cmd or powershell"
-    }
-
-  }
-  else {
-    
-    
-    $idracinfo=(get-content -path "C:\testing_AI\settings\idrac.txt").split(",")
-    $idracip=$idracinfo[0]
-    $idracuser=$idracinfo[1]
-    $idracpwd=$idracinfo[2]
-     if($cmdline -match "#idracip"){
-       $cmdline=$cmdline.Replace("#idracip",$idracip)
-       }    
-     if($cmdline -match "#idracusr"){
-        $cmdline=$cmdline.Replace("#idracusr",$idracuser)
-       }    
-     if($cmdline -match "#idracpwd"){
-        $cmdline=$cmdline.Replace("#idracpwd",$idracpwd)
-       }
-   ## setlocation
-
-   if($cmdpath.length -ne 0){
-      Set-Location $cmdpath
-     }
-            
-  #### cmd / powershell ##
-if($cmdtype.Length -ne 0){
-    
-    if($cmdtype -match "cmd"){
+    $cmdlines=@($cmdline_on,$cmdline_off,$cmdport)  
+       
     start-process cmd -WindowStyle Maximized
-    }
-    if($cmdtype -match "powershell"){
-    start-process "$PSHOME\powershell.exe"  -WindowStyle Maximized
-    }
-
-Start-Sleep -Seconds 5
-$id2= (Get-Process -name $cmdtype|Sort-Object StartTime -ea SilentlyContinue |Select-Object -last 1).id
-#$cmdwindowhd=(Get-Process -name $cmdtype |Sort-Object StartTime -ea SilentlyContinue |Select-Object -last 1).MainWindowHandle 
-
-### click cmd window ###
+    Start-Sleep -Seconds 5
+    $id2= (Get-Process -name $cmdtype|Sort-Object StartTime -ea SilentlyContinue |Select-Object -last 1).id
+   
+    ### click cmd window ###
 
 [Microsoft.VisualBasic.interaction]::AppActivate($id2)|out-null
 start-sleep -s 2
@@ -170,12 +140,8 @@ Start-Sleep -Seconds 2
 $wshell.SendKeys("~") 
 Start-Sleep -Seconds 2
 
-$cmdlines=$cmdline.split("|")
-$k=0
-
 foreach($cmdline in $cmdlines){
-    write-host "now send : $cmdline"
-    $k++
+    Write-Output "now send : $cmdline"
     Set-Clipboard -value $cmdline
     Start-Sleep -Seconds 5
     [Microsoft.VisualBasic.interaction]::AppActivate($id2)|out-null
@@ -185,54 +151,12 @@ foreach($cmdline in $cmdlines){
     start-sleep -s 1
     $wshell.SendKeys("p")
     start-sleep -s 1 
-    Start-Sleep -Seconds 3
     $wshell.SendKeys("~") 
-    Start-Sleep -Seconds 3 
-    
-    &$actionss  -para3 nonlog -para5 $indexcmd
-    
- } 
-        if($cmdtype -match "cmd"){
-          Set-Clipboard -value "echo %errorlevel%"
-          Start-Sleep -s 5
-          $wshell.SendKeys("^v") 
-         }
-        if($cmdtype -match "powershell"){
-          $wshell.SendKeys("$")
-          $wshell.SendKeys("?")
-         }
+     } 
 
-        Start-Sleep -s 2
-        $wshell.SendKeys("~")
-         do{  
-              start-sleep -s 2
-              [Microsoft.VisualBasic.interaction]::AppActivate($id2)|out-null
-              start-sleep -s 1
-              [Clicker]::LeftClickAtPoint(1,1)
-              $wshell.SendKeys("E")
-              start-sleep -s 1
-              $wshell.SendKeys("S")
-              start-sleep -s 1
-              $wshell.SendKeys("~")
-              start-sleep -s 1
-              $index2=Get-Clipboard
-              start-sleep -s 2
-              $checkend=$index2[-1]
-              if($checkend.length -gt 0){$endcheck=$checkend.Substring($checkend.length-1,1)}
-              else{$endcheck=""}
-              }until($endcheck -eq ">" -and $checkend.length -gt 0 )
-          
-
-              ## screenshot ##
-              &$actionss  -para3 nonlog -para5 "cmd_End"
-              #$picfile=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match $action }).FullName
-              
-              taskkill /PID $id2 /F  
+     &$actionss -para1 1 -para3 nonlog -para5 "cmd_end"
+     taskkill /PID $id2 /F  
       
- ###>
-  }
-
- $results="OK"
  if($index2.length -gt 0){
  set-content $logpath -Value  $index2
  }

@@ -162,18 +162,25 @@ $runflag="run"
 
 if($scriptname -ne "no_define"){
 
-$checkgfx=(Get-WmiObject -Class Win32_VideoController | Select-Object Name,AdapterCompatibility).name
+#$checkgfx=(Get-WmiObject -Class Win32_VideoController | Select-Object Name,AdapterCompatibility).name
 
-if ($scriptname -match "nv_controlpanel" -and $checkgfx -match "AMD"){
+$inidrv=(Get-ChildItem "C:\testing_AI\logs\ini*\*" -r -Filter "*DriverVersion.csv"|Sort-Object lastwritetime|Select-Object -last 1).FullName
+$checktype=(import-csv $inidrv|Where-object{$_.DeviceClass -match "DISPLAY"}).devicename
+if($checkgfx -match "AMD"){
+  $drvtype="AMD"
+}
+if($checkgfx -match "NVidia"){
+  $drvtype="NV"
+}
+if (($scriptname -match "^nv_" -and $checkgfx -match "AMD") -or ($scriptname -match "^amd_" -and $checkgfx -match "NVIDIA")){
  $runflag="skip"
  $results="na"
- $index="AMD, skip"
+ $index="$($drvtype), skip"
 }
 
 if ($runflag -eq "run"){
-
 (get-process -name msedge -ea SilentlyContinue).CloseMainWindow()
-$checkrun=(get-process -Name "AutoTool"　-ea SilentlyContinue).Id
+$checkrun=(get-process -Name "AutoTool" -ea SilentlyContinue).Id
 if($checkrun){
 taskkill /F /IM AutoTool.exe
 }
@@ -183,6 +190,12 @@ $scriptname=$scriptname.replace(".ScriptAction","")
 $action="pcai-$scriptname"
 $scriptname=$scriptname.replace(".ScriptAction","")
 $scriptfull=( Get-ChildItem "C:\testing_AI\modules\PC_AI_Tool*\Main\Windows\*\script\*" |Where-Object { $_.name -match "^$($scriptname)\." -and $_.name -match "\.ScriptAction"} ).FullName
+
+if(!$scriptfull -or $scriptfull.Length -eq 0){
+  $results="NG"
+  $index="PCAI script not found"
+}
+else{
 
 $oldresult=(Get-ChildItem C:\testing_AI\modules\PC_AI_Tool*\Main\Windows\Report\*\*.html).count
 
@@ -324,7 +337,7 @@ $results="NG"
 $index="PCAI fail to execute"
 
 }
-
+}
 }
 
 }
