@@ -1,9 +1,7 @@
 ﻿function specview_dl ([string]$para1,[string]$para2){
 
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
-    Add-Type -AssemblyName System.Windows.Forms
-    $wshell=New-Object -ComObject wscript.shell
-
+     
     if($PSScriptRoot.length -eq 0){
         $scriptRoot="C:\testing_AI\modules"
     }else{
