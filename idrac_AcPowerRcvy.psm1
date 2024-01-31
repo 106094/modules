@@ -1,4 +1,4 @@
-﻿function idrac_AcPowerRcvy ([string]$para1,[string]$para2){
+﻿function idrac_AcPowerRcvy ([string]$para1,[string]$para2,[string]$para3){
 
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     Add-Type -AssemblyName System.Windows.Forms
@@ -18,7 +18,17 @@
             $rcytype="off"
         }    
 
-   $nonlog_flag=$para2
+        $rcydly="Immediate"
+
+        if($para2 -match "random"){
+            $rcydly="random"
+        }
+        if($para2 -match "userdefined"){
+            $rcydly="user defined"
+            $rcydlytime=($para2.split("-"))[1]
+        }    
+
+   $nonlog_flag=$para3
 
     $actionsln ="selenium_prepare"
     Get-Module -name $actionsln|remove-module
@@ -133,22 +143,39 @@
         start-sleep -s 5        
         $acpwrrcvy = $driver.FindElement([OpenQA.Selenium.By]::Id("SysSecurityRef.AcPwrRcvry"))
         $acpwrrcvy_option = $acpwrrcvy.GetAttribute("value")
+        
+        $acpwrrcvydly = $driver.FindElement([OpenQA.Selenium.By]::Id("SysSecurityRef.AcPwrRcvryDelay"))
+        $acpwrrcvydly_option = $acpwrrcvydly.GetAttribute("value")
+        
+        $acpwrrcvydly2 = $driver.FindElement([OpenQA.Selenium.By]::Id("SysSecurityRef.AcPwrRcvryUserDelay"))
+        $acpwrrcvydly2_option = $acpwrrcvydly2.GetAttribute("value")
+       
+
         #$acpwrrcvy_option =$acpwrrcvy_option.replace("string:","")
-        if($acpwrrcvy_option -match $rcytype){
+        if($acpwrrcvy_option -match $rcytype -and !($rcydly -match "user") -and $acpwrrcvydly_option -match $rcydly -or `
+           ($acpwrrcvy_option -match $rcytype -and $rcydly -match "user" -and $acpwrrcvydly_option -match $rcydly -and $acpwrrcvydly2_option -eq $rcydlytime)){
             $index="no need to change settings"
             #region screenshot
             $timenow=get-date -format "yyMMdd_HHmmss"
-            $savepic=$picpath+"$($timenow)_step$($tcstep)_noPcieResizBarSetting.jpg"
+            $savepic=$picpath+"$($timenow)_step$($tcstep)_currentsettings.jpg"
             $screenshot = $driver.GetScreenshot()
             $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
             #endregion
         }
         else{
             try{
-            $acpwrrcvy.SendKeys($rcytype)
+                if(! ($acpwrrcvy_option -match $rcytype )){
+                    $acpwrrcvy.SendKeys($rcytype)
+                }
+                if(! ($acpwrrcvydly_option -match $rcydly)){
+                    $acpwrrcvydly.SendKeys($rcydly)
+                    if($rcydly -match "user"){
+                        
+                    }
+                }
             #region screenshot
             $timenow=get-date -format "yyMMdd_HHmmss"
-            $savepic=$picpath+"$($timenow)_step$($tcstep)_changeAcPwrRcvrySetting-$($rcytype).jpg"
+            $savepic=$picpath+"$($timenow)_step$($tcstep)_changeAcPwrRcvrySetting-$($rcytype)-$($rcydly).jpg"
             $screenshot = $driver.GetScreenshot()
             $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
             #endregion

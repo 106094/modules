@@ -25,7 +25,7 @@ $tcstep=((get-content $tcpath).split(","))[1]
 
 $checkrun=(get-process -Name "AutoTool").Id
 
-if($checkrun -ne $null){
+if($checkrun){
 ## pcai still running
 exit
 }
@@ -33,7 +33,7 @@ exit
 else{
 start-sleep -s 10
 
-$pcairesult=(Get-ChildItem -path C:\testing_AI\modules\PC_AI_Tool_20221220\Main\Windows\Report\* -Directory|sort creationtime |select -last 1).fullname
+$pcairesult=(Get-ChildItem -path C:\testing_AI\modules\PC_AI_Tool*\Main\Windows\Report\* -Directory|Sort-Object creationtime |Select-Object -last 1).fullname
 Move-Item $pcairesult $picpath -Force
 move-item C:\testing_AI\logs\*.png  $picpath -Force
 
