@@ -16,8 +16,7 @@
         }
         if($para1 -match "off"){
             $rcytype="off"
-        }
-    
+        }    
 
    $nonlog_flag=$para2
 
@@ -174,7 +173,7 @@
             $screenshot = $driver.GetScreenshot()
             $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
             #endregion
-            
+
             }
         }
        catch{
