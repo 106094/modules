@@ -1942,12 +1942,11 @@ if((test-path $env:USERPROFILE\Documents\3DMark\3DMark.log) -or (test-path "C:\P
 $getlogs=get-content -path $env:USERPROFILE\Documents\3DMark\3DMark.log
 foreach($getlog in $getlogs){
 if($getlog -match "Starting 3DMark" ){
-$getlog -match "v\d{1,}\.\d{1,}\.\d{1,}"
+$getlog -match "v\d{1,}\.\d{1,}\.\d{1,}"|Out-Null
 $3dmarkversion=$matches[0]
-$3dmarkversion
 }
 }
-
+write-output "last 3DMark version is $3dmarkversion"
 <###
 $3dmarkversion= (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*\*" | Where-Object {$_.DisplayName -like "3DMark*"} | Select-Object DisplayName, DisplayVersion).DisplayVersion
 if($3dmarkversion.length -eq 0){
