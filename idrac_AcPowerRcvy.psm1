@@ -152,7 +152,14 @@
         $sysecbtn.Click()
         start-sleep -s 5
         $driver.ExecuteScript("window.scrollTo(0, document.body.scrollHeight);")
-        start-sleep -s 5        
+        start-sleep -s 5
+        #region screenshot
+        $timenow=get-date -format "yyMMdd_HHmmss"
+        $savepic=$picpath+"$($timenow)_step$($tcstep)_currentsettings.jpg"
+        $screenshot = $driver.GetScreenshot()
+        $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
+        #endregion
+
         $acpwrrcvy = $driver.FindElement([OpenQA.Selenium.By]::Id("SysSecurityRef.AcPwrRcvry"))
         $acpwrrcvy_option = $acpwrrcvy.GetAttribute("value")
         
@@ -167,12 +174,6 @@
         if($acpwrrcvy_option -match $rcytype -and !($rcydly -match "user") -and $acpwrrcvydly_option -match $rcydly -or `
            ($acpwrrcvy_option -match $rcytype -and $rcydly -match "user" -and $acpwrrcvydly_option -match $rcydly -and $acpwrrcvydly2_option -eq $rcydlytime)){
             $index="no need to change settings"
-            #region screenshot
-            $timenow=get-date -format "yyMMdd_HHmmss"
-            $savepic=$picpath+"$($timenow)_step$($tcstep)_currentsettings.jpg"
-            $screenshot = $driver.GetScreenshot()
-            $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
-            #endregion
         }
         else{
                 if(! ($acpwrrcvy_option -match $rcytype )){
