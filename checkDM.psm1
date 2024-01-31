@@ -249,9 +249,9 @@ else{
 Get-WmiObject Win32_PnPSignedDriver|select-object DeviceName, DriverVersion, HardwareID, Signer, IsSigned, DriverProviderName, InfName,Description,Location,DeviceClass |Where-object{$_.InfName -match "oem"}|Export-Csv "$picpath\$($dd)_step$($tcstep)_DriverVersion.csv" -Encoding UTF8 -NoTypeInformation
 Get-WmiObject Win32_PnPSignedDriver|select-object DeviceName, DriverVersion, HardwareID, Signer, IsSigned, DriverProviderName, InfName,Description,Location,DeviceClass |Export-Csv "$picpath\$($dd)_step$($tcstep)_DriverVersion_all.csv" -Encoding UTF8 -NoTypeInformation
 Get-Package | select-object  name, Version,ProviderName,Source,FastPackageReference |Export-Csv -Path  "$picpath\$($dd)_step$($tcstep)_packages.csv" -Encoding UTF8  -NoTypeInformation
-Get-CimInstance win32_product | select-object -object Name,Version,Vendor,InstallDate,PackageFullName | Export-csv "$picpath\$($dd)_step$($tcstep)_AppVersion.csv" -Encoding UTF8 -NoTypeInformation 
-Get-AppxPackage | select-object -object Name,Version,Vendor,InstallDate,PackageFullName | Export-csv "$picpath\$($dd)_step$($tcstep)_AppVersion.csv"  -Append  -Encoding UTF8  -NoTypeInformation
-Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | select-object -Object DisplayName, DisplayVersion, Publisher, InstallDate|export-csv "$picpath\$($dd)_step$($tcstep)_controlpanel_programs.csv" -Encoding UTF8  -NoTypeInformation
+Get-CimInstance win32_product | select-object  Name,Version,Vendor,InstallDate,PackageFullName | Export-csv "$picpath\$($dd)_step$($tcstep)_AppVersion.csv" -Encoding UTF8 -NoTypeInformation 
+Get-AppxPackage | select-object  Name,Version,Vendor,InstallDate,PackageFullName | Export-csv "$picpath\$($dd)_step$($tcstep)_AppVersion.csv"  -Append  -Encoding UTF8  -NoTypeInformation
+Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | select-object  DisplayName, DisplayVersion, Publisher, InstallDate|export-csv "$picpath\$($dd)_step$($tcstep)_controlpanel_programs.csv" -Encoding UTF8  -NoTypeInformation
 start-sleep -s 5
 $ye=Get-WmiObject Win32_PnPEntity|Where-object{ $_.ConfigManagerErrorCode -ne 0}|select-object Name,Description, DeviceID, @{Name="HardwareID";Expression={$_.HardwareID -join "; "}},Manufacturer
 $results="OK"
