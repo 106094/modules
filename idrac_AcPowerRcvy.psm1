@@ -2,12 +2,16 @@
 
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     Add-Type -AssemblyName System.Windows.Forms
-       
+    $wshell=New-Object -ComObject wscript.shell
+
     if($PSScriptRoot.length -eq 0){
         $scriptRoot="C:\testing_AI\modules"
     }else{
         $scriptRoot=$PSScriptRoot
     }
+
+    $results="OK"
+    $index="change settings ok"
 
     $rcytype="last"
 
@@ -22,10 +26,18 @@
 
         if($para2 -match "random"){
             $rcydly="random"
+            $rcydlytime=""
         }
-        if($para2 -match "userdefined"){
+        if($para2 -match "user"){
             $rcydly="user defined"
-            $rcydlytime=($para2.split("-"))[1]
+            $rcydlytime=[int64](($para2.split("-"))[1])
+            if($rcydlytime -eq 0){
+                $rcydlytime=120                
+            }
+            elseif($rcydlytime -lt 120 -or $rcydlytime -gt 600){
+              $results="NG"  
+              $index="user defined time should be between 120 and 600"
+            }
         }    
 
    $nonlog_flag=$para3
@@ -41,9 +53,9 @@
     $tcstep=((get-content $tcpath).split(","))[1]
     $picpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
     if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-null}
-    $results="OK"
-    $index="check screenshots"
 
+    if($results -ne "NG"){
+             
     &$actionsln  edge nonlog
            
     $idracinfo=(get-content -path "C:\testing_AI\settings\idrac.txt").split(",")
@@ -170,43 +182,51 @@
                 if(! ($acpwrrcvydly_option -match $rcydly)){
                     $acpwrrcvydly.SendKeys($rcydly)
                     if($rcydly -match "user"){
-                        
-                    }
-                }
-            #region screenshot
-            $timenow=get-date -format "yyMMdd_HHmmss"
-            $savepic=$picpath+"$($timenow)_step$($tcstep)_changeAcPwrRcvrySetting-$($rcytype)-$($rcydly).jpg"
-            $screenshot = $driver.GetScreenshot()
-            $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
-            #endregion
-            start-sleep -s 5
-            
-            $applybutton=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[ng-click='onApplyAction()']"))
-            $applybutton.Click()
-            Start-Sleep -s 5
-            #region screenshot
-            $timenow=get-date -format "yyMMdd_HHmmss"
-            $savepic=$picpath+"$($timenow)_step$($tcstep)_apply.jpg"
-            $screenshot = $driver.GetScreenshot()
-            $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
-            #endregion
-            $okbutton=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[translate='ok']"))
-            if($okbutton.Displayed -eq $true){                     
-            $okbutton.Click() 
-            Start-Sleep -s 5
-            #region screenshot
-            $timenow=get-date -format "yyMMdd_HHmmss"
-            $savepic=$picpath+"$($timenow)_step$($tcstep)_okbutton.jpg"
-            $screenshot = $driver.GetScreenshot()
-            $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
-            #endregion
+                        $acpwrrcvydly2.Click()
+                        Start-Sleep -s 3
+                        $wshell.SendKeys("{bs 10}")
+                        Set-Clipboard -Value $rcydlytime
+                        Start-Sleep -s 5
+                        $wshell.SendKeys("^v")
+                        Start-Sleep -s 2
+                        }
 
+                    }
+               
+                    #region screenshot
+                    $timenow=get-date -format "yyMMdd_HHmmss"
+                    $savepic=$picpath+"$($timenow)_step$($tcstep)_changeAcPwrRcvrySetting-$($rcytype)-$($rcydly).jpg"
+                    $screenshot = $driver.GetScreenshot()
+                    $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
+                    #endregion
+                    start-sleep -s 5
+                    
+                    $applybutton=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[ng-click='onApplyAction()']"))
+                    $applybutton.Click()
+                    Start-Sleep -s 5
+                    #region screenshot
+                    $timenow=get-date -format "yyMMdd_HHmmss"
+                    $savepic=$picpath+"$($timenow)_step$($tcstep)_apply.jpg"
+                    $screenshot = $driver.GetScreenshot()
+                    $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
+                    #endregion
+                    $okbutton=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[translate='ok']"))
+                    if($okbutton.Displayed -eq $true){                     
+                    $okbutton.Click() 
+                    Start-Sleep -s 5
+                    #region screenshot
+                    $timenow=get-date -format "yyMMdd_HHmmss"
+                    $savepic=$picpath+"$($timenow)_step$($tcstep)_okbutton.jpg"
+                    $screenshot = $driver.GetScreenshot()
+                    $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
+                    #endregion
+
+                    }
             }
-        }
-       catch{
-        $results="NG"
-        $index="fail to apply settings"
-        }
+            catch{
+            $results="NG"
+            $index="fail to apply settings"
+            }
 
         }
         
@@ -224,6 +244,7 @@
     
     if((get-process -Name msedgedriver -ErrorAction SilentlyContinue)){Stop-Process -Name msedgedriver}
 
+    }
     }
     ### write to log ###
     
