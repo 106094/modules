@@ -1,4 +1,4 @@
-﻿function idrac_AcPowerRcvy ([string]$para1,[string]$para2,[string]$para3){
+﻿function idrac_AcPowerRcvy ([string]$para1,[string]$para2){
 
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     Add-Type -AssemblyName System.Windows.Forms
@@ -9,26 +9,24 @@
         $scriptRoot=$PSScriptRoot
     }
 
-    if($para2.Length -eq 0 -or $para2 -match "last"){
-        $rcytype="last"
-    }
-    else{
-        if($para2 -match "on"){
+    $rcytype="last"
+
+        if($para1 -match "on"){
             $rcytype="on"
         }
-        if($para2 -match "off"){
+        if($para1 -match "off"){
             $rcytype="off"
         }
-    }
+    
 
-   $nonlog_flag=$para3
+   $nonlog_flag=$para2
 
     $actionsln ="selenium_prepare"
     Get-Module -name $actionsln|remove-module
     $mdpath=(get-childitem -path $scriptRoot -r -file |where-object{$_.name -match "^$actionsln\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
         
-    $action="idrac_AC Power Recovery-$($switches)"
+    $action="idrac_AC Power Recovery setting - $($switches)"
     $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
     $tcnumber=((get-content $tcpath).split(","))[0]
     $tcstep=((get-content $tcpath).split(","))[1]
@@ -121,148 +119,80 @@
       if($findjudge.Displayed -eq $true){
         $findjudge.Click()
         start-sleep -s 10
-        }  
-        $searchbox = $driver.FindElement([OpenQA.Selenium.By]::Id("searchInputId"))
-        $searchbox.SendKeys("Resizable BAR")
+        }
         start-sleep -s 5
-        $searchbox.SendKeys([OpenQA.Selenium.Keys]::Enter)
+        $configbtn=$driver.FindElement([OpenQA.Selenium.By]::Id("configuration"))
+        $configbtn.Click()
         start-sleep -s 5
-        $serchresult=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("span[translate='menu_configuration']"))
-        $serchresult.Click()
+        $biosbtn = $driver.FindElement([OpenQA.Selenium.By]::Name("menu_biossettings"))
+        $biosbtn.Click()
         start-sleep -s 5
-        $intselection = $driver.FindElement([OpenQA.Selenium.By]::Id("IntegratedDevicesRef"))
-        $intselection.Click()
+        $sysecbtn=$driver.FindElement([OpenQA.Selenium.By]::Id("SysSecurityRef"))
+        $sysecbtn.Click()
         start-sleep -s 5
-        try{
-        $resselection = $driver.FindElement([OpenQA.Selenium.By]::Id("IntegratedDevicesRef.PcieResizBar"))
-        $resselection_option = $resselection.GetAttribute("value")
-        $currentsetting=$resselection_option.replace("string:","")
-        #$resselection.Click()
         $driver.ExecuteScript("window.scrollTo(0, document.body.scrollHeight);")
-        start-sleep -s 5
-        }
-        catch{
-         #region screenshot
-        $timenow=get-date -format "yyMMdd_HHmmss"
-        $savepic=$picpath+"$($timenow)_step$($tcstep)_noPcieResizBarSetting.jpg"
-        $screenshot = $driver.GetScreenshot()
-        $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
-        #endregion
-        $results="NG"
-        $index="no ResizBar settings"
-        }
-
-        start-sleep -s 5
-        if($resselection_option){
-        
-        #region screenshot
-        $timenow=get-date -format "yyMMdd_HHmmss"
-        $savepic=$picpath+"$($timenow)_step$($tcstep)_current_settings_$($currentsetting).jpg"
-        $screenshot = $driver.GetScreenshot()
-        $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
-        #endregion
-
-        if(($switches.Length -gt 0 -and $resselection_option -match $switches) -or  ($chkstauts.Length -gt 0 -and $resselection_option -match $chkstauts)){       
-            
-        if($switches.Length -gt 0){
+        start-sleep -s 5        
+        $acpwrrcvy = $driver.FindElement([OpenQA.Selenium.By]::Id("SysSecurityRef.AcPwrRcvry"))
+        $acpwrrcvy_option = $acpwrrcvy.GetAttribute("value")
+        #$acpwrrcvy_option =$acpwrrcvy_option.replace("string:","")
+        if($acpwrrcvy_option -match $rcytype){
             $index="no need to change settings"
+            #region screenshot
+            $timenow=get-date -format "yyMMdd_HHmmss"
+            $savepic=$picpath+"$($timenow)_step$($tcstep)_noPcieResizBarSetting.jpg"
+            $screenshot = $driver.GetScreenshot()
+            $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
+            #endregion
         }
-        if($chkstauts.Length -gt 0){
-            $results="PASS"
-            $index="$chkstauts check ok"
-        }
-        
-        }
-        
         else{
+            try{
+            $acpwrrcvy.SendKeys($rcytype)
+            #region screenshot
+            $timenow=get-date -format "yyMMdd_HHmmss"
+            $savepic=$picpath+"$($timenow)_step$($tcstep)_changeAcPwrRcvrySetting-$($rcytype).jpg"
+            $screenshot = $driver.GetScreenshot()
+            $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
+            #endregion
+            start-sleep -s 5
+            
+            $applybutton=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[ng-click='onApplyAction()']"))
+            $applybutton.Click()
+            Start-Sleep -s 5
+            #region screenshot
+            $timenow=get-date -format "yyMMdd_HHmmss"
+            $savepic=$picpath+"$($timenow)_step$($tcstep)_apply.jpg"
+            $screenshot = $driver.GetScreenshot()
+            $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
+            #endregion
+            $okbutton=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[translate='ok']"))
+            if($okbutton.Displayed -eq $true){                     
+            $okbutton.Click() 
+            Start-Sleep -s 5
+            #region screenshot
+            $timenow=get-date -format "yyMMdd_HHmmss"
+            $savepic=$picpath+"$($timenow)_step$($tcstep)_okbutton.jpg"
+            $screenshot = $driver.GetScreenshot()
+            $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
+            #endregion
+            
+            }
+        }
+       catch{
+        $results="NG"
+        $index="fail to apply settings"
+        }
+
+        }
         
-            if($chkstauts.Length -gt 0){
-              $results="FAIL"
-              $index="$chkstauts check fail"
-            }
-
-            if($switches.Length -gt 0){       
-                Start-Sleep -s 5
-                if($switches -match "enable"){
-                    $resselection.SendKeys("e")
-                    Start-Sleep -s 1
-                    $resselection.SendKeys("{enter}")
-                }
-                if($switches -match "disable"){
-                    $resselection.SendKeys("d")
-                    Start-Sleep -s 1
-                    $resselection.SendKeys("{enter}")
-                }
-
-                Start-Sleep -s 5
-                #region screenshot
-                $timenow=get-date -format "yyMMdd_HHmmss"
-                $savepic=$picpath+"$($timenow)_step$($tcstep)_changesettings.jpg"
-                $screenshot = $driver.GetScreenshot()
-                $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
-                #endregion
-
-                $applybutton=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[ng-click='onApplyAction()']"))
-                $applybutton.Click()
-                Start-Sleep -s 5
-                #region screenshot
-                $timenow=get-date -format "yyMMdd_HHmmss"
-                $savepic=$picpath+"$($timenow)_step$($tcstep)_apply.jpg"
-                $screenshot = $driver.GetScreenshot()
-                $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
-                #endregion
-                Start-Sleep -s 5
-
-                try{
-                $okbutton=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[translate='ok']"))
-                if($okbutton.Displayed -eq $true){                     
-                $okbutton.Click() 
-                Start-Sleep -s 5
-                #region screenshot
-                $timenow=get-date -format "yyMMdd_HHmmss"
-                $savepic=$picpath+"$($timenow)_step$($tcstep)_okbutton.jpg"
-                $screenshot = $driver.GetScreenshot()
-                $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
-                #endregion
-                }
-                }catch{
-                $results="NG"
-                $index="fail to apply settings"
-                }
-                Start-Sleep -s 2
-                try {
-                $applyandrebootbt=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[translate='apply_reboot']"))
-                if($applyandrebootbt.Displayed -eq $true){
-                    if($nonlog_flag.Length -eq 0){
-                        Get-Module -name "outlog"|remove-module
-                        $mdpath=(get-childitem -path "C:\testing_AI\modules\" -r -file |where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
-                        Import-Module $mdpath -WarningAction SilentlyContinue -Global
-                        outlog $action $results $tcnumber $tcstep $index
-                        $writelog=$true
-                        }
-                $applyandrebootbt.Click()
-                #region screenshot
-                $timenow=get-date -format "yyMMdd_HHmmss"
-                $savepic=$picpath+"$($timenow)_step$($tcstep)_applyandreboot.jpg"
-                $screenshot = $driver.GetScreenshot()
-                $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
-                #endregion 
-                
-                Start-Sleep -s 5
-                }        
-
-                }
-                catch {
-                    $results="NG"
-                    $index="fail to change settings"
-                }
-
-            }
+        #logout        
+        $logout1=$driver.FindElement([OpenQA.Selenium.By]::XPath("//*[@id=""scrollArea""]/div[1]/header/div/ul/li[2]/a/i"))
+        $logout1.click()
+        start-sleep -s 5
+        $logout2=$driver.FindElement([OpenQA.Selenium.By]::XPath("//*[@id=""scrollArea""]/div[1]/header/div/ul/li[2]/ul/li[2]/a"))
+        $logout2.click()
         }
-        }
-                
-    }
-    
+        
+                   
     $driver.Close()
     $driver.Quit()
     
@@ -271,9 +201,6 @@
     }
     ### write to log ###
     
-    if($writelog){
-        Write-Output "ERROR-fail to reboot idrac"
-    }
     if($nonlog_flag.Length -eq 0 -and !$writelog){
     Get-Module -name "outlog"|remove-module
     $mdpath=(get-childitem -path "C:\testing_AI\modules\" -r -file |where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
