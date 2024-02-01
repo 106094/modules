@@ -219,7 +219,7 @@ Add-Type -TypeDefinition $cSource -ReferencedAssemblies System.Windows.Forms,Sys
      $WindowRect = New-Object RECT
      $clickx=($WindowRect.right)/2
      $clicky= 10 
-     
+
      [Microsoft.VisualBasic.interaction]::AppActivate($id)|out-null
      start-sleep -s 2
      [Clicker]::LeftClickAtPoint($clickx, $clicky)
@@ -238,13 +238,16 @@ Add-Type -TypeDefinition $cSource -ReferencedAssemblies System.Windows.Forms,Sys
      start-sleep -s 1
      [System.Windows.Forms.SendKeys]::SendWait("{right}")
 
-     [System.Windows.Forms.SendKeys]::SendWait("{tab}")   
-
+     [System.Windows.Forms.SendKeys]::SendWait("{tab}")  
+     start-sleep -s 1 
      [System.Windows.Forms.SendKeys]::SendWait(" ")
-     start-sleep -s 1
-     [System.Windows.Forms.SendKeys]::SendWait("{tab 3}")
+      &$actionss  -para3 nonlog -para5 "next2"
+     [System.Windows.Forms.SendKeys]::SendWait("{tab}")
+     start-sleep -s 1 
+     [System.Windows.Forms.SendKeys]::SendWait("{tab}")
+     start-sleep -s 1 
+     [System.Windows.Forms.SendKeys]::SendWait("{tab}")
      &$actionss  -para3 nonlog -para5 "startdownload"
-
      $starttime=Get-Date
 
      [System.Windows.Forms.SendKeys]::SendWait("~")
