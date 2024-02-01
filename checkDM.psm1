@@ -208,7 +208,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 if ($expand_flag -match "display"){
 
 #Get-WmiObject Win32_PnPSignedDriver|select-object DeviceName, DriverVersion, HardwareID, Signer, IsSigned, DriverProviderName, InfName,Description,Location,DeviceClass |Where-object{$_.DeviceClass -match "display"}|out-string|set-content  "$picpath\$($dd)_step$($tcstep)_DisplayDeviceManager.txt"
-$applist=Get-AppxPackage  |Where-object{$_.Name -match "AMD" -or $_.Name -match "NVIDIA"}| select-object -object Name,Version,Vendor,InstallDate,PackageFullName|out-string
+$applist=Get-AppxPackage  |Where-object{$_.Name -match "AMD" -or $_.Name -match "NVIDIA"}| select-object Name,Version,Vendor,InstallDate,PackageFullName|out-string
 if(!$applist){$applist="na"}
 $applist|set-content  "$picpath\$($dd)_step$($tcstep)_Display_AppInfo.txt"
 
