@@ -9,7 +9,101 @@ function driver_uninstall_ControlPanel ([string]$para1,[string]$para2){
     Add-Type -AssemblyName Microsoft.VisualBasic
     Add-Type -AssemblyName System.Windows.Forms
     Add-Type -AssemblyName System.Windows.Forms,System.Drawing
-    
+    $cSource = @'
+using System;
+using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+public class Clicker
+{
+//https://msdn.microsoft.com/en-us/library/windows/desktop/ms646270(v=vs.85).aspx
+[StructLayout(LayoutKind.Sequential)]
+struct INPUT
+{ 
+  public int        type; // 0 = INPUT_MOUSE,
+                          // 1 = INPUT_KEYBOARD
+                          // 2 = INPUT_HARDWARE
+  public MOUSEINPUT mi;
+}
+
+//https://msdn.microsoft.com/en-us/library/windows/desktop/ms646273(v=vs.85).aspx
+[StructLayout(LayoutKind.Sequential)]
+struct MOUSEINPUT
+{
+  public int    dx ;
+  public int    dy ;
+  public int    mouseData ;
+  public int    dwFlags;
+  public int    time;
+  public IntPtr dwExtraInfo;
+}
+
+//This covers most use cases although complex mice may have additional buttons
+//There are additional constants you can use for those cases, see the msdn page
+const int MOUSEEVENTF_MOVED      = 0x0001 ;
+const int MOUSEEVENTF_LEFTDOWN   = 0x0002 ;
+const int MOUSEEVENTF_LEFTUP     = 0x0004 ;
+const int MOUSEEVENTF_RIGHTDOWN  = 0x0008 ;
+const int MOUSEEVENTF_RIGHTUP    = 0x0010 ;
+const int MOUSEEVENTF_MIDDLEDOWN = 0x0020 ;
+const int MOUSEEVENTF_MIDDLEUP   = 0x0040 ;
+const int MOUSEEVENTF_WHEEL      = 0x0080 ;
+const int MOUSEEVENTF_XDOWN      = 0x0100 ;
+const int MOUSEEVENTF_XUP        = 0x0200 ;
+const int MOUSEEVENTF_ABSOLUTE   = 0x8000 ;
+
+const int screen_length = 0x10000 ;
+
+//https://msdn.microsoft.com/en-us/library/windows/desktop/ms646310(v=vs.85).aspx
+[System.Runtime.InteropServices.DllImport("user32.dll")]
+extern static uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
+
+public static void LeftClickAtPoint(int x, int y)
+{
+  //Move the mouse
+  INPUT[] input = new INPUT[3];
+  input[0].mi.dx = x*(65535/System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width);
+  input[0].mi.dy = y*(65535/System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height);
+  input[0].mi.dwFlags = MOUSEEVENTF_MOVED | MOUSEEVENTF_ABSOLUTE;
+  //Left mouse button down
+  input[1].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+  //Left mouse button up
+  input[2].mi.dwFlags = MOUSEEVENTF_LEFTUP;
+  SendInput(3, input, Marshal.SizeOf(input[0]));
+}
+}
+'@
+Add-Type -TypeDefinition $cSource -ReferencedAssemblies System.Windows.Forms,System.Drawing
+
+Add-Type @"
+using System;
+using System.Runtime.InteropServices;
+public class PInvoke {
+    [DllImport("user32.dll")] public static extern IntPtr GetDC(IntPtr hwnd);
+    [DllImport("gdi32.dll")] public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+}
+"@
+$hdc = [PInvoke]::GetDC([IntPtr]::Zero)
+$curwidth = [PInvoke]::GetDeviceCaps($hdc, 118) # width
+$curheight = [PInvoke]::GetDeviceCaps($hdc, 117) # height
+
+$screen = [System.Windows.Forms.Screen]::PrimaryScreen
+$bounds = $screen.Bounds
+
+$currentDPI = (Get-ItemProperty -Path "HKCU:\Control Panel\Desktop\WindowMetrics" -Name AppliedDPI).AppliedDPI
+
+$dpisets=@(96,120,144,168)
+$sclsets=@(100,125,150,175)
+
+$index = $dpisets.IndexOf($currentDPI)
+$calcu = $sclsets[$index] /100
+
+$bounds.Width = $curwidth * $calcu
+$bounds.Height = $curheight * $calcu
+
+$centerx=($bounds.Width)/2
+$centery=($bounds.Height)/2
+
     #ini parameter
     $pkgename=$para1
     $nonlog_flag=$para2     
@@ -212,7 +306,30 @@ $pkgename="AMD"
                     
                     $flag = 1
                 }
+ 
+                if($pkgename -match "Dell Optimizer"){
+                  ## check if uninstall UI is opened
+                    $timestart1=get-date
+                    do{
+                    Start-Sleep -Seconds 10
+                    $processname=(get-process * |Where-Object{$_.MainWindowTitle -match "InstallShield" }).Name
+                    }until($processname)
+                    Start-Sleep -Seconds 30
+                    
+                 &$actionss  -para3 nonlog -para5 "_uninstall_$($package)_starting"
 
+                 $n=0
+                    do{  
+                    $n++                           
+                    start-sleep -s 5
+                    [Clicker]::LeftClickAtPoint($centerx, $centery)  
+                     &$actionss  -para3 nonlog -para5 "_uninstall_$($package)_running$($n)"  
+                    $wshell.SendKeys("~")
+                    start-sleep -s 5
+                    $checkrun=(get-process -name $processname -ErrorAction SilentlyContinue)
+                    }until(!$checkrun)
+                    
+                }
 
                 ## wait uninstall processing
                 Start-Sleep -s 60
