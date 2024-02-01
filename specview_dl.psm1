@@ -144,9 +144,11 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
      start-sleep -s 1
      [System.Windows.Forms.SendKeys]::SendWait("{tab 3}")
      &$actionss  -para3 nonlog -para5 "startdownload"
+     
+     $starttime=Get-Date
 
      [System.Windows.Forms.SendKeys]::SendWait("~")
-     start-sleep -s 10
+     start-sleep -s 60
      &$actionss  -para3 nonlog -para5 "downloading"
 
     do{
