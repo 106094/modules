@@ -214,8 +214,8 @@ Add-Type -TypeDefinition $cSource -ReferencedAssemblies System.Windows.Forms,Sys
     $id=(Get-Process msedge |Where-object{($_.MainWindowTitle).length -gt 0}).Id
      start-sleep -s 2
      Get-Process -id $id | Set-WindowState -State MAXIMIZE
-     $Handle = Get-Process msedge| Where-Object { $_.MainWindowTitle -match $env:TITLE } | ForEach-Object { $_.MainWindowHandle }
-     if ( $Handle -is [System.Array] ) { $Handle = $Handle[0] }
+     $Handles = Get-Process msedge| Where-Object { $_.MainWindowTitle -match $env:TITLE } | where-Object { $_.MainWindowHandle -ne 0}
+     $Handle=$Handles.MainWindowHandle
      $WindowRect = New-Object RECT
      $GotWindowRect = [Window]::GetWindowRect($Handle, [ref]$WindowRect)
      $clickx=($WindowRect.right)/2
