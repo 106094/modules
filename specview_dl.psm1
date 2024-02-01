@@ -264,7 +264,7 @@ Add-Type -TypeDefinition $cSource -ReferencedAssemblies System.Windows.Forms,Sys
       Move-Item "$env:USERPROFILE\Downloads\$filename" -Destination "$env:USERPROFILE\desktop" -Force
       &$actionsfe -para1 "$env:USERPROFILE\desktop\" -para2 "nolog"
       $copytopath="C:\testing_AI\modules\BITools\$spectype"
-      if(!test-path $copytopath){new-item -ItemType directory -path $copytopath |out-null}
+      if(!(test-path $copytopath)){new-item -ItemType directory -path $copytopath |out-null}
       Move-Item "$env:USERPROFILE\desktop\$filename" -Destination $copytopath -Force
       }
       else{
