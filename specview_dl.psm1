@@ -211,16 +211,15 @@ Add-Type -TypeDefinition $cSource -ReferencedAssemblies System.Windows.Forms,Sys
 
     start-process msedge $website -WindowStyle Maximized
     start-sleep -s 20
-    $id=(Get-Process msedge |Where-object{($_.MainWindowTitle).length -gt 0}).Id
+     $id=(Get-Process msedge |Where-object{($_.MainWindowTitle).length -gt 0}).Id
      start-sleep -s 2
      Get-Process -id $id | Set-WindowState -State MAXIMIZE
      $Handles = Get-Process msedge| Where-Object { $_.MainWindowTitle -match $env:TITLE } | where-Object { $_.MainWindowHandle -ne 0}
      $Handle=$Handles.MainWindowHandle
      $WindowRect = New-Object RECT
-     $GotWindowRect = [Window]::GetWindowRect($Handle, [ref]$WindowRect)
      $clickx=($WindowRect.right)/2
-     $clicky= 10
- 
+     $clicky= 10 
+     
      [Microsoft.VisualBasic.interaction]::AppActivate($id)|out-null
      start-sleep -s 2
      [Clicker]::LeftClickAtPoint($clickx, $clicky)

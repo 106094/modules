@@ -916,7 +916,7 @@ $_
 
 }
 
-move-item $mgntjs $mgntjs1 -Force  -ErrorAction SilentlyContinue
+move-item $mgntjs $mgntjsb1 -Force  -ErrorAction SilentlyContinue
 $newmngmjs2|set-content $mgntjs
 
 ### revise【gwpgRunBenchmark.js】for auto running ###
