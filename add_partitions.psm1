@@ -183,7 +183,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
        
 ## screenshot###
 
-&$actionss  -para3 nonlog　-para5 "check1"
+&$actionss  -para3 nonlog -para5 "check1"
    
 $picfile1=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "check1" }).FullName
 
@@ -206,7 +206,7 @@ diskmgmt.msc
          start-sleep -s 2
  
  
-&$actionss  -para3 nonlog　-para5 "diskmgmt"
+&$actionss  -para3 nonlog -para5 "diskmgmt"
    
 $picfile2=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "diskmgmt" }).FullName
      
