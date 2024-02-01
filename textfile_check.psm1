@@ -32,10 +32,10 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
  $resultfail="PASS"
  }
 
-    if($checkline.length -eq 0 -or $checkline.length -eq 0 ){
+    if($checkfile.length -eq 0 -or $checkline.length -eq 0 ){
     $results="NG"
     $index="no define file/keywords"
-        }
+    }
     else{
 
     $cc=0
@@ -43,19 +43,19 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
     $cc++
     start-sleep -s 5
     $checkfilefull=(Get-ChildItem $picpath|Where-object{$_.name -match $checkfile}).FullName
-    }until($checkfilefull.lenth -ne 0 -or $cc -gt 20)
+    }until($checkfilefull -or $cc -gt 20)
 
-    if( $cc -gt 20){
+    if(!($checkfilefull) -and $cc -gt 20){
     $results= "-"
     $index="no match file is found"
     }
     
-    if($checkfilefull.count -gt 1){
+    elseif($checkfilefull.count -gt 1){
     $results="-"
     $index="multi files found, need a specific file name"
     }
 
-if($checkfilefull.count -eq 1 -and  $cc -le 20 ){
+    elseif($checkfilefull.count -eq 1 -and  $cc -le 20 ){
  
     write-host "check [$checkfilefull] if contains [$checkline]"
 
@@ -82,18 +82,17 @@ if($checkfilefull.count -eq 1 -and  $cc -le 20 ){
       $mats=$mats
     }
      $mats=$mats+@("--- End ---")
+     $index=[string]::Join("`n",$mats)
 
+     ## out-result as txt file ##
+     
+     $timenow=get-date -Format "yyMMdd_HHmmss"
+     $outtextpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\$($timenow)_step$($tcstep)_textfilecheck_results.txt"
+     
+     set-content -path $outtextpath -value $index
     }
     }
     
- $index=[string]::Join("`n",$mats)
- 
-## out-result as txt file ##
-
-$timenow=get-date -Format "yyMMdd_HHmmss"
-$outtextpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\$($timenow)_step$($tcstep)_textfilecheck_results.txt"
-
-set-content -path $outtextpath -value $index
 
 ######### write log  #######
 
@@ -103,7 +102,6 @@ Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"
 outlog $action $results $tcnumber $tcstep $index
-
 
 
   }
