@@ -219,7 +219,7 @@ Add-Type -TypeDefinition $cSource -ReferencedAssemblies System.Windows.Forms,Sys
      $WindowRect = New-Object RECT
      $GotWindowRect = [Window]::GetWindowRect($Handle, [ref]$WindowRect)
      $clickx=($WindowRect.right)/2
-     $clicky= 20
+     $clicky= 10
  
      [Microsoft.VisualBasic.interaction]::AppActivate($id)|out-null
      start-sleep -s 2
