@@ -160,7 +160,9 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
       write-output "$spectype download complete: $(get-date)"
       Move-Item "$env:USERPROFILE\Downloads\$filename" -Destination "$env:USERPROFILE\desktop" -Force
       &$actionsfe -para1 "$env:USERPROFILE\desktop\" -para2 "nolog"
-      Move-Item "$env:USERPROFILE\desktop\$filename" -Destination $picpath -Force
+      $copytopath="C:\testing_AI\modules\BITools\$spectype"
+      if(!test-path $copytopath){new-item -ItemType directory -path $copytopath |out-null}
+      Move-Item "$env:USERPROFILE\desktop\$filename" -Destination $copytopath -Force
       }
       else{
        $results="NG"

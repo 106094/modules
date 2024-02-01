@@ -702,7 +702,15 @@ $results="chceck screenshots"
 
 if($bitype -match "SPECviewperf2020"){
 
+    #check if exe dowloaded form web
+    $flowcheck=(import-csv -path C:\testing_AI\logs\logs_timemap.csv|where-object{$_.tc -match $tcnumber -and $_.program -match "specview_dl"}).results
+    $copyfromserver=$true
+  if($flowcheck -match "ok"){
+    $copyfromserver=$false
+  }
 ## copy tool ##
+if($copyfromserver -eq $true){
+    
 
  function netdisk_connect([string]$webpath,[string]$username,[string]$passwd,[string]$diskid){
 
@@ -735,6 +743,7 @@ $copytopath="C:\testing_AI\modules\BITools\SPECviewperf2020"
     #>
     }
 
+}
 
  $action="SPECviewperf2020 Benchmark"
 
@@ -748,24 +757,6 @@ $copytopath="C:\testing_AI\modules\BITools\SPECviewperf2020"
 
  else{
 
- <##
- $displayw=[int64](([System.Windows.Forms.Screen]::AllScreens).Bounds).Width
- $displayh=[int64](([System.Windows.Forms.Screen]::AllScreens).Bounds).Height
- $systemw= [int64](($width.split())[0])
- $systemh=[int64](($height.split())[0])
-
- 
-$diffw=$displayw- $systemw
-$diffh= $displayh-  $systemh
-
-if(-not($diffw -eq 0 -and $diffh -eq 0)){
- Set-ScreenResolution -Width $systemw -Height  $systemh
-}
-#>
-
-start-sleep -s 5
-
-
 $bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |Where-object{$_.name -match "exe"}).FullName
    
  get-process nw -ErrorAction SilentlyContinue|stop-process -Force
@@ -777,10 +768,10 @@ $bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |Where-object{$_.
 
  $installspec2020=$false
 
-(Get-ChildItem "HKLM:Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\")|%{
+(Get-ChildItem "HKLM:Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\")|ForEach-Object{
 $n=$_.name
 $n=$n.Replace("HKEY_LOCAL_MACHINE\","HKLM:")
-($p=Get-ItemProperty $n)|%{
+($p=Get-ItemProperty $n)|ForEach-Object{
 #$_.DisplayName
 if($_.DisplayName -match "SPECviewperf" -and $_.DisplayName -match "2020"){
 $installspec2020=$true
@@ -792,7 +783,6 @@ write-host "SPECviewperf2020 has been installed"
 if($installspec2020 -eq $false){
   #&$bipath /VERYSILENT 
   $id0=((get-process notepad -ea SilentlyContinue).Id).count
-
 
  &$bipath /VERYSILENT
 
@@ -816,7 +806,7 @@ if($installspec2020 -eq $false){
     start-sleep -s 10
 
    $idrelesaenote=(get-process notepad -ea SilentlyContinue|Where-object{$_.MainWindowTitle -match "note"}).Id
-   if( $idrelesaenote -ne $null){
+   if( $idrelesaenote){
    [Microsoft.VisualBasic.interaction]::AppActivate( $idrelesaenote)|out-null
     start-sleep -s 2
     [System.Windows.Forms.SendKeys]::SendWait("%{F4}")
@@ -911,7 +901,6 @@ $_
 }
 move-item $mgntjs $mgntjsb -Force  -ErrorAction SilentlyContinue
 $newmngmjs|set-content $mgntjs
-
 
 ###>
 
