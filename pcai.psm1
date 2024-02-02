@@ -430,7 +430,7 @@ Import-Module $mdpath -WarningAction SilentlyContinue -Global
 outlog $action $results $tcnumber $tcstep $index
 }
 
-if($pcaioption.length -match "exit"){
+if($pcaioption -match "exit"){
 exit
 }
 
