@@ -309,7 +309,7 @@ if($width2 -eq $resx -and  $height2 -eq $resy){
 
  }
  
-else{start-sleep -s 10
+else{start-sleep -s 20
 
    $results="OK"
     $index="success change resolution to $($resx) X  $($resy)"
