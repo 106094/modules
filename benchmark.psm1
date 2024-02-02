@@ -1096,11 +1096,11 @@ do{
      &$actionss  -para3 nonlog -para5 "score"
 
      do{
-      Start-Sleep -s 2
+      Start-Sleep -s 5
       [System.Windows.Forms.SendKeys]::SendWait("~")
-       &$actionss  -para3 nonlog -para5 "save_result1"
+      Start-Sleep -s 5
        [System.Windows.Forms.SendKeys]::SendWait("~")
-        &$actionss  -para3 nonlog -para5 "save_result2"
+       Start-Sleep -s 5
         $checkbenchresult=Get-ChildItem -path $cashe3
         if(!$checkbenchresult){
         $checkbenchresult=Get-ChildItem -path $cashe4
