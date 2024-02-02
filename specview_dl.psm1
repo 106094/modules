@@ -203,9 +203,11 @@ Add-Type -TypeDefinition $cSource -ReferencedAssemblies System.Windows.Forms,Sys
     $index="download ok"
     
     $website="https://gwpg.spec.org/benchmarks/benchmark/specviewperf-2020-v3-1/"
+    $download="https://spec.cs.miami.edu/downloads/gpc/opc/viewperf/SPECviewperf2020.3.1.exe"
     $filename="$spectype*.exe"
     if($spectype -eq "SPECworkstation"){
     $website="https://gwpg.spec.org/benchmarks/benchmark/specworkstation-3_1/"
+    $download="https://spec.cs.miami.edu/downloads/gpc/wpc/SPECworkstation_3.1.zip"
     $filename="$spectype*.zip"
     }
 
@@ -250,7 +252,15 @@ Add-Type -TypeDefinition $cSource -ReferencedAssemblies System.Windows.Forms,Sys
      &$actionss  -para3 nonlog -para5 "startdownload"
      $starttime=Get-Date
 
+     #[System.Windows.Forms.SendKeys]::SendWait("~")
+     
+     [System.Windows.Forms.SendKeys]::SendWait("^l")
+     Set-Clipboard -value $download
+     start-sleep -s 5     
+     [System.Windows.Forms.SendKeys]::SendWait("^v")
+     start-sleep -s 2 
      [System.Windows.Forms.SendKeys]::SendWait("~")
+
      start-sleep -s 60
      &$actionss  -para3 nonlog -para5 "downloading"
 
