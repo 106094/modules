@@ -1115,8 +1115,8 @@ do{
 
      copy-item $env:HOMEPATH\Heaven\log.html -Destination  $picpath -Force
      move-item $checkbenchresult.FullName -destination $picpath -Force
-     $logfile1=(get-chileitem -path $picpath -filter "$checkbenchresult.name").fullname
-     $logfile2=(get-chileitem -path $picpath -filter "log.html").fullname
+     $logfile1=(Get-ChildItem -path $picpath -filter "$checkbenchresult.name").fullname
+     $logfile2=(Get-ChildItem -path $picpath -filter "log.html").fullname
      	Rename-Item  -path $logfile1 -NewName $logfilename -force
      	Rename-Item  -path $logfile2 -NewName $logfilename2 -force
      

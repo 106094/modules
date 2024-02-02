@@ -77,7 +77,7 @@ stop-process -name "$dupname10*" -ea SilentlyContinue
     do{
     start-sleep -s 5
     $dupid=(get-process -name "$dupname10*" -ea SilentlyContinue).Id
-    $timepassed=(New-TimeSpan -start $starttime -End (get-date)).TotalMilliseconds
+    $timepassed=(New-TimeSpan -start $starttime -End (get-date)).TotalMinutes
     }until (!$dupid -or $timepassed -gt 30)
 
     if ($timepassed -gt 30){
@@ -103,7 +103,7 @@ if($extractorinstall.Length -eq 0 -or $extractorinstall -match "install"){
     do{
     start-sleep -s 5
     $dupid=(get-process -name "$dupname10*" -ea SilentlyContinue).Id
-    $timepassed=(New-TimeSpan -start $starttime -End (get-date)).TotalMilliseconds
+    $timepassed=(New-TimeSpan -start $starttime -End (get-date)).TotalMinutes
     }until (!$dupid -or $timepassed -gt 30)
    
      if ($timepassed -gt 30){ 
