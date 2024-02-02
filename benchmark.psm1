@@ -844,7 +844,7 @@ if($bitype -match "Unigine_Heaven"){
    $bitconfig_resy=($bitconfig_res.split("x"))[1]
   }
   $logfilename="Unigine_Heaven_Benchmark_4.0_"+$bitconfig.replace("|","_")+".html"
-  $logfilename2="step$($tcstep)_log.html"
+  $logfilename2="step$($tcstep)"+$bitconfig.replace("|","_")+"_log.html"
   $bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |Where-object{$_.name -match $bitype -and $_.name -match "exe"}).FullName
    
    $checkprocessing1=((get-process -name Valley -ea SilentlyContinue).Id).count 
@@ -1098,9 +1098,9 @@ do{
      do{
       Start-Sleep -s 2
       [System.Windows.Forms.SendKeys]::SendWait("~")
-      Start-Sleep -s 5
-      [System.Windows.Forms.SendKeys]::SendWait("~")
-      start-sleep -s 10
+       &$actionss  -para3 nonlog -para5 "save_result1"
+       [System.Windows.Forms.SendKeys]::SendWait("~")
+        &$actionss  -para3 nonlog -para5 "save_result2"
         $checkbenchresult=Get-ChildItem -path $cashe3
         if(!$checkbenchresult){
         $checkbenchresult=Get-ChildItem -path $cashe4
@@ -1115,8 +1115,9 @@ do{
 
      copy-item $env:HOMEPATH\Heaven\log.html -Destination  $picpath -Force
      move-item $checkbenchresult.FullName -destination $picpath -Force
-     $logfile1=(Get-ChildItem -path $picpath -filter "$checkbenchresult.name").fullname
-     $logfile2=(Get-ChildItem -path $picpath -filter "log.html").fullname
+     $htmlfilename=$checkbenchresult.name
+     $logfile1=(Get-ChildItem -path $picpath |Where-Object {$_.name -eq $htmlfilename}).fullname
+     $logfile2=(Get-ChildItem -path $picpath |Where-Object {$_.name -eq "log.html"}).fullname
      	Rename-Item  -path $logfile1 -NewName $logfilename -force
      	Rename-Item  -path $logfile2 -NewName $logfilename2 -force
      
