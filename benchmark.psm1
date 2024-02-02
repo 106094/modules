@@ -844,7 +844,7 @@ if($bitype -match "Unigine_Heaven"){
    $bitconfig_resy=($bitconfig_res.split("x"))[1]
   }
   $logfilename="Unigine_Heaven_Benchmark_4.0_"+$bitconfig.replace("|","_")+".html"
-  $logfilename2="step$($tcstep)"+$bitconfig.replace("|","_")+"_log.html"
+  $logfilename2="step$($tcstep)_"+$bitconfig.replace("|","_")+"_log.html"
   $bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |Where-object{$_.name -match $bitype -and $_.name -match "exe"}).FullName
    
    $checkprocessing1=((get-process -name Valley -ea SilentlyContinue).Id).count 
