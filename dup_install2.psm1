@@ -146,10 +146,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 $installfile=(Get-ChildItem ($scriptRoot+"\driver\$($duptype)\$($nversion)\") -File |Where-object{$_.name -match "\.exe"} |Sort-Object lastwritetime|Select-Object -first 1).fullname
  $installfilebn=(split-path -Leaf $installfile) -replace "\.exe",""
 
- write-host "The Display Type is $($drvtype2)"
- write-host "The Display Driver SWB is $($SWB)"
-
-if($installfile){
+ if($installfile){
 
 $dupname10=$installfilebn.substring(0,10)
 $dupnamepic=$installfilebn
@@ -303,7 +300,6 @@ $windowRect = New-Object RECT
   
    &$actionss -para3 nonlog -para5 "$($dupnamepic)_install_start"
    
-
    [System.Windows.Forms.SendKeys]::SendWait(" ")
 
   
