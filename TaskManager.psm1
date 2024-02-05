@@ -209,7 +209,7 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
 
     &$actionss  -para3 nonlog -para5 "OpenTaskManager"
 
-    [Clicker]::LeftClickAtPoint(40, 10)  ## click
+    [Clicker]::LeftClickAtPoint(100, 10)  ## click
 
     if((Get-WmiObject -Class Win32_OperatingSystem).Caption -match "Windows 10"){        
         Start-Sleep -Seconds 10
