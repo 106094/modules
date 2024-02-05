@@ -237,7 +237,9 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
         [System.Windows.Forms.SendKeys]::SendWait("{tab}")
         Start-Sleep -s 10
         [System.Windows.Forms.SendKeys]::SendWait("{down}")
-        [System.Windows.Forms.SendKeys]::SendWait("{down $para1}")
+        if($para1 -ne 0){
+            [System.Windows.Forms.SendKeys]::SendWait("{down $para1}")
+        }
         Start-Sleep -s 10
         [System.Windows.Forms.SendKeys]::SendWait("~")
 
