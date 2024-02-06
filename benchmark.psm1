@@ -1076,9 +1076,10 @@ do{
     if($bitconfig_window -match "window"){
     [Microsoft.VisualBasic.interaction]::AppActivate($checkrunning.Id)|out-null
     start-sleep -s 2
+    }
+    
     [Clicker]::LeftClickAtPoint($x1, $y1)
     start-sleep -s 5
-    }
     [System.Windows.Forms.SendKeys]::SendWait("{F9}")
     start-sleep -s 5
     [System.Windows.Forms.SendKeys]::SendWait("{F9}") #insurance
@@ -1094,36 +1095,42 @@ do{
 
      start-sleep -s 10
      &$actionss  -para3 nonlog -para5 "score"
-
-     do{
+     start-sleep -s 10
+     
+      [Clicker]::LeftClickAtPoint($x1, $y1)
       Start-Sleep -s 5
       [System.Windows.Forms.SendKeys]::SendWait("~")
       Start-Sleep -s 5
+      &$actionss  -para3 nonlog -para5 "save1"
        [System.Windows.Forms.SendKeys]::SendWait("~")
        Start-Sleep -s 5
+       &$actionss  -para3 nonlog -para5 "save2"
         $checkbenchresult=Get-ChildItem -path $cashe3
         if(!$checkbenchresult){
         $checkbenchresult=Get-ChildItem -path $cashe4
         }
-     } until ($checkbenchresult)
           
+     if (!$checkbenchresult){
+       $index="save score failed"
+     }
+     else{
+      copy-item $env:HOMEPATH\Heaven\log.html -Destination  $picpath -Force
+      move-item $checkbenchresult.FullName -destination $picpath -Force
+      $htmlfilename=$checkbenchresult.name
+      $logfile1=(Get-ChildItem -path $picpath |Where-Object {$_.name -eq $htmlfilename}).fullname
+      $logfile2=(Get-ChildItem -path $picpath |Where-Object {$_.name -eq "log.html"}).fullname
+        Rename-Item  -path $logfile1 -NewName $logfilename -force
+        Rename-Item  -path $logfile2 -NewName $logfilename2 -force
+      
+      #recover settings  
+      Get-ChildItem $backuppath -file| Copy-Item -Destination "C:\Program Files (x86)\Unigine\Heaven Benchmark 4.0\data\launcher\js\" -Force
+      remove-item -path  "$env:USERPROFILE\AppData\Local\file__0.localstorage"  -Force
+     }
       [System.Windows.Forms.SendKeys]::SendWait("%{F4}")
       start-sleep -s 5
-
       (get-process -name heaven -ErrorAction SilentlyContinue).CloseMainWindow()|Out-Null
       (get-process -name browser_x86 -ErrorAction SilentlyContinue).CloseMainWindow()|Out-Null
 
-     copy-item $env:HOMEPATH\Heaven\log.html -Destination  $picpath -Force
-     move-item $checkbenchresult.FullName -destination $picpath -Force
-     $htmlfilename=$checkbenchresult.name
-     $logfile1=(Get-ChildItem -path $picpath |Where-Object {$_.name -eq $htmlfilename}).fullname
-     $logfile2=(Get-ChildItem -path $picpath |Where-Object {$_.name -eq "log.html"}).fullname
-     	Rename-Item  -path $logfile1 -NewName $logfilename -force
-     	Rename-Item  -path $logfile2 -NewName $logfilename2 -force
-     
-     #recover settings  
-     Get-ChildItem $backuppath -file| Copy-Item -Destination "C:\Program Files (x86)\Unigine\Heaven Benchmark 4.0\data\launcher\js\" -Force
-     remove-item -path  "$env:USERPROFILE\AppData\Local\file__0.localstorage"  -Force
        }
 
    }
