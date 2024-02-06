@@ -158,7 +158,6 @@ public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
 #$lastid=  (Get-Process cmd |sort StartTime -ea SilentlyContinue |select -last 1).id
  #Get-Process -id $lastid  | Set-WindowState -State MINIMIZE
  
-start-sleep -s $timeset
 
 ### show taskbar###
 
@@ -177,7 +176,7 @@ if($taskbarpara -match "show"){
      Start-Sleep -s 2
 }
 
-Start-Sleep -s 2
+start-sleep -s $timeset
 
 #$screens = [Windows.Forms.Screen]::AllScreens
 #$width  = ([System.Windows.Forms.SystemInformation]::PrimaryMonitorSize|select Width).width
