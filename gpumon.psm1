@@ -7,7 +7,7 @@ function gpumon ([string]$para1){
      Add-Type -AssemblyName System.Windows.Forms
       Add-Type -AssemblyName System.Windows.Forms,System.Drawing
   
-
+  #region import functions
 $cSource = @'
 using System;
 using System.Drawing;
@@ -73,6 +73,91 @@ public static void LeftClickAtPoint(int x, int y)
 }
 '@
 Add-Type -TypeDefinition $cSource -ReferencedAssemblies System.Windows.Forms,System.Drawing
+ 
+function Set-WindowState {
+	<#
+	.LINK
+	https://gist.github.com/Nora-Ballard/11240204
+	#>
+
+	[CmdletBinding(DefaultParameterSetName = 'InputObject')]
+	param(
+		[Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
+		[Object[]] $InputObject,
+
+		[Parameter(Position = 1)]
+		[ValidateSet('FORCEMINIMIZE', 'HIDE', 'MAXIMIZE', 'MINIMIZE', 'RESTORE',
+					 'SHOW', 'SHOWDEFAULT', 'SHOWMAXIMIZED', 'SHOWMINIMIZED',
+					 'SHOWMINNOACTIVE', 'SHOWNA', 'SHOWNOACTIVATE', 'SHOWNORMAL')]
+		[string] $State = 'SHOW'
+	)
+
+	Begin {
+		$WindowStates = @{
+			'FORCEMINIMIZE'		= 11
+			'HIDE'				= 0
+			'MAXIMIZE'			= 3
+			'MINIMIZE'			= 6
+			'RESTORE'			= 9
+			'SHOW'				= 5
+			'SHOWDEFAULT'		= 10
+			'SHOWMAXIMIZED'		= 3
+			'SHOWMINIMIZED'		= 2
+			'SHOWMINNOACTIVE'	= 7
+			'SHOWNA'			= 8
+			'SHOWNOACTIVATE'	= 4
+			'SHOWNORMAL'		= 1
+		}
+
+		$Win32ShowWindowAsync = Add-Type -MemberDefinition @'
+[DllImport("user32.dll")]
+public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
+'@ -Name "Win32ShowWindowAsync" -Namespace Win32Functions -PassThru
+
+		if (!$global:MainWindowHandles) {
+			$global:MainWindowHandles = @{ }
+		}
+	}
+
+	Process {
+		foreach ($process in $InputObject) {
+			if ($process.MainWindowHandle -eq 0) {
+				if ($global:MainWindowHandles.ContainsKey($process.Id)) {
+					$handle = $global:MainWindowHandles[$process.Id]
+				} else {
+					Write-Error "Main Window handle is '0'"
+					continue
+				}
+			} else {
+				$handle = $process.MainWindowHandle
+				$global:MainWindowHandles[$process.Id] = $handle
+			}
+
+			$Win32ShowWindowAsync::ShowWindowAsync($handle, $WindowStates[$State]) | Out-Null
+			Write-Verbose ("Set Window State '{1} on '{0}'" -f $MainWindowHandle, $State)
+		}
+	}
+}
+
+Add-Type -TypeDefinition @"
+using System;
+using System.Runtime.InteropServices;
+
+public class SetWindowHelper {
+    [DllImport("user32.dll")]
+    public static extern bool GetWindowRect(IntPtr hWnd, out myRECT myrect);
+}
+
+public struct myRECT {
+    public int Left;
+    public int Top;
+    public int Right;
+    public int Bottom;
+}
+"@
+
+#endregion
+            
    
 if($PSScriptRoot.length -eq 0){
 $scriptRoot="C:\testing_AI\modules"
@@ -91,9 +176,12 @@ $action=((get-content $tcpath).split(","))[2]
 $picpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
 if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-null}
 
-$actionmd ="screenshot"
-Get-Module -name $actionmd|remove-module
-$mdpath=(get-childitem -path $scriptRoot -r -file |where-object{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
+$results= "OK"
+$index="check screenshot and log"
+
+$actionss ="screenshot"
+Get-Module -name $actionss|remove-module
+$mdpath=(get-childitem -path $scriptRoot -r -file |where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 $checkgfx=(Get-WmiObject -Class Win32_VideoController | Select-Object Name,AdapterCompatibility).name
@@ -105,22 +193,40 @@ $index="AMD Gfx Driver, by pass"+"`n" `
 
 else{
 
+function opengpumon {
+start-sleep -s 5
+$checkrunning=get-process -name GPUMon -ErrorAction SilentlyContinue
+if(!$checkrunning){
+
+&"$scriptRoot\GPUMon\GPUMon.exe"
+start-sleep -s 20
+}
+
+$gpumid=(get-process -name GPUMon).Id
+[Microsoft.VisualBasic.Interaction]::AppActivate($gpumid)
+start-sleep -s 2
+$windowHandle = (Get-Process -Name "GPUMON").MainWindowHandle
+$myrect = New-Object myRECT
+[SetWindowHelper]::GetWindowRect($windowHandle, [ref]$myrect)
+
+$windowx = $myrect.Left
+$windowy = $myrect.Top
+
+[Clicker]::LeftClickAtPoint($windowx+30, $windowy+5)
+  Start-Sleep -s 2
+
+  }
 
 if($actiontype -match "start"){    
 
-&"$scriptRoot\GPUMon\GPUMon.exe"
-start-sleep -s 10
-$gpumid=(get-process -name GPUMon).Id
-[Microsoft.VisualBasic.Interaction]::AppActivate($gpumid)
-  Start-Sleep -s 1
+opengpumon
+
 [System.Windows.Forms.SendKeys]::SendWait("{tab 14}")
  Start-Sleep -s 2
  
 ## screenshot ##
 
-&$actionmd  -para3 nonlog -para5 "$actiontype_tab14"
-
-$picfile1=(get-childitem $picpath |where-object{$_.name -match ".jpg" -and $_.name -match "$actiontype_tab14" }|sort-object lastwritetime|select-object -last1).FullName
+&$actionss  -para3 nonlog -para5 "$actiontype_tab14"
 
  [System.Windows.Forms.SendKeys]::SendWait("~")
   Start-Sleep -s 2
@@ -128,20 +234,14 @@ $picfile1=(get-childitem $picpath |where-object{$_.name -match ".jpg" -and $_.na
 $gpumid=(get-process -name GPUMon -ErrorAction SilentlyContinue).Id
 
 if(-not($gpumid)){
-&"$scriptRoot\GPUMon\GPUMon.exe"
-start-sleep -s 10
-$gpumid=(get-process -name GPUMon).Id
-[Microsoft.VisualBasic.Interaction]::AppActivate($gpumid)
-  Start-Sleep -s 1
+opengpumon
+
 [System.Windows.Forms.SendKeys]::SendWait("{tab 13}")
     Start-Sleep -s 2
+    
+&$actionss  -para3 nonlog -para5 "$actiontype_tab13"
 
-
-
-&$actionmd  -para3 nonlog -para5 "$actiontype_tab13"
-
-$picfile2=(get-childitem $picpath |where-object{$_.name -match ".jpg" -and $_.name -match "$actiontype_tab13" }|sort-object lastwritetime|select-object -last1).FullName
-      
+     
  [System.Windows.Forms.SendKeys]::SendWait("~")
    Start-Sleep -s 2
  }
@@ -152,16 +252,13 @@ if($gpumid){
 
 ## screenshot ##
 
-
-&$actionmd  -para3 nonlog -para5 "clickstart"
+&$actionss  -para3 nonlog -para5 "clickstart"
 
 #$picfile3=(get-childitem $picpath |where-object{$_.name -match ".jpg" -and $_.name -match "clickstart" }|sort-object lastwritetime|select-object -last1).FullName
 
 start-sleep -s 1
 [System.Windows.Forms.SendKeys]::SendWait("~")
 
-$results= "check screenshot"
-$index="$picfile"
 }
 else{
 $results= "NG"
@@ -186,16 +283,13 @@ $timespan=(New-TimeSpan -start $tiemcheck1 -end  $checktime).TotalSeconds
 
 $newlog=$checklogs.fullname
 
-$gpumid=(get-process -name GPUMon).Id
-[Microsoft.VisualBasic.Interaction]::AppActivate($gpumid)
-  Start-Sleep -s 1
+opengpumon
+
 [System.Windows.Forms.SendKeys]::SendWait("~")
  Start-Sleep -s 2         
+ 
+&$actionss  -para3 nonlog -para5 $actiontype
 
-
-&$actionmd  -para3 nonlog -para5 $actiontype
-
-$picfile4=(get-childitem $picpath |where-object{$_.name -match ".jpg" -and $_.name -match $actiontype }|sort-object lastwritetime|select-object -last1).FullName
 
 (get-process -name GPUMon).CloseMainWindow()
 
@@ -203,10 +297,6 @@ $timestmp=Get-Date -Format "yyMMdd_HHmmss"
 
 Move-Item  $newlog "$picpath\$($timestmp)_GPUMon.log" -Force
 
-$picfile=[string]::Join("`n",$picfile1,$picfile2,$picfile4)
-
-$results= "check screenshot and log"
-$index=$picfile
 
 }
 
@@ -217,63 +307,51 @@ $index="no GPUMon is running"
 
 }
 
-if($actiontype -match "GPUsettings"){    
+if($actiontype -match "GPUsettings"){
 
-&"$scriptRoot\GPUMon\GPUMon.exe"
-start-sleep -s 10
-$gpumid=(get-process -name GPUMon).Id
-[Microsoft.VisualBasic.Interaction]::AppActivate($gpumid)
-  Start-Sleep -s 2
+opengpumon
   
-&$actionmd  -para3 nonlog -para5 "open"
+&$actionss  -para3 nonlog -para5 "open"
 
 [System.Windows.Forms.SendKeys]::SendWait("{tab 3}")
  Start-Sleep -s 2
  
 [System.Windows.Forms.SendKeys]::SendWait(" ")
- Start-Sleep -s 2
  
-&$actionmd  -para3 nonlog -para5 "$actiontype_L0s_check"
- Start-Sleep -s 2
+&$actionss  -para3 nonlog -para5 "$($actiontype)_L0s_check"
  
 [System.Windows.Forms.SendKeys]::SendWait(" ")
- Start-Sleep -s 2
  
-&$actionmd  -para3 nonlog -para5 "$actiontype_L0s_uncheck"
+&$actionss  -para3 nonlog -para5 "$($actiontype)_L0s_uncheck"
 
 [System.Windows.Forms.SendKeys]::SendWait("{tab}")
- Start-Sleep -s 2
  
 [System.Windows.Forms.SendKeys]::SendWait(" ")
- Start-Sleep -s 2
  
- &$actionmd  -para3 nonlog -para5 "$actiontype_L1_check"
- Start-Sleep -s 2
+ &$actionss  -para3 nonlog -para5 "$($actiontype)_L1_check"
  
 [System.Windows.Forms.SendKeys]::SendWait(" ")
 
- &$actionmd  -para3 nonlog -para5 "$actiontype_L1_uncheck"
+ &$actionss  -para3 nonlog -para5 "$actiontype_L1_uncheck"
  
 [System.Windows.Forms.SendKeys]::SendWait("{tab 3}")
 ## screenshot ##
 
 [System.Windows.Forms.SendKeys]::SendWait("{F4}")
-&$actionmd  -para3 nonlog -para5 "$actiontype_width_expand"
+&$actionss  -para3 nonlog -para5 "$($actiontype)_width_expand"
 
 [System.Windows.Forms.SendKeys]::SendWait("{F4}")
  Start-Sleep -s 2
    [System.Windows.Forms.SendKeys]::SendWait("{tab}")
       Start-Sleep -s 2
      [System.Windows.Forms.SendKeys]::SendWait("{F4}")
-&$actionmd  -para3 nonlog -para5 "$actiontype_gen_expand"
+&$actionss  -para3 nonlog -para5 "$($actiontype)_gen_expand"
 
 [System.Windows.Forms.SendKeys]::SendWait("{F4}")
  Start-Sleep -s 2
 
  (Get-Process -name gpumon).CloseMainWindow()
 
- $results="OK"
- $index="check screenshots"
 }
 
 
