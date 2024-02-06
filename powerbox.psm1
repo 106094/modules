@@ -83,8 +83,8 @@ $scriptRoot=$PSScriptRoot
 if($para2 -le 30){
 $para2=30
 }
-if($para3 -eq 10){
-$para3=10
+if($para3 -le 20){
+$para3=20
 }
 
 $boxip=$para1
