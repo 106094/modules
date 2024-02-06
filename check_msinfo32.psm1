@@ -52,11 +52,10 @@ $tcstep=((get-content $tcpath).split(","))[1]
 $picpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
 if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-null}
 
-$actionmd="screenshot"
-Get-Module -name $actionmd|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionmd\b" -and $_.name -match "psm1"}).fullname
+$actionss="screenshot"
+Get-Module -name $actionss|remove-module
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
-
 
 # 0 – Security 1 – Basic 2 – Enhanced 3 – Full  -> On:3 Off:1
 $checkvalue=(Get-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection -Name "AllowTelemetry").AllowTelemetry
@@ -76,6 +75,15 @@ $appname="msinfo32"
    Start-Sleep -s 2
    [System.Windows.Forms.SendKeys]::SendWait("~")
     Start-Sleep -s 10
+
+    $results="NG"
+    $index="fail to open msinfo32"
+    
+   if(Get-Process -name $appname){
+        $results="OK"
+        $index="check screenshots"
+   
+
      [System.Windows.Forms.SendKeys]::SendWait("% ")
        Start-Sleep -s 2
         [System.Windows.Forms.SendKeys]::SendWait("x")
@@ -85,32 +93,31 @@ $appname="msinfo32"
        
 ## screen capture ##
 
-&$actionmd  -para3 nonlog -para5 "1"
- 
-      
-       [System.Windows.Forms.SendKeys]::SendWait("{PGDN}")
-          Start-Sleep -s 10
-          
-&$actionmd  -para3 nonlog -para5 "2"
+    &$actionss  -para3 nonlog -para5 "1"
     
-       [System.Windows.Forms.SendKeys]::SendWait("{PGDN}")
-          Start-Sleep -s 10
-          
-&$actionmd  -para3 nonlog -para5 "3"
+        
+        [System.Windows.Forms.SendKeys]::SendWait("{PGDN}")
+            Start-Sleep -s 10
+            
+    &$actionss  -para3 nonlog -para5 "2"
+        
+        [System.Windows.Forms.SendKeys]::SendWait("{PGDN}")
+            Start-Sleep -s 10
+            
+    &$actionss  -para3 nonlog -para5 "3"
 
-     [System.Windows.Forms.SendKeys]::SendWait("% ")
-       Start-Sleep -s 2
+        [System.Windows.Forms.SendKeys]::SendWait("% ")
+        Start-Sleep -s 2
         [System.Windows.Forms.SendKeys]::SendWait("c")
-          Start-Sleep -s 2
+        Start-Sleep -s 2
 
-##check results ##
+    ##check results ##
 
- $picfile1=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "1" }).FullName
- $picfile2=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "2" }).FullName
- $picfile3=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "3" }).FullName
+}
 
-$results="check screenshot"
-$index=[string]::join("`n",$picfile1,$picfile2,$picfile3)
+if(Get-Process -name $appname -ErrorAction SilentlyContinue){
+    (Get-Process -name $appname).CloseMainWindow()
+}
 
 ######### write log  #######
 
