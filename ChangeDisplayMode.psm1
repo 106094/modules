@@ -13,15 +13,17 @@ function ChangeDisplayMode ([string]$para1,[string]$para2){
         $scriptRoot=$PSScriptRoot
     }
 
+    $nonlog_flag=$para2
 
+    $action = "Change Display Mode to $para1"
     $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
     $tcnumber=((get-content $tcpath).split(","))[0]
     $tcstep=((get-content $tcpath).split(","))[1]
-    $action = "Change Display Mode to $para1"
-        
-    $actionss ="screenshot"
+    
     $results = "OK"
     $index = "check screenshots"
+    
+    $actionss ="screenshot"
 
     Get-Module -name $actionss|remove-module
     $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
@@ -47,10 +49,12 @@ function ChangeDisplayMode ([string]$para1,[string]$para2){
 
 
     #output log
+    if($nonlog_flag.Length -gt 0){        
     Get-Module -name "outlog"|remove-module
     $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
     #write-host "Do $action!"
     outlog $action $results $tcnumber $tcstep $index
+    }
 }
 Export-ModuleMember -Function ChangeDisplayMode
