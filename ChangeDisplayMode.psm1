@@ -32,14 +32,17 @@ function ChangeDisplayMode ([string]$para1,[string]$para2){
     $extendedMode = $displaySettings.Count -gt 1
 
     if ($extendedMode) {
-        
+        &$actionss  -para3 nonlog -para5 "change_display_mode_to_$($para1)_before"
         try {
         displayswitch.exe  /$para1
         Start-Sleep -s 10
         }
         catch{
             $results = "NG"
+            $index="fail to change display mode"
         }
+
+        &$actionss  -para3 nonlog -para5 "change_display_mode_to_$($para1)_after"
 
     }else{
         $results = "NG"
