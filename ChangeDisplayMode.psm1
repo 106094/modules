@@ -51,7 +51,7 @@ function ChangeDisplayMode ([string]$para1,[string]$para2){
 
 
     #output log
-    if($nonlog_flag.Length -gt 0){        
+    if($nonlog_flag.Length -eq 0){        
     Get-Module -name "outlog"|remove-module
     $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
