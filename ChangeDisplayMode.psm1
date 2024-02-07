@@ -25,7 +25,7 @@ function ChangeDisplayMode ([string]$para1,[string]$para2){
     
     $actionssm ="screenshot_multiscreen"
     Get-Module -name $actionssm |remove-module
-    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionssm \b" -and $_.name -match "psm1"}).fullname
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionssm\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     $displaySettings = Get-WmiObject -Namespace root\cimv2 -Class Win32_DesktopMonitor
