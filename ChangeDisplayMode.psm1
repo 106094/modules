@@ -1,4 +1,4 @@
-function ChangeDisplayMode ([string]$para1){
+function ChangeDisplayMode ([string]$para1,[string]$para2){
 
     $paracheck1=$PSBoundParameters.ContainsKey('para1')
 
@@ -17,21 +17,32 @@ function ChangeDisplayMode ([string]$para1){
     $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
     $tcnumber=((get-content $tcpath).split(","))[0]
     $tcstep=((get-content $tcpath).split(","))[1]
+    $action = "Change Display Mode to $para1"
+        
+    $actionss ="screenshot"
+    $results = "OK"
+    $index = "check screenshots"
 
+    Get-Module -name $actionss|remove-module
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+    Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     $displaySettings = Get-WmiObject -Namespace root\cimv2 -Class Win32_DesktopMonitor
     $extendedMode = $displaySettings.Count -gt 1
 
     if ($extendedMode) {
-        $results = "OK"
-        $action = "Change Display Mode to $para1"
-
-
         
+        try {
         displayswitch.exe  /$para1
         Start-Sleep -s 10
+        }
+        catch{
+            $results = "NG"
+        }
+
     }else{
         $results = "NG"
+        $index="only one monitor"
     }
 
 
