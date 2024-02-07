@@ -23,16 +23,16 @@ function ChangeDisplayMode ([string]$para1,[string]$para2){
     $results = "OK"
     $index = "check screenshots"
     
-    $actionss ="screenshot"
-    Get-Module -name $actionss|remove-module
-    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+    $actionssm ="screenshot_multiscreen"
+    Get-Module -name $actionssm |remove-module
+    $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionssm \b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
     $displaySettings = Get-WmiObject -Namespace root\cimv2 -Class Win32_DesktopMonitor
     $extendedMode = $displaySettings.Count -gt 1
 
     if ($extendedMode) {
-        &$actionss  -para3 nonlog -para5 "change_display_mode_to_$($para1)_before"
+        &$actionssm  -para3 nonlog -para5 "change_display_mode_to_$($para1)_before"
         try {
         displayswitch.exe  /$para1
         Start-Sleep -s 10
@@ -42,7 +42,7 @@ function ChangeDisplayMode ([string]$para1,[string]$para2){
             $index="fail to change display mode"
         }
 
-        &$actionss  -para3 nonlog -para5 "change_display_mode_to_$($para1)_after"
+        &$actionssm  -para3 nonlog -para5 "change_display_mode_to_$($para1)_after"
 
     }else{
         $results = "NG"
