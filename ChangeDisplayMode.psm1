@@ -24,7 +24,6 @@ function ChangeDisplayMode ([string]$para1,[string]$para2){
     $index = "check screenshots"
     
     $actionss ="screenshot"
-
     Get-Module -name $actionss|remove-module
     $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
