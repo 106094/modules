@@ -67,8 +67,16 @@ $picpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
 if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-null}
 $moninfo=$picpath+"$($timenow)_step$($tcstep)_monitorinfo_before.csv"
 
+$monitors = Get-WmiObject -Class Win32_DesktopMonitor
+$numberOfMonitors = $monitors.Count
 
-$actionss ="screenshot_multiscreen"
+if($numberOfMonitors -gt 1){
+    $actionss ="screenshot_multiscreen"
+}
+if($numberOfMonitors -eq 1){
+    $actionss ="screenshot"
+}
+
 Get-Module -name $actionss|remove-module
 $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
