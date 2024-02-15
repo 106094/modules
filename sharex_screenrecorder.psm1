@@ -1,11 +1,11 @@
 ﻿
 function sharex_screenrecorder ([int64]$para1,[string]$para2,[string]$para3){
     
-    Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
-    $wshell=New-Object -ComObject wscript.shell
-      Add-Type -AssemblyName Microsoft.VisualBasic
-      Add-Type -AssemblyName System.Windows.Forms
-   
+  Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
+  $wshell=New-Object -ComObject wscript.shell
+    Add-Type -AssemblyName Microsoft.VisualBasic
+    Add-Type -AssemblyName System.Windows.Forms
+ 
 
 $paracheck=$PSBoundParameters.ContainsKey('para1')
 $paracheck2=$PSBoundParameters.ContainsKey('para2')
@@ -55,7 +55,7 @@ $results="OK"
 #region check file and install
 
 $configpath="$env:userprofile\Documents\ShareX\ApplicationConfig.json"
-$exefilepath="C:\Program Files\ShareX\ShareX.exe"
+$exefilepath="C:\Program Files\ShareX\ffmpeg.exe"
 
 if (!(test-path $configpath) -or (test-path $exefilepath)){
 
@@ -91,8 +91,8 @@ Add-Type @"
 using System;
 using System.Runtime.InteropServices;
 public class PInvoke {
-    [DllImport("user32.dll")] public static extern IntPtr GetDC(IntPtr hwnd);
-    [DllImport("gdi32.dll")] public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+  [DllImport("user32.dll")] public static extern IntPtr GetDC(IntPtr hwnd);
+  [DllImport("gdi32.dll")] public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
 }
 "@
 $hdc = [PInvoke]::GetDC([IntPtr]::Zero)
@@ -145,17 +145,16 @@ Start-Sleep -s $recordtime
 #endregion
 
 #region start recording
+$size="$($bWidth)x$($bHeight)"
 
-
-&$exefilepath -hide_banner -f gdigrab -thread_queue_size 1024 -rtbufsize 256M -framerate 30 -offset_x 0 -offset_y 0 -video_size $($bWidth)x$($bHeight) -draw_mouse 1 `
--i desktop -c:v libx264 -r 30 -preset ultrafast -t $($recordtime) -tune zerolatency -crf 28 -pix_fmt yuv420p -movflags +faststart -y $reclog -silent
+&$exefilepath -hide_banner -f gdigrab -thread_queue_size 1024 -rtbufsize 256M -framerate 30 -offset_x 0 -offset_y 0 -video_size $size -draw_mouse 1 -i desktop -c:v libx264 -r 30 -preset ultrafast -t $($recordtime) -tune zerolatency -crf 28 -pix_fmt yuv420p -movflags +faststart -y "$reclog"
 
 #endregion
 start-sleep -s 10
 
 if(test-path $reclog){
-  $results="OK"
-  $index="check the recorded mp4 file"
+$results="OK"
+$index="check the recorded mp4 file"
 }
 
 
@@ -181,6 +180,6 @@ outlog $action $results $tcnumber $tcstep $index
 
 }
 
-  }
+}
 
-    export-modulemember -Function sharex_screenrecorder
+  export-modulemember -Function sharex_screenrecorder
