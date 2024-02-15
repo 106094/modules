@@ -165,7 +165,7 @@ function idrac_EmbVideo ([string]$para1){
          $index ="EmbVideo settings Fail" 
       }
 
-   }   
+    
 
     
 ## Apply and reboot ##
@@ -227,15 +227,15 @@ function idrac_EmbVideo ([string]$para1){
      
     Start-Sleep -s 30
 
+    }
+    
     ### close web if fail ###
 
     $driver.Close()
     $driver.Quit()
     if((get-process -Name msedgedriver -ErrorAction SilentlyContinue)){Stop-Process -Name msedgedriver}
     write-host "fail to reboot after IntegratedDevices setting apply"
-
     }
-
     ### write to log ###
     
     if($writelog){

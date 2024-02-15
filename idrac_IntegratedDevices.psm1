@@ -20,6 +20,16 @@ function idrac_IntegratedDevices ([string]$para1){
         $scriptRoot=$PSScriptRoot
     }
 
+
+    $action="idrac_IntegratedDevices_$para1"
+    
+    $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
+    $tcnumber=((get-content $tcpath).split(","))[0]
+    $tcstep=((get-content $tcpath).split(","))[1]
+ 
+    #write-host "Do $action!"
+    outlog $action $results $tcnumber $tcstep $index
+
     Get-Module -name "screenshot" |remove-module
     $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^screenshot\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
@@ -109,7 +119,6 @@ function idrac_IntegratedDevices ([string]$para1){
 
     start-sleep -s 20
  
-
     $idsetconn=$driver.FindElement([OpenQA.Selenium.By]::Id( "configuration.biossettings"))
     $idsetconn.Click()
 
@@ -143,7 +152,6 @@ function idrac_IntegratedDevices ([string]$para1){
 
     $selected_option = $idtpmsec.GetAttribute("value").split(":")[1]
     screenshot -para3 nolog -para5 "$($para1)_NIC1NIC2setting"
-
  
       if($selected_option -match $settins1){      
          $index ="Embedded NIC1 and NIC2 settings OK" 
@@ -153,28 +161,9 @@ function idrac_IntegratedDevices ([string]$para1){
          $index ="Embedded NIC1 and NIC2 settings Fail" 
       }
 
-   }   
-
-   
-    ### write to log ###
-
-    $action="idrac_IntegratedDevices_$para1"
-    
-    $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
-    $tcnumber=((get-content $tcpath).split(","))[0]
-    $tcstep=((get-content $tcpath).split(","))[1]
- 
-    Get-Module -name "outlog"|remove-module
-    $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
-    Import-Module $mdpath -WarningAction SilentlyContinue -Global
-
-    #write-host "Do $action!"
-    outlog $action $results $tcnumber $tcstep $index
-
 ## Apply and reboot ##
 
  if(!$check -and $results -ne "NG" ){
-
 
     start-sleep -s 10                        
     $applybutton=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[ng-click='onApplyAction()']"))
@@ -231,8 +220,9 @@ function idrac_IntegratedDevices ([string]$para1){
      
     Start-Sleep -s 30
 
-
-    ### close web if fail ###
+    }
+    
+    ### close web if reboot fail ###
 
     $driver.Close()
     $driver.Quit()
@@ -240,7 +230,6 @@ function idrac_IntegratedDevices ([string]$para1){
     write-host "fail to reboot after IntegratedDevices setting apply"
 
     }
-
     ### write to log ###
     
     if($writelog){
