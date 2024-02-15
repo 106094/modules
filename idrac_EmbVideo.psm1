@@ -18,6 +18,11 @@ function idrac_EmbVideo ([string]$para1){
         $scriptRoot=$PSScriptRoot
     }
 
+    $action="idrac_EmbeddedVideoController_$para1"    
+    $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
+    $tcnumber=((get-content $tcpath).split(","))[0]
+    $tcstep=((get-content $tcpath).split(","))[1]
+
     Get-Module -name "screenshot" |remove-module
     $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^screenshot\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
@@ -138,7 +143,6 @@ function idrac_EmbVideo ([string]$para1){
 
     $selected_option = $idtpmsec.GetAttribute("value").split(":")[1]
     screenshot -para3 nolog -para5 "$($para1)_EmbVideosetting"
-
  
       if($selected_option -match $settins1){      
          $index ="EmbVideo settings OK" 
@@ -150,37 +154,64 @@ function idrac_EmbVideo ([string]$para1){
 
    }   
 
-   
-    ### write to log ###
-
-    $action="idrac_EmbeddedVideoController_$para1"
     
-    $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
-    $tcnumber=((get-content $tcpath).split(","))[0]
-    $tcstep=((get-content $tcpath).split(","))[1]
- 
-    Get-Module -name "outlog"|remove-module
-    $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
-    Import-Module $mdpath -WarningAction SilentlyContinue -Global
-
-    #write-host "Do $action!"
-    outlog $action $results $tcnumber $tcstep $index
-
 ## Apply and reboot ##
 
  if(!$check -and $results -ne "NG" ){
-start-sleep -s 10
-   $idtpmappy=$driver.FindElement([OpenQA.Selenium.By]::XPath("//*[@id='module-div']/div[2]/div/div[9]/table-bios-inputs/div/form/div/table/tfoot/tr/td[2]/span/button[1]"))
-   $idtpmappy.Click()
-   start-sleep -s 5
-   $idtpmappyok=$driver.FindElement([OpenQA.Selenium.By]::XPath("/html/body/div[4]/div/div/div/div[3]/span/button"))
-   $idtpmappyok.Click()
-      start-sleep -s 5
-    $idtpmappy_reboot=$driver.FindElement([OpenQA.Selenium.By]::XPath("//*[@id='module-div']/div[2]/div/div[16]/button[1]"))
-       $idtpmappy_reboot.Click()
-         start-sleep -s 5
-     $idtpmappy_rebootok=$driver.FindElement([OpenQA.Selenium.By]::XPath("/html/body/div[4]/div/div/div/div[3]/span[2]/button"))
-     $idtpmappy_rebootok.Click()
+
+    start-sleep -s 10
+                        
+    $applybutton=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[ng-click='onApplyAction()']"))
+    $applybutton.Click()
+    Start-Sleep -s 20
+    #region screenshot
+    $timenow=get-date -format "yyMMdd_HHmmss"
+    $savepic=$picpath+"$($timenow)_step$($tcstep)_apply.jpg"
+    $screenshot = $driver.GetScreenshot()
+    $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
+    #endregion                    
+    try{
+    $okbutton=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[translate='ok']"))
+    if($okbutton.Displayed -eq $true){                     
+    $okbutton.Click() 
+    Start-Sleep -s 10
+    #region screenshot
+    $timenow=get-date -format "yyMMdd_HHmmss"
+    $savepic=$picpath+"$($timenow)_step$($tcstep)_okbutton.jpg"
+    $screenshot = $driver.GetScreenshot()
+    $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
+    #endregion
+    }
+    }catch{
+    $results="NG"
+    $index="fail to apply settings"
+    }
+    Start-Sleep -s 10
+    try {
+    $applyandrebootbt=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[translate='apply_reboot']"))
+    if($applyandrebootbt.Displayed -eq $true){
+        if($nonlog_flag.Length -eq 0){
+            Get-Module -name "outlog"|remove-module
+            $mdpath=(get-childitem -path "C:\testing_AI\modules\" -r -file |where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+            Import-Module $mdpath -WarningAction SilentlyContinue -Global
+            outlog $action $results $tcnumber $tcstep $index
+            $writelog=$true
+            }
+    Start-Sleep -s 10
+    $applyandrebootbt.Click()
+    #region screenshot
+    $timenow=get-date -format "yyMMdd_HHmmss"
+    $savepic=$picpath+"$($timenow)_step$($tcstep)_applyandreboot.jpg"
+    $screenshot = $driver.GetScreenshot()
+    $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
+    #endregion 
+    Start-Sleep -s 5
+    }        
+    }
+    catch {
+        $results="NG"
+        $index="fail to change settings"
+    }
      
     Start-Sleep -s 30
 
@@ -193,6 +224,19 @@ start-sleep -s 10
 
     }
 
+    ### write to log ###
+    
+    if($writelog){
+        Write-Output "ERROR-fail to reboot idrac"
+    }
+    if($nonlog_flag.Length -eq 0 -and !$writelog){
+    Get-Module -name "outlog"|remove-module
+    $mdpath=(get-childitem -path "C:\testing_AI\modules\" -r -file |where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+    Import-Module $mdpath -WarningAction SilentlyContinue -Global
+
+    #write-host "Do $action!"
+    outlog $action $results $tcnumber $tcstep $index
+    }
 
 }
 
