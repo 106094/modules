@@ -86,7 +86,6 @@ $index="cannot find install exe file"
 
 
 if($results -ne "NG"){
-
 #region modify settings json and run
 Add-Type @"
 using System;
@@ -100,8 +99,8 @@ $hdc = [PInvoke]::GetDC([IntPtr]::Zero)
 $curwidth = [PInvoke]::GetDeviceCaps($hdc, 118) # width
 $curheight = [PInvoke]::GetDeviceCaps($hdc, 117) # height
 
-$screen = [System.Windows.Forms.Screen]::PrimaryScreen
-$bounds = $screen.Bounds
+#$screen = [System.Windows.Forms.Screen]::PrimaryScreen
+#$bounds = $screen.Bounds
 
 $currentDPI = (Get-ItemProperty -Path "HKCU:\Control Panel\Desktop\WindowMetrics" -Name AppliedDPI).AppliedDPI
 
@@ -114,6 +113,7 @@ $calcu = $sclsets[$index] /100
 $bWidth = $curwidth * $calcu
 $bHeight = $curheight * $calcu
 
+<# revise config json file
 $jsoncontents=get-content $configpath
 $lineafterjob="""CopyImageToClipboard, SaveImageToFile"","
 $lineaudio="""virtual-audio-capturer"","
@@ -136,31 +136,29 @@ $line
 }
 
 $newcontent|set-content $configpath -Force
+&$exefilepath  -startscreenrecorder -silent
+Start-Sleep -s $recordtime
+&$exefilepath  -startscreenrecorder -silent -autoclose
+
+#>
+
 #endregion
 
 #region start recording
 
-$mp4logpath="$env:userprofile\Documents\ShareX\Screenshots\"
-$checklogbefore=(Get-ChildItem $mp4logpath -r -filter "*.mp4").count
 
-&$exefilepath  -startscreenrecorder -silent
+&$exefilepath -hide_banner -f gdigrab -thread_queue_size 1024 -rtbufsize 256M -framerate 30 -offset_x 0 -offset_y 0 -video_size $($bWidth)x$($bHeight) -draw_mouse 1 `
+-i desktop -c:v libx264 -r 30 -preset ultrafast -t $($recordtime) -tune zerolatency -crf 28 -pix_fmt yuv420p -movflags +faststart -y $reclog -silent
 
-Start-Sleep -s $recordtime
-
-&$exefilepath  -startscreenrecorder -silent -autoclose
 #endregion
+start-sleep -s 10
 
-do{
-start-sleep -s 2
-$checklogafter=(Get-ChildItem $mp4logpath -r -filter "*.mp4").count
-}until($checklogafter -gt $checklogbefore)
+if(test-path $reclog){
+  $results="OK"
+  $index="check the recorded mp4 file"
+}
 
-$logfile=(Get-ChildItem $mp4logpath -r -filter "*.mp4"|sort lastwritetime|select -Last 1).fullname
 
-copy-item $logfile -Destination $reclog -Force
-
-$results="OK"
-$index="check the recorded mp4 file"
 
 if(!(Test-Path $reclog)){
 $results="NG"
