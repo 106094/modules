@@ -119,8 +119,15 @@ function idrac_EmbVideo ([string]$para1){
     $idsetconn2.Click()
 
     start-sleep -s 5
+    
+    $driver.ExecuteScript("window.scrollTo(0, document.body.scrollHeight);")
 
-    screenshot -para3 nolog -para5 "$($para1)_original"
+        #region screenshot
+        $timenow=get-date -format "yyMMdd_HHmmss"
+        $savepic=$picpath+"$($timenow)_step$($tcstep)_original.jpg"
+        $screenshot = $driver.GetScreenshot()
+        $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
+        #endregion     
 
     start-sleep -s 5
     
@@ -142,7 +149,13 @@ function idrac_EmbVideo ([string]$para1){
     }
 
     $selected_option = $idtpmsec.GetAttribute("value").split(":")[1]
-    screenshot -para3 nolog -para5 "$($para1)_EmbVideosetting"
+    
+        #region screenshot
+        $timenow=get-date -format "yyMMdd_HHmmss"
+        $savepic=$picpath+"$($timenow)_step$($tcstep)_EmbVideosetting.jpg"
+        $screenshot = $driver.GetScreenshot()
+        $screenshot.SaveAsFile( $savepic, [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg)
+        #endregion     
  
       if($selected_option -match $settins1){      
          $index ="EmbVideo settings OK" 
@@ -159,11 +172,10 @@ function idrac_EmbVideo ([string]$para1){
 
  if(!$check -and $results -ne "NG" ){
 
-    start-sleep -s 10
-                        
+    start-sleep -s 10                        
     $applybutton=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[ng-click='onApplyAction()']"))
     $applybutton.Click()
-    Start-Sleep -s 20
+    Start-Sleep -s 5
     #region screenshot
     $timenow=get-date -format "yyMMdd_HHmmss"
     $savepic=$picpath+"$($timenow)_step$($tcstep)_apply.jpg"
@@ -174,7 +186,7 @@ function idrac_EmbVideo ([string]$para1){
     $okbutton=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[translate='ok']"))
     if($okbutton.Displayed -eq $true){                     
     $okbutton.Click() 
-    Start-Sleep -s 10
+    Start-Sleep -s 5
     #region screenshot
     $timenow=get-date -format "yyMMdd_HHmmss"
     $savepic=$picpath+"$($timenow)_step$($tcstep)_okbutton.jpg"
