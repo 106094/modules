@@ -22,6 +22,8 @@ function idrac_EmbVideo ([string]$para1){
     $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
     $tcnumber=((get-content $tcpath).split(","))[0]
     $tcstep=((get-content $tcpath).split(","))[1]
+    $results="OK"
+    $index="check screenshots"
 
     Get-Module -name "screenshot" |remove-module
     $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^screenshot\b" -and $_.name -match "psm1"}).fullname
@@ -132,11 +134,9 @@ function idrac_EmbVideo ([string]$para1){
     start-sleep -s 5
     
     $idtpmsec=$driver.FindElement([OpenQA.Selenium.By]::Id( "IntegratedDevicesRef.EmbVideo"))
-    $results="OK"
 
     if(!$check){          
-        #Embedded NIC1 and NIC2	
-                
+                        
         if($settins1 -match "Enabled"){
             $idtpmsec.SendKeys("Enabled")
         }
@@ -145,7 +145,7 @@ function idrac_EmbVideo ([string]$para1){
             $idtpmsec.SendKeys("disabled")
         }
         
-       start-sleep -s 5        
+       start-sleep -s 10        
     }
 
     $selected_option = $idtpmsec.GetAttribute("value").split(":")[1]
@@ -165,14 +165,11 @@ function idrac_EmbVideo ([string]$para1){
          $index ="EmbVideo settings Fail" 
       }
 
-    
-
-    
+        
 ## Apply and reboot ##
 
  if(!$check -and $results -ne "NG" ){
-
-    start-sleep -s 10                        
+                 
     $applybutton=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[ng-click='onApplyAction()']"))
     $applybutton.Click()
     Start-Sleep -s 5
