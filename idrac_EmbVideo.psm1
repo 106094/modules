@@ -1,15 +1,13 @@
-function idrac_IntegratedDevices ([string]$para1){
+function idrac_EmbVideo ([string]$para1){
     
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     Add-Type -AssemblyName System.Windows.Forms
            
     $paracheck1=$PSBoundParameters.ContainsKey('para1')
 
-    #Embedded NIC1 and NIC2	
     if($paracheck1 -eq $false -or $para1.Length -eq 0){
         $para1="Enabled-check"
     }
-
     
     $settins1=($para1.Split("-"))[0]
     $check = $para1 -match "-"
@@ -59,7 +57,7 @@ function idrac_IntegratedDevices ([string]$para1){
 
     start-sleep -s 10
     $detailbt=$driver.FindElement([OpenQA.Selenium.By]:: ID("details-button"))
-    if($detailbt -ne $null){ 
+    if($detailbt){ 
         $detailbt.click()
         start-sleep -s 2
         $detailbt2=$driver.FindElement([OpenQA.Selenium.By]:: ID("proceed-link"))
@@ -73,15 +71,13 @@ function idrac_IntegratedDevices ([string]$para1){
 
     start-sleep -s 5
     $usenameinp.SendKeys($idracuser)
-
+    start-sleep -s 5
     $passwordinp=$driver.FindElement([OpenQA.Selenium.By]::ClassName("cui-start-screen-password"))
     $passwordinp.SendKeys($idracpwd)
-
+    start-sleep -s 5
     $sumitbt=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[ng-click='onButtonAction(\'login\')']"))
     $sumitbt.Click()
-
-    Start-Sleep -s 5
-          
+    Start-Sleep -s 10          
 
     $radioButton=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("input[type='radio'][name='pwd_option'][value='1']"))
     if($radioButton){
@@ -92,10 +88,10 @@ function idrac_IntegratedDevices ([string]$para1){
 
         $submitBt2=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[ng-click='onButtonAction(\'dcw\')']"))
         $submitBt2.Click()
+        Start-Sleep -s 10
     }
   #---------------------------------------------------------------------------
 
-    Start-Sleep -s 10
 
     #if small screen,check the website control
     $findjudge = $driver.FindElement([OpenQA.Selenium.By]::XPath("//button[@class='navbar-toggle mobileMenu']"))
@@ -124,7 +120,7 @@ function idrac_IntegratedDevices ([string]$para1){
 
     start-sleep -s 5
     
-    $idtpmsec=$driver.FindElement([OpenQA.Selenium.By]::Id( "IntegratedDevicesRef.EmbNic1Nic2"))
+    $idtpmsec=$driver.FindElement([OpenQA.Selenium.By]::Id( "IntegratedDevicesRef.EmbVideo"))
     $results="OK"
 
     if(!$check){          
@@ -142,15 +138,15 @@ function idrac_IntegratedDevices ([string]$para1){
     }
 
     $selected_option = $idtpmsec.GetAttribute("value").split(":")[1]
-    screenshot -para3 nolog -para5 "$($para1)_NIC1NIC2setting"
+    screenshot -para3 nolog -para5 "$($para1)_EmbVideosetting"
 
  
       if($selected_option -match $settins1){      
-         $index ="Embedded NIC1 and NIC2 settings OK" 
+         $index ="EmbVideo settings OK" 
       }     
       else{
          $results="NG"
-         $index ="Embedded NIC1 and NIC2 settings Fail" 
+         $index ="EmbVideo settings Fail" 
       }
 
    }   
@@ -158,7 +154,7 @@ function idrac_IntegratedDevices ([string]$para1){
    
     ### write to log ###
 
-    $action="idrac_IntegratedDevices_$para1"
+    $action="idrac_EmbeddedVideoController_$para1"
     
     $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
     $tcnumber=((get-content $tcpath).split(","))[0]
@@ -201,4 +197,4 @@ start-sleep -s 10
 
 }
 
-Export-ModuleMember -Function idrac_IntegratedDevices
+Export-ModuleMember -Function idrac_EmbVideo
