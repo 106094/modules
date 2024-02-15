@@ -59,7 +59,7 @@ function idrac_IntegratedDevices ([string]$para1){
 
     start-sleep -s 10
     $detailbt=$driver.FindElement([OpenQA.Selenium.By]:: ID("details-button"))
-    if($detailbt -ne $null){ 
+    if($detailbt){ 
         $detailbt.click()
         start-sleep -s 2
         $detailbt2=$driver.FindElement([OpenQA.Selenium.By]:: ID("proceed-link"))

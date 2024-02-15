@@ -90,8 +90,7 @@ function idrac_EmbVideo ([string]$para1){
         $submitBt2.Click()
         Start-Sleep -s 10
     }
-  #---------------------------------------------------------------------------
-
+  
 
     #if small screen,check the website control
     $findjudge = $driver.FindElement([OpenQA.Selenium.By]::XPath("//button[@class='navbar-toggle mobileMenu']"))
