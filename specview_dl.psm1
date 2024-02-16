@@ -211,6 +211,8 @@ Add-Type -TypeDefinition $cSource -ReferencedAssemblies System.Windows.Forms,Sys
     $filename="$spectype*.zip"
     }
 
+    remove-item "$env:USERPROFILE\Downloads\$filename" -Force -ErrorAction SilentlyContinue
+
     start-process msedge $website -WindowStyle Maximized
     start-sleep -s 20
      $id=(Get-Process msedge |Where-object{($_.MainWindowTitle).length -gt 0}).Id
@@ -288,7 +290,7 @@ Add-Type -TypeDefinition $cSource -ReferencedAssemblies System.Windows.Forms,Sys
     
     ### write to log ###
     
-    if($nonlog_flag.Length -eq 0 -and !$writelog){
+    if($nonlog_flag.Length -eq 0){
     Get-Module -name "outlog"|remove-module
     $mdpath=(get-childitem -path "C:\testing_AI\modules\" -r -file |where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
