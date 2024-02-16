@@ -1,6 +1,5 @@
 ﻿function net_connecting([string]$para1,[string]$para2){
-  
-  
+   
    $ping = New-Object System.Net.NetworkInformation.Ping
 
 if($PSScriptRoot.length -eq 0){
@@ -20,7 +19,7 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 
 
 $netname=$para1
-$logflag=$para2
+$nonlog_flag=$para2
 
  function linkaction ($netname) {
  
@@ -28,14 +27,21 @@ $logflag=$para2
   #$testping2=ping google.com /n 3
   #if($testping1 -match "Reply from" -and !($testping1 -match "unreachable")){$connecting1="local connect ok"}
   #if($testping2 -match "Reply from" -and !($testping2 -match "unreachable")){$connecting2="internet connect ok"}
-
-
-
   #$testping1=($ping.Send("192.168.2.249", 1000)).Status
   #$testping2=($ping.Send("www.google.com", 1000)).Status
-  $testping1= Invoke-WebRequest -Uri "192.168.2.249" -UseBasicParsing 
-  $testping2= Invoke-WebRequest -Uri "www.msn.com" -UseBasicParsing 
-
+  try{
+    $testping1= Invoke-WebRequest -Uri "192.168.2.249" -UseBasicParsing 
+  }
+  catch{
+    write-host "testping1 (line 36): $($error[0])"
+  }
+  try{
+    $testping2= Invoke-WebRequest -Uri "www.msn.com" -UseBasicParsing 
+  }
+  catch{
+    write-host "testping2  (line 42): $($error[0])"
+  }
+  
   #if($testping1 -match "Success"){$connecting1="local connect ok"}
   #if($testping2 -match "Success"){$connecting2="internet connect ok"}
   if($testping1){$connecting1="local connect ok"}
@@ -102,22 +108,46 @@ $netnames=(Get-NetAdapter|Where-object{$_.status -ne "UP"}).name
     
   #if($testping01 -match "Success"){$connecting1="local connect ok"}
   #if($testping02 -match "Success"){$connecting2="internet connect ok"}
-  if($testping01){$connecting1="local connect ok"}
-  if($testping02){$connecting2="internet connect ok"}
+  try{
+    $testping1= Invoke-WebRequest -Uri "192.168.2.249" -UseBasicParsing 
+  }
+  catch{
+    write-host "testping1 (line 115): $($error[0])"
+  }
+  try{
+    $testping2= Invoke-WebRequest -Uri "www.msn.com" -UseBasicParsing 
+  }
+  catch{
+    write-host "testping2 (line 121): $($error[0])"
+  }
   
+  #if($testping1 -match "Success"){$connecting1="local connect ok"}
+  #if($testping2 -match "Success"){$connecting2="internet connect ok"}
+  if($testping1){$connecting1="local connect ok"}
+  if($testping2){$connecting2="internet connect ok"}
+     
   $connects=@($connecting1,$connecting2)
   
   #if($testping1 -match "Reply from" -and !($testping1 -match "unreachable")){$connecting1="local connect ok"}else{$connecting1="local connect fail"}
   #if($testping2 -match "Reply from" -and !($testping2 -match "unreachable")){$connecting2="internet connect ok"}else{$connecting2="internet connect fail"}
     
-
    }
     
   $connects=[string]::Join("`n", $connects)
   #$testping1=ping 192.168.2.249 /n 3
   #$testping2=ping www.google.com /n 3
-  $testping1= Invoke-WebRequest -Uri "192.168.2.249" -UseBasicParsing 
-  $testping2= Invoke-WebRequest -Uri "www.msn.com" -UseBasicParsing 
+  try{
+    $testping1= Invoke-WebRequest -Uri "192.168.2.249" -UseBasicParsing 
+  }
+  catch{
+    write-host "testping1 (line 143):$($error[0])"
+  }
+  try{
+    $testping2= Invoke-WebRequest -Uri "www.msn.com" -UseBasicParsing 
+  }
+  catch{
+    write-host "testping2  (line 149):$($error[0])"
+  }
 
   #$checkpin=@($testping1,$testping2,$connects)
   $checkpin=@("IP request:$($testping1.StatusDescription)","IP request:$($testping2.StatusDescription)",$connects)
@@ -125,29 +155,31 @@ $netnames=(Get-NetAdapter|Where-object{$_.status -ne "UP"}).name
 
   }
 
-$linkaction = linkaction
+  $linkaction = linkaction
 
- $results="NG"
-if($linkaction -match "local connect ok" -and $linkaction -match "internet connect ok" ){
- $results="OK"
-}
+  $results="NG"
+  if($linkaction -match "local connect ok" -and $linkaction -match "internet connect ok" ){
+  $results="OK"
+  }
 
-if($logflag.length -eq 0){
+  $timennow=get-date -format "yyMMdd_HHmmss"
+  $ipconfigtxt=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\$($timennow)_step$($tcstep)_ipconfig_result.txt"
+  ipconfig|set-content $ipconfigtxt
 
-$timennow=get-date -format "yyMMdd_HHmmss"
-$ipconfigtxt=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\$($timennow)_step$($tcstep)_ipconfig_result.txt"
-ipconfig|set-content $ipconfigtxt
+  $index=$linkaction|Out-String
 
- $index=$linkaction|Out-String
-    
-Get-Module -name "outlog"|remove-module
-$mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
-Import-Module $mdpath -WarningAction SilentlyContinue -Global
+  if($nonlog_flag.length -eq 0){
+      
+  Get-Module -name "outlog"|remove-module
+  $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
+  Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
-#write-host "Do $action!"
-outlog $action $results $tcnumber $tcstep $index
+  #write-host "Do $action!"
+  outlog $action $results $tcnumber $tcstep $index
 
-}
+  }
+  start-sleep -s 60
+
   }
 
   
