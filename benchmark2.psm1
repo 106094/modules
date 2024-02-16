@@ -329,12 +329,6 @@ else{
 $scriptRoot=$PSScriptRoot
 }
 
-$actionss="screenshot"
-Get-Module -name $actionss|remove-module
-$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
-Import-Module $mdpath -WarningAction SilentlyContinue -Global
-
-
 $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
 $tcnumber=((get-content $tcpath).split(","))[0]
 $tcstep=((get-content $tcpath).split(","))[1]
@@ -347,6 +341,15 @@ if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-nu
 $width  = (([string]::Join("`n", (wmic path Win32_VideoController get CurrentHorizontalResolution))).split("`n") -match "\d{1,}")[0]
 $height  = (([string]::Join("`n", (wmic path Win32_VideoController get CurrentVerticalResolution))).split("`n") -match "\d{1,}")[0]
 
+$actionss="screenshot"
+Get-Module -name $actionss|remove-module
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
+Import-Module $mdpath -WarningAction SilentlyContinue -Global
+
+$actioncmd="cmdline"
+Get-Module -name $actioncmd|remove-module
+$mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actioncmd\b" -and $_.name -match "psm1"}).fullname
+Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 if($bitype -match "SPECviewperf13"){
 
@@ -1038,6 +1041,181 @@ $results="chceck screenshots"
   
 
   }
+
+}
+
+}
+
+if($bitype -match "SPECworkstation"){
+   
+  $results="OK"
+  $index="check logs"
+
+    #check if exe dowloaded form web
+    $flowcheck=(import-csv -path C:\testing_AI\logs\logs_timemap.csv|where-object{$_.tc -match $tcnumber -and $_.program -match "specview_dl"}).results
+    $copyfromserver=$true
+
+  if($flowcheck -match "ok"){
+    $copyfromserver=$false
+  }
+## copy tool ##
+if($copyfromserver -eq $true){
+    
+
+ function netdisk_connect([string]$webpath,[string]$username,[string]$passwd,[string]$diskid){
+
+net use $webpath /delete
+net use $webpath /user:$username $passwd /PERSISTENT:yes
+ net use $webpath /SAVECRED 
+
+ if($diskid.length -ne 0){
+  $diskpath=$diskid+":"
+  $checkdisk=net use
+   if($checkdisk -match $diskpath){net use $diskpath /delete}
+    net use $diskpath $webpath
+}
+
+}
+
+netdisk_connect -webpath \\192.168.2.249\srvprj\Inventec\Dell -username pctest -passwd pctest -diskid Y
+
+$autopath="Y:\Matagorda\07.Tool\_AutoTool"
+$copytopath="C:\testing_AI\modules\BITools\SPECviewperf2020"
+
+  if(!(test-path $copytopath)){
+ Expand-Archive "$autopath\extra_tools\SPECviewperf2020.zip" -DestinationPath $copytopath
+   <#
+  new-item -ItemType directory $copytopath |Out-Null
+   $zipfile="$autopath\extra_tools\SPECviewperf2020.zip"
+   $copytopath="C:\testing_AI\modules\BITools\SPECviewperf2020"
+   write-host "unzip  $zipfile to $copytopath"
+    $shell.NameSpace($copytopath).copyhere($shell.NameSpace($zipfile).Items(),16)
+    #>
+    }
+
+}
+
+ $action="SPECworkstation Benchmark"
+
+ $resultss= Set-ScreenResolution -Width 1920 -Height  1080
+
+ if( $resultss -match "failed"){
+   $results="NG, Fail to change resolution to 1920*1080"
+   $Index="-"
+   $noexit_flag="noexit"
+ }
+
+ else{
+
+$bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |Where-object{$_.name -match "exe"}).FullName
+   
+ get-process nw -ErrorAction SilentlyContinue|stop-process -Force
+ get-process RunViewperf -ErrorAction Silent|stop-process  -Force
+
+ start-sleep -s 10
+
+ ## check install and install ###
+
+ $installworkstation=$false
+
+(Get-ChildItem "HKLM:Software\Microsoft\Windows\CurrentVersion\Uninstall\")|ForEach-Object{
+$n=$_.name
+$n=$n.Replace("HKEY_LOCAL_MACHINE\","HKLM:")
+($p=Get-ItemProperty $n)|ForEach-Object{
+#$_.DisplayName
+if($_.DisplayName -match "SPECworkstation"){
+$installworkstation=$true
+write-host "SPECworkstation has been installed"
+}
+}
+}
+
+if($installworkstation -eq $false){
+  #&$bipath /VERYSILENT 
+  $id0=((get-process notepad -ea SilentlyContinue).Id).count
+
+ &$bipath /VERYSILENT
+
+   $starttime= (get-date).ToString()
+
+    write-host "installing will take about few minutes" -nonewline
+
+   set-content $picpath\installtime.txt -value "installing will take about 25+ minutes from $starttime"
+  
+   start-sleep -s 60
+
+    do{
+        start-sleep -s 10  
+        $checkSPECworkstation=((Get-Process -name SPECworkstation* -ErrorAction SilentlyContinue).Id).count
+       }until( $checkSPECworkstation -eq 0)
+       
+    start-sleep -s 10
+
+   }
+
+   
+### start UI & screenshot ###
+
+start-sleep -s 5
+&$actioncmd -para1 "C:\SPEC\SPECworkstation\runSPEC.exe"  -para3 "cmd" -para5 "nonlog" 
+
+do{
+start-sleep -s 5
+$checkrunning=(get-process nw|Where-Object {$_.MainWindowTitle -match "SPECworkstation"}).id
+}until($checkrunning)
+
+start-sleep -s 10
+$Handle =( Get-Process nw| Where-Object { $_.MainWindowTitle -match"SPECworkstation"} ).MainWindowHandle
+$WindowRect = New-Object RECT
+$GotWindowRect = [Window]::GetWindowRect($Handle, [ref]$WindowRect)
+$clickx=$WindowRect.Left+50
+$clicky=$WindowRect.top+20 
+$clickx2=$WindowRect.Right-100
+$clicky2=$WindowRect.Bottom-50 
+Start-Sleep -s 3
+[Clicker]::LeftClickAtPoint($clickx, $clicky)
+&$actionss  -para3 nonlog -para5 "start"
+
+ $wshell.SendKeys("{tab 6}")
+ Start-Sleep -s 1
+ $wshell.SendKeys("")
+ Start-Sleep -s 1
+ $wshell.SendKeys("{tab}")
+ Start-Sleep -s 1
+ $wshell.SendKeys("")
+ Start-Sleep -s 1
+ $wshell.SendKeys("{tab}")
+ Start-Sleep -s 1
+ $wshell.SendKeys("")
+ Start-Sleep -s 1
+ $wshell.SendKeys("{tab}")
+ Start-Sleep -s 1
+ $wshell.SendKeys("")
+ Start-Sleep -s 1
+ $wshell.SendKeys("{tab}")
+ Start-Sleep -s 1
+ $wshell.SendKeys("")
+ Start-Sleep -s 1
+ $wshell.SendKeys("{tab}")
+ Start-Sleep -s 1
+ $wshell.SendKeys("")
+ Start-Sleep -s 1
+ $wshell.SendKeys("{tab}")
+ Start-Sleep -s 1
+ $wshell.SendKeys("")
+ Start-Sleep -s 2
+[Clicker]::LeftClickAtPoint($clickx2, $clicky2)
+ Start-Sleep -s 10
+ $checkrunning=get-process -name viewperf -ea SilentlyContinue
+ if($checkrunning){
+&$actionss  -para3 nonlog -para5 "running"
+}
+else{
+&$actionss  -para3 nonlog -para5 "runfail"
+$results="NG"
+$index="runbench failed"
+}
+  
 
 }
 
