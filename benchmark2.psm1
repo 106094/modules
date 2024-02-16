@@ -301,7 +301,6 @@ namespace KeySends
 "@
 
 Add-Type -TypeDefinition $source -ReferencedAssemblies "System.Windows.Forms"
-
   $Signature = @"
 [DllImport("user32.dll")]public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
 "@
@@ -427,10 +426,10 @@ $bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |Where-object{$_.
 
  $installspec13=$false
 
-(Get-ChildItem "HKLM:Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\")|%{
+(Get-ChildItem "HKLM:Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\")|ForEach-Object{
 $n=$_.name
 $n=$n.Replace("HKEY_LOCAL_MACHINE\","HKLM:")
-($p=Get-ItemProperty $n)|%{
+($p=Get-ItemProperty $n)|ForEach-Object{
 #$_.DisplayName
 if($_.DisplayName -match "SPECviewperf" -and $_.DisplayName -match "13"){
 $installspec13=$true
@@ -470,7 +469,7 @@ if($installspec13 -eq $false){
     start-sleep -s 10
 
    $idrelesaenote=(get-process *|Where-object{$_.MainWindowTitle -match "release_note"}).Id
-   if( $idrelesaenote -ne $null){
+   if($idrelesaenote){
    [Microsoft.VisualBasic.interaction]::AppActivate( $idrelesaenote)|out-null
     start-sleep -s 2
     [System.Windows.Forms.SendKeys]::SendWait("%{F4}")
@@ -512,7 +511,7 @@ if(Test-Path $setindexb){
 move-item $setindexb $setindex -Force -ErrorAction SilentlyContinue
 }
 
-$newhtml=get-content $setindex|%{
+$newhtml=get-content $setindex|ForEach-Object{
 
 if($_ -match "<footer>"){
  " <script>window.setInterval (run_benchmark,20000);</script>"  ###<footer>前加入 <script>window.setInterval (run_benchmark,10000);</script> ->30秒後自動開始
@@ -534,14 +533,14 @@ move-item $mgntjsb $mgntjs -Force  -ErrorAction SilentlyContinue
 
 if($bitconfig.Length -ne 0){
 
- $defviewset=($bitconfig.split("+")|%{"'"+$_+"'"}) -join ","    # ['3dsmax-06','catia-05']; 
+ $defviewset=($bitconfig.split("+")|ForEach-Object{"'"+$_+"'"}) -join ","    # ['3dsmax-06','catia-05']; 
  
 $oriline="'3dsmax-06','catia-05','creo-02','energy-02','maya-05','medical-02','showcase-02','snx-03','sw-04'"
 }
 
 $changefalse=999
 
-$newmngmjs=get-content $mgntjs|%{
+$newmngmjs=get-content $mgntjs|ForEach-Object{
 
 if($bitconfig.Length -ne 0 -and $_ -like "*var official_viewsets*"){
 
@@ -566,7 +565,7 @@ $newmngmjs|set-content $mgntjs
 
 ### revise 【gwpgManageBenchmark.js】 2. disable alert ##  【gwpgManageBenchmark.js】//  alert('DPI must be 96 for a submission candidate.');
 
-$newmngmjs2=get-content $mgntjs|%{
+$newmngmjs2=get-content $mgntjs|ForEach-Object{
 $oriline="alert('DPI must be 96 for a submission candidate.')"
 if($_ -like "*$oriline*"){
 $_ = "// " +$_
@@ -587,7 +586,7 @@ move-item $mgntrbjsb $mgntrbjs -Force  -ErrorAction SilentlyContinue
 
 $remarklines=@("122","125")
 $n=0
-$newrunjs=get-content $mgntrbjs|%{
+$newrunjs=get-content $mgntrbjs|ForEach-Object{
 if($n -in $remarklines){
 if(-not ($_ -match "//")){$_ = "// " +$_}
 }
@@ -633,18 +632,12 @@ start-sleep -s 5
 
 #### check if fail to open##
 
-$resultNG = $null
-
  if( ((get-process -Name nw).Id).count -eq 0 -and ((get-process -Name viewperf).Id).count -eq 0 ){
  
 #### outlog parameteres ###
 
-  $results="NG, Fail to open programs"
-       $Index="-"
-
-
-[System.Windows.Forms.MessageBox]::Show($this, "Fail to open programs, please check")   
-exit
+  $results="NG"
+       $Index="Fail to open programs"
 
  }
 
@@ -851,7 +844,7 @@ if(Test-Path $setindexb){
 move-item $setindexb $setindex -Force  -ErrorAction SilentlyContinue
 }
 
-$newhtml=get-content $setindex|%{
+$newhtml=get-content $setindex|ForEach-Object{
 
 if($_ -match "<footer>"){
  " <script>window.setInterval (run_benchmark,20000);</script>"  ###<footer>前加入 <script>window.setInterval (run_benchmark,10000);</script> ->30秒後自動開始
@@ -874,7 +867,7 @@ move-item $mgntjsb $mgntjs -Force  -ErrorAction SilentlyContinue
 ### revise 【gwpgManageBenchmark.js】 1. viewset settings 
 if($bitconfig.Length -ne 0){
 
- $defviewset=($bitconfig.split("+")|%{"'"+$_+"'"}) -join ","    # ['3dsmax-06','catia-05']; 
+ $defviewset=($bitconfig.split("+")|ForEach-Object{"'"+$_+"'"}) -join ","    # ['3dsmax-06','catia-05']; 
  
 $oriline="'3dsmax-07','catia-06','creo-03','energy-03','maya-06','medical-03','snx-04','solidworks-07'"
 
@@ -882,7 +875,7 @@ $oriline="'3dsmax-07','catia-06','creo-03','energy-03','maya-06','medical-03','s
 
 $changefalse=999
 
-$newmngmjs=get-content $mgntjs|%{
+$newmngmjs=get-content $mgntjs|ForEach-Object{
 
 if($bitconfig.Length -ne 0 -and $_ -like "*$oriline*"){
 
@@ -909,7 +902,7 @@ $newmngmjs|set-content $mgntjs
 
 ### revise 【gwpgManageBenchmark.js】 2. disable alert ##  【gwpgManageBenchmark.js】//  alert('DPI must be 96 for a submission candidate.');
  
-$newmngmjs2=get-content C:\SPEC\SPECgpc\SPECviewperf2020\vpbench\gwpgManageBenchmark.js|%{
+$newmngmjs2=get-content C:\SPEC\SPECgpc\SPECviewperf2020\vpbench\gwpgManageBenchmark.js|ForEach-Object{
 $oriline="lert('DPI must be 96 for a submission candidate.')"
 if($_ -like "*$oriline*"){
 $_ = "// " +$_
@@ -930,7 +923,7 @@ move-item $mgntrbjsb $mgntrbjs -Force  -ErrorAction SilentlyContinue
 
 $remarklines=@("114","117")
 $n=0
-$newrunjs=get-content $mgntrbjs|%{
+$newrunjs=get-content $mgntrbjs|ForEach-Object{
 if($n -in $remarklines){
 if(-not ($_ -match "//")){$_ = "// " +$_}
 }
@@ -977,18 +970,12 @@ start-sleep -s 5
  start-sleep -s 40       
 #### check if fail to open##
 
-$resultNG = $null
-
  if( ((get-process -Name nw).Id).count -eq 0 -and ((get-process -Name viewperf).Id).count -eq 0 ){
  
 #### outlog parameteres ###
 
-  $results="NG, Fail to open programs"
-       $Index="-"
-
-
-[System.Windows.Forms.MessageBox]::Show($this, "Fail to open programs, please check")   
-exit
+  $results="NG"
+       $Index="Fail to open programs"
 
  }
 
@@ -1468,10 +1455,10 @@ write-host "close warning message"
 
     # Get the Process object for the specific process
     $process = Get-Process -Name $processName
-
+    
     # Get the Process ID (PID) of the specific process
     $processId = $process.Id
-
+    Write-Output "$process id $($processId)" 
     write-host "atto benchmark start $(get-date)"
     # Define the performance counters you want to monitor for the specific process
 
