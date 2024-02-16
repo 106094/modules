@@ -279,7 +279,22 @@ Add-Type -TypeDefinition $cSource -ReferencedAssemblies System.Windows.Forms,Sys
       &$actionsfe -para1 "$env:USERPROFILE\desktop\" -para2 "nolog"
       $copytopath="C:\testing_AI\modules\BITools\$spectype"
       if(!(test-path $copytopath)){new-item -ItemType directory -path $copytopath |out-null}
+   
+      if($filename -match "zip"){
+      $filenamefullnew=(Get-ChildItem "$env:USERPROFILE\desktop\$filename").FullName
+      try{
+        Expand-Archive $filenamefullnew -DestinationPath $copytopath -Force
+      }
+      catch{
+        write-output "fail to expand $filenamefullnew"        
+        $results="NG"
+        $index="fail to expand $filenamefullnew"
+      }
+       Start-Sleep -s 30
+      }
+      else{
       Move-Item "$env:USERPROFILE\desktop\$filename" -Destination $copytopath -Force
+      }
       }
       else{
        $results="NG"
