@@ -3,7 +3,7 @@ function benchmark2 ([string]$para1, [string]$para2, [string]$para3){
     
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     $wshell=New-Object -com wscript.shell
-      $shell=New-Object -ComObject shell.application
+      #$shell=New-Object -ComObject shell.application
       Add-Type -AssemblyName Microsoft.VisualBasic
        Add-Type -AssemblyName System.Windows.Forms
         Add-Type -AssemblyName System.Windows.Forms,System.Drawing
@@ -310,8 +310,8 @@ Add-Type -TypeDefinition $source -ReferencedAssemblies "System.Windows.Forms"
 
 #endregion
        
-$paracheck1=$PSBoundParameters.ContainsKey('para1')
-$paracheck2=$PSBoundParameters.ContainsKey('para2')
+#$paracheck1=$PSBoundParameters.ContainsKey('para1')
+#$paracheck2=$PSBoundParameters.ContainsKey('para2')
 $paracheck3=$PSBoundParameters.ContainsKey('para3')
 
 if($paracheck3 -eq $false -or $para3.Length -eq 0){
@@ -333,7 +333,7 @@ $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
 $tcnumber=((get-content $tcpath).split(","))[0]
 $tcstep=((get-content $tcpath).split(","))[1]
 
-$timenow=get-date -format "yyMMdd_HHmmss"
+#$timenow=get-date -format "yyMMdd_HHmmss"
 #$picpath=(Split-Path -Parent $scriptRoot)+"\logs\screenshot\"
 $picpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
 if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-null}
