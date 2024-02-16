@@ -77,7 +77,12 @@ public static void LeftClickAtPoint(int x, int y)
 }
 }
 '@
-Add-Type -TypeDefinition $cSource -ReferencedAssemblies System.Windows.Forms,System.Drawing
+try{
+  Add-Type -TypeDefinition $cSource -ReferencedAssemblies System.Windows.Forms,System.Drawing
+}
+catch{
+  Write-Output "$($_.Exception.Message)"
+}
    
 if($PSScriptRoot.length -eq 0){
 $scriptRoot="C:\testing_AI\modules"
