@@ -232,7 +232,7 @@ write-host "checking #$($countcb) cycle and saving files in  folder name $($inif
 Get-Module -name "initial"|remove-module
 $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\" -r -file |Where-object{$_.name -match "initial" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
-initial -para1 nodialog -para2 nolog　-para3 nocapture
+initial -para1 nodialog -para2 nolog -para3 nocapture
  
  ## data moving ##
  

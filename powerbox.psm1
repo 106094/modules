@@ -87,23 +87,35 @@ if($para3 -le 20){
 $para3=20
 }
 
+Start-Sleep -s 30
+
 $boxip=$para1
 $ontime=$para2
 $offtime=$para3
 $cycletime=$para4
 $nonlog_flag=$para5
+
 $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
+do{
+ Start-Sleep -s 10
+}until(Test-Path -Path $tcpath)
+Start-Sleep -s 5
 $tcnumber=((get-content $tcpath).split(","))[0]
 $tcstep=((get-content $tcpath).split(","))[1]
 $action=((get-content $tcpath).split(","))[2]
 $cmdline = $cmdline.Replace("##","$tcstep")
-
 $picpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
-if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-null}
-$logpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\step$($tcstep)_cmd_output.txt"
-
 $logcsv=(Split-Path -Parent $scriptRoot)+"\logs\logs_timemap.csv"
-$starttime=(Get-ChildItem $logcsv).lastwritetime
+
+if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-null}
+do{
+    Start-Sleep -s 10
+    $testpath1=Test-Path -Path $picpath
+    $testpath2=Test-Path -Path $logcsv
+    $starttime=(Get-ChildItem $logcsv).lastwritetime
+   }until($testpath1 -and $testpath2 -and $starttime) 
+Start-Sleep -s 5
+
 $timepassed=(New-TimeSpan -start $starttime -end (Get-Date)).TotalMinutes + 2
 
 $results="OK"
