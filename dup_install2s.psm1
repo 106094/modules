@@ -115,7 +115,7 @@ if($extractorinstall.Length -eq 0 -or $extractorinstall -match "install"){
      }
      else{
         $checkpkg=Get-AppPackage |Where-Object{$_.name -match $duptype}|out-string
-        if($checkpkg -gt 0){
+        if($checkpkg.length -gt 0){
             set-content $logpath_result -Force
         }
         else{
