@@ -67,8 +67,10 @@ stop-process -name "$dupname10*" -ea SilentlyContinue
  if($extractorinstall.Length -eq 0 -or $extractorinstall -match "extract"){
     
     $extractpath=$picpath+"step$($tcstep)_$($duptype)_DUPextract"
-    $logpath_extract=$picpath+"step$($tcstep)_$($duptype)_extract.log"
-    
+    if(!(test-path $extractpath)){
+        new-item -ItemType directory -path $extractpath |out-null
+    }
+    $logpath_extract=$picpath+"step$($tcstep)_$($duptype)_extract.log"    
     $logpath_result=$picpath+"step$($tcstep)_$($duptype)_checkextract.log"
     
     $starttime=get-date
@@ -82,11 +84,11 @@ stop-process -name "$dupname10*" -ea SilentlyContinue
 
     if ($timepassed -gt 30){
     $results="NG"
-    $index=  $index+@("DUP extract timeout")
+    $index=  "DUP extract timeout"
     stop-process -name "$dupname10*" -Force
     }
     else{
-        Get-ChildItem -path "C:\testing_AI\logs\TC-162415(NoComlete)\dup"|out-string|set-content $logpath_result -Force
+        (Get-ChildItem -path $extractpath).fullname|out-string|set-content $logpath_result -Force
     }
 
    }
@@ -94,7 +96,7 @@ stop-process -name "$dupname10*" -ea SilentlyContinue
 ## install ##
 
 if($extractorinstall.Length -eq 0 -or $extractorinstall -match "install"){
-    $logpath_install=$picpath+"step$($tcstep)_$($duptype)_install.log"
+    $logpath_install=$picpath+"step$($tcstep)_$($duptype)_DUPinstall.log"
     $logpath_result=$picpath+"step$($tcstep)_$($duptype)_checkapp.log"
     
     $starttime=get-date
@@ -112,7 +114,14 @@ if($extractorinstall.Length -eq 0 -or $extractorinstall -match "install"){
         stop-process -name "$dupname10*" -Force
      }
      else{
-        Get-AppPackage |Where-Object{$_.name -match $duptype}|out-string|set-content $logpath_result -Force
+        $checkpkg=Get-AppPackage |Where-Object{$_.name -match $duptype}|out-string
+        if($checkpkg -gt 0){
+            set-content $logpath_result -Force
+        }
+        else{
+            $results="NG"
+            $index= "DUP install failed"
+        }
      }
 
 }
