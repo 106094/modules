@@ -89,9 +89,15 @@ $scriptRoot=$PSScriptRoot
 $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
 $tcnumber=((get-content $tcpath).split(","))[0]
 $tcstep=((get-content $tcpath).split(","))[1]
-$action="clear idrac sessions"
+$action="clear iDRAC sessions"
 $index="check screenshots"
 
+$checkidracset=test-path "C:\testing_AI\settings\idrac.txt"
+if($checkidracset){
+    $checkidracdata=get-content -path "C:\testing_AI\settings\idrac.txt"
+}
+
+if($checkidracdata.Length -gt 0){
 $idracinfo=(get-content -path "C:\testing_AI\settings\idrac.txt").split(",")
 $idracip=$idracinfo[0]
 #$idracuser=$idracinfo[1]
@@ -167,6 +173,12 @@ foreach($cmdline in $cmdlines){
              
 
          taskkill /PID $id2 /F  
+  }
+  else{
+    
+    $results="-"
+    $index="no iDRAC settings"
+  }
       
  ###>
     
