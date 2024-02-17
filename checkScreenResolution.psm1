@@ -1,4 +1,4 @@
-﻿function checkScreenResolution ([int]$para1,[int]$para2,[string]$para3){
+﻿function checkScreenResolution ([int]$para1,[int]$para2,[string]$para3,[string]$para4){
     
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
     #$wshell=New-Object -ComObject wscript.shell
@@ -8,6 +8,7 @@
 $paracheck=$PSBoundParameters.ContainsKey('para1')
 $paracheck2=$PSBoundParameters.ContainsKey('para2')
 $paracheck3=$PSBoundParameters.ContainsKey('para3')
+$paracheck4=$PSBoundParameters.ContainsKey('para4')
 
 if( $paracheck -eq $false -or $para1 -eq 0 ){
 $para1=1920
@@ -17,10 +18,14 @@ $para2=1080
 }
 if( $paracheck3 -eq $false -or $para3.length -eq 0 ){
 $para3=""
+}if( $paracheck4 -eq $false -or $para4.length -eq 0 ){
+$para4=""
 }
+
 $resx=$para1
 $resy=$para2
-$non_logflag=$para3
+$checkall=$para3
+$non_logflag=$para4
 
 if($PSScriptRoot.length -eq 0){
 $scriptRoot="C:\testing_AI\modules"
@@ -36,16 +41,14 @@ $tcnumber=((get-content $tcpath).split(","))[0]
 $tcstep=((get-content $tcpath).split(","))[1]
 $picpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
 if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-null}
-
-$results="NG"
-$index="not matching"
+$checkresxy="$($resx)x$($resy)"
 
 $actionss ="screenshot"
 Get-Module -name $actionss|remove-module
 $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
-$checkresxy="$($resx)x$($resy)"
+
 ## check  resolution match ## $resx $resy
 $monitors = Get-WmiObject -Namespace "root\wmi" -Class WmiMonitorID
 
@@ -54,7 +57,7 @@ foreach ($monitor in $monitors) {
     $monitorInfo = ($monitor.InstanceName -split '\\')[-1]  # Escape backslashes
     $monitorid = ($monitorInfo -split "\&")[1]
     $monitoruid = ($monitorInfo -split "\&")[-1]  
-    Write-Host "Monitor: number $monitor_number ID $monitorid  $monitoruid"
+    Write-Host "Monitor: number $monitor_number ID $monitorid uid  $monitoruid"
 
     # Use LIKE operator for pattern matching
     $query = "SELECT * FROM WmiMonitorListedSupportedSourceModes WHERE InstanceName LIKE '%$monitorInfo%'"
@@ -67,17 +70,37 @@ foreach ($monitor in $monitors) {
                 Write-Host "Resolution: ${horizontal}x${vertical}"
                 $collections= $collections+@("${horizontal}x${vertical}")
             }
+
+            $checkifmatch=$collections|Sort-Object|Get-Unique|Where-Object {$_ -match $checkresxy}
+                if(!$checkifmatch){
+                $results+=@("NG")
+                $index+=@("Monitor $($monitoruid) $checkifmatch not matching")
+                }
+                else{
+                $results+=@("OK")
+                $index+=@("Monitor $($monitoruid) $checkresxy suppported ")
+                
+                }
         }
     }
     else {
-        Write-Host "No modes found for this monitor."
+        $results="-"        
+        $index="No modes found for this monitor."
+
     }
 }
-$checkifmatch=$collections|Sort-Object|Get-Unique|Where-Object {$_ -match $checkresxy}
-if($checkifmatch){
-$results="OK"
-$index="$checkifmatch suppported"
+
+$index=$index|Out-String
+if($checkall.Length -gt 0 -and $results -match "NG"){
+ $results="NG"
 }
+if($checkall.Length -eq 0 -and $results -match "OK"){
+ $results="OK"
+}
+
+
+ Write-Output "$results ; $index"
+
 <#
 $horlist=wmic /namespace:\\ROOT\WMI path WmiMonitorListedSupportedSourceModes get MonitorSourceModes /format:list |Where-object{$_ -match "HorizontalActivePixels"}
 $verlist=wmic /namespace:\\ROOT\WMI path WmiMonitorListedSupportedSourceModes get MonitorSourceModes /format:list |Where-object{$_ -match "VerticalActivePixels"}
@@ -105,9 +128,9 @@ if([int]$maxy1 -eq [int]$resy){
 if($maxy -eq $resy -and $maxx -eq $resx){
 $results="OK"
 }
-  
- Write-Output "$results; $index"
 #>
+
+  
 
 ######### write log #######
 if($non_logflag.Length -eq 0){
