@@ -387,6 +387,10 @@ start-sleep -s 2
                  start-sleep -s 1
                  $wshell.sendkeys("{down}")
                  &$actionss  -para3 nonlog -para5 "$($expand_flag)_$($i)_resourcestab3"
+                 $wshell.sendkeys("{down}")
+                 start-sleep -s 1
+                 $wshell.sendkeys("{down}")
+                 &$actionss  -para3 nonlog -para5 "$($expand_flag)_$($i)_resourcestab4"
                                
               }    
 
