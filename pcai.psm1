@@ -232,13 +232,8 @@ if($scriptname -ne "no_define"){
 #$checkgfx=(Get-WmiObject -Class Win32_VideoController | Select-Object Name,AdapterCompatibility).name
 
 $inidrv=(Get-ChildItem "C:\testing_AI\logs\ini*\*" -r -Filter "*DriverVersion.csv"|Sort-Object lastwritetime|Select-Object -last 1).FullName
-$checktype=(import-csv $inidrv|Where-object{$_.DeviceClass -match "DISPLAY"}).devicename
-if($checkgfx -match "AMD"){
-  $drvtype="AMD"
-}
-if($checkgfx -match "NVidia"){
-  $drvtype="NV"
-}
+$checkgfx=(import-csv $inidrv|Where-object{$_.DeviceClass -match "DISPLAY"}).devicename
+
 if (($scriptname -match "^nv" -and $checkgfx -match "AMD") -or ($scriptname -match "^amd" -and $checkgfx -match "NVIDIA")){
  $runflag="skip"
  $results="na"
