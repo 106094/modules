@@ -90,7 +90,8 @@ $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
 $tcnumber=((get-content $tcpath).split(","))[0]
 $tcstep=((get-content $tcpath).split(","))[1]
 $action=((get-content $tcpath).split(","))[2]
-$cmdline = $cmdline.Replace("##","$tcstep")
+$cmdline = $cmdline.Replace("step##","step$($tcstep)")
+$cmdline = $cmdline.Replace("TC##","$($tcnumber)")
 
 $picpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
 if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-null}

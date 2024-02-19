@@ -93,11 +93,11 @@ $scriptRoot=$PSScriptRoot
 
 $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
 $tcnumber=((get-content $tcpath).split(","))[0]
-$tcnumber2=($tcnumber.Replace("(","*")).Replace(")","*")
+#$tcnumber2=($tcnumber.Replace("(","*")).Replace(")","*")
 $tcstep=((get-content $tcpath).split(","))[1]
 $action=((get-content $tcpath).split(","))[2]
 $cmdline = $cmdline.Replace("step##","step$($tcstep)")
-$cmdline = $cmdline.Replace("TC##","$($tcnumber2)")
+$cmdline = $cmdline.Replace("TC##","$($tcnumber)")
 
 
 $picpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
