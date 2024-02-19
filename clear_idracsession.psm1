@@ -94,14 +94,10 @@ $index="check screenshots"
 
 $checkidracset=test-path "C:\testing_AI\settings\idrac.txt"
 if($checkidracset){
-    $checkidracdata=get-content -path "C:\testing_AI\settings\idrac.txt"
-}
-
-if($checkidracdata.Length -gt 0){
-$idracinfo=(get-content -path "C:\testing_AI\settings\idrac.txt").split(",")
-$idracip=$idracinfo[0]
-#$idracuser=$idracinfo[1]
-$idracpwd=$idracinfo[2]
+  $idracinfo=(get-content -path "C:\testing_AI\settings\idrac.txt").split(",")
+  $idracip=$idracinfo[0]
+  #$idracuser=$idracinfo[1]
+  $idracpwd=$idracinfo[2]
 
 $cmdline = "ssh root@$($idracip) -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no|$($idracpwd)|closessn -a|exit"
 
@@ -173,6 +169,7 @@ foreach($cmdline in $cmdlines){
              
 
          taskkill /PID $id2 /F  
+  
   }
   else{
     
