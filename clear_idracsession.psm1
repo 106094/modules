@@ -103,7 +103,7 @@ $idracip=$idracinfo[0]
 #$idracuser=$idracinfo[1]
 $idracpwd=$idracinfo[2]
 
-$cmdline = "ssh root@$($idracip) -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no|yes|$($idracpwd)|closessn -a|exit"
+$cmdline = "ssh root@$($idracip) -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no|$($idracpwd)|closessn -a|exit"
 
 $picpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
 if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-null}
