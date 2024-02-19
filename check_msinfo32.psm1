@@ -22,7 +22,9 @@ $tcnumber=((get-content $tcpath).split(","))[0]
 $tcstep=((get-content $tcpath).split(","))[1]
 $picpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
 if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-null}
-$mslog=$picpath+"step$($tcstep)_msinfo.$($outlogtype)"
+
+$mslog1=$picpath+"step$($tcstep)_msinfo.txt"
+$mslog2=$picpath+"step$($tcstep)_msinfo.nfo"
 
 $results="NG"
 $index="fail to open msinfo32"
@@ -31,10 +33,14 @@ $index="fail to open msinfo32"
 
 #get report #
 if($outlogtype -match "txt"){
-Start-Process 'C:\Windows\System32\msinfo32.exe' -ArgumentList '/report', $mslog -Wait
+Start-Process 'C:\Windows\System32\msinfo32.exe' -ArgumentList '/report', $mslog1 -Wait
 }
 if($outlogtype -match "nfo"){
-Start-Process 'C:\Windows\System32\msinfo32.exe' -ArgumentList '/nfo', $mslog -Wait 
+Start-Process 'C:\Windows\System32\msinfo32.exe' -ArgumentList '/nfo', $mslog2 -Wait 
+}
+if($outlogtype.Length -eq 0){
+    Start-Process 'C:\Windows\System32\msinfo32.exe' -ArgumentList '/nfo', $mslog1 -Wait 
+    Start-Process 'C:\Windows\System32\msinfo32.exe' -ArgumentList '/report', $mslog2 -Wait
 }
 
 $actionss="screenshot"
