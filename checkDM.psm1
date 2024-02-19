@@ -289,7 +289,9 @@ start-sleep -s 2
 
 [Clicker]::LeftClickAtPoint(50, 1)
 
-Start-Sleep -Seconds 2
+Start-Sleep -Seconds 5
+    
+&$actionss  -para3 nonlog -para5 "openDM"
 
 ## show hidden ##
 if($expand_flag.Length -eq 0){
@@ -297,16 +299,14 @@ Start-Sleep -Seconds 2
   $wshell.sendkeys("%v")
    start-sleep -s 2
      $wshell.sendkeys("w")
+     
+         &$actionss  -para3 nonlog -para5 "show_hidden"
      }
 
      start-sleep -s 2
   $wshell.sendkeys("{tab}")
-  start-sleep -s 2 
+  start-sleep -s 5
 
-if($expand_flag.Length -eq 0){
-&$actionss  -para3 nonlog -para5 "DevicecManager"
-#$picfile=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "DeviceManager" }).FullName
-}
 
 if($expand_flag.length -gt 0){
 
@@ -346,7 +346,9 @@ $wshell.AppActivate('Device Manager')
  start-sleep -s 2
  if($expand_flag -match "display"){
    $wshell.sendkeys("display")
- }
+    start-sleep -s 2
+    $wshell.sendkeys("display")
+     }
  else{
   $wshell.sendkeys($expand_flag)
  }

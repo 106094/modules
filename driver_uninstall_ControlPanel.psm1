@@ -178,7 +178,7 @@ $pkgename="AMD"
    
     if($pkgename.length -ne 0){   
                                           
-        $packages_original = Get-Package |Where-object{$_.name -like "*$pkgename*" -and $_.version -ne $null}
+        $packages_original = Get-Package |Where-object{$_.name -like "*$pkgename*" -and $_.version}
 
       if($packages_original){
 
@@ -385,7 +385,7 @@ $pkgename="AMD"
            
 
         }
-        
+
         }
 
         write-host "uninstall complete, no related programs were found"
@@ -401,7 +401,7 @@ $pkgename="AMD"
         add-content -path $installrecord -value "end record:  $timenow "
         $ren=$timenow+"_"+(Split-Path -leaf $installrecord)
         Rename-Item -Path $installrecord -NewName $ren
-        $results="check index"
+        $results="OK"
         $index="check $ren"
         &$actiontsd -para1 nonlog
         
