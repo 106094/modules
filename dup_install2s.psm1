@@ -116,7 +116,7 @@ if($extractorinstall.Length -eq 0 -or $extractorinstall -match "install"){
      else{
         $checkpkg=Get-AppPackage |Where-Object{$_.name -match $duptype}|out-string
         if($checkpkg.length -gt 0){
-            set-content $logpath_result -Force
+            set-content $logpath_result -Value $checkpkg -Force
         }
         else{
             $results="NG"

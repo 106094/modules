@@ -98,6 +98,7 @@ $tcstep=((get-content $tcpath).split(","))[1]
 $action=((get-content $tcpath).split(","))[2]
 $cmdline = $cmdline.Replace("step##","step$($tcstep)")
 $cmdline = $cmdline.Replace("TC##","$($tcnumber)")
+$cmdpath=$cmdpath.Replace("TC##","$($tcnumber)")
 
 
 $picpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
