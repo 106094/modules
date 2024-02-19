@@ -27,6 +27,8 @@ $mslog=$picpath+"step$($tcstep)_msinfo.$($outlogtype)"
 $results="NG"
 $index="fail to open msinfo32"
 
+(Get-Process -name msinfo32 -ea SilentlyContinue).CloseMainWindow()
+
 #get report #
 if($outlogtype -match "txt"){
 Start-Process 'C:\Windows\System32\msinfo32.exe' -ArgumentList '/report', $mslog -Wait
