@@ -1,37 +1,11 @@
-﻿function check_msinfo32 ([string]$para1){
+﻿function check_msinfo32 ([string]$para1,[string]$para2){
       
     Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
-    $wshell=New-Object -ComObject wscript.shell
+    #$wshell=New-Object -ComObject wscript.shell
       Add-Type -AssemblyName Microsoft.VisualBasic
       Add-Type -AssemblyName System.Windows.Forms
       Add-Type -AssemblyName System.Windows.Forms,System.Drawing
       
-$source = @"
-using System;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices;
-using System.Windows.Forms;
-namespace KeySends
-{
-    public class KeySend
-    {
-        [DllImport("user32.dll")]
-        public static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
-        private const int KEYEVENTF_EXTENDEDKEY = 1;
-        private const int KEYEVENTF_KEYUP = 2;
-        public static void KeyDown(Keys vKey)
-        {
-            keybd_event((byte)vKey, 0, KEYEVENTF_EXTENDEDKEY, 0);
-        }
-        public static void KeyUp(Keys vKey)
-        {
-            keybd_event((byte)vKey, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
-        }
-    }
-}
-"@
-Add-Type -TypeDefinition $source -ReferencedAssemblies "System.Windows.Forms"
-
 if($PSScriptRoot.length -eq 0){
 $scriptRoot="C:\testing_AI\modules"
 }
@@ -39,85 +13,73 @@ else{
 $scriptRoot=$PSScriptRoot
 }
 
-$nonlog_flag=$para1
-
-$width  = (([string]::Join("`n", (wmic path Win32_VideoController get CurrentHorizontalResolution))).split("`n") -match "\d{1,}")[0]
-$height  = (([string]::Join("`n", (wmic path Win32_VideoController get CurrentVerticalResolution))).split("`n") -match "\d{1,}")[0]
+$outlogtype=$para1
+$nonlog_flag=$para2
 
 $action="check_msinfo32"
 $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
 $tcnumber=((get-content $tcpath).split(","))[0]
 $tcstep=((get-content $tcpath).split(","))[1]
-
 $picpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
 if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-null}
+$mslog=$picpath+"step$($tcstep)_msinfo.$($outlogtype)"
+
+$results="NG"
+$index="fail to open msinfo32"
+
+#get report #
+if($outlogtype -match "txt"){
+Start-Process 'C:\Windows\System32\msinfo32.exe' -ArgumentList '/report', $mslog -Wait
+}
+if($outlogtype -match "nfo"){
+Start-Process 'C:\Windows\System32\msinfo32.exe' -ArgumentList '/nfo', $mslog -Wait 
+}
 
 $actionss="screenshot"
 Get-Module -name $actionss|remove-module
 $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
-# 0 – Security 1 – Basic 2 – Enhanced 3 – Full  -> On:3 Off:1
-$checkvalue=(Get-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection -Name "AllowTelemetry").AllowTelemetry
-$turns=$false
-if($checkvalue -eq 1 -and $switchflag -eq "on"){$turns=$true}
-if($checkvalue -eq 3 -and $switchflag -eq "off"){$turns=$true}
-
-#####
-
-$appname="msinfo32"
-
-    [KeySends.KeySend]::KeyDown("LWin")
-        [KeySends.KeySend]::KeyUp("LWin")
-      
-    Start-Sleep -s 2     
-   [System.Windows.Forms.SendKeys]::SendWait("$appname")
-   Start-Sleep -s 2
-   [System.Windows.Forms.SendKeys]::SendWait("~")
-    Start-Sleep -s 10
-
-    $results="NG"
-    $index="fail to open msinfo32"
+#screenshots
+start-process msinfo32
+Start-Sleep -s 10
     
-   if(Get-Process -name $appname){
-        $results="OK"
-        $index="check screenshots"
-   
+$process = Get-Process -name msinfo32  
 
-     [System.Windows.Forms.SendKeys]::SendWait("% ")
-       Start-Sleep -s 2
-        [System.Windows.Forms.SendKeys]::SendWait("x")
-          Start-Sleep -s 2
-     [System.Windows.Forms.SendKeys]::SendWait("{tab}")
-       Start-Sleep -s 2
+if ($process) {
+    
+    $results="OK"
+    $index="check screenshots"
+   
+# Define the ShowWindow function from the user32.dll
+Add-Type @"
+using System;
+using System.Runtime.InteropServices;
+public class Win32ShowWindow {
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+}
+"@
+# Maximize the window
+[Win32ShowWindow]::ShowWindow($process.MainWindowHandle, 3) # 3 is for SW_MAXIMIZE
+Start-Sleep -s 2
+[System.Windows.Forms.SendKeys]::SendWait("{tab}")
+Start-Sleep -s 2
        
 ## screen capture ##
 
     &$actionss  -para3 nonlog -para5 "1"
-    
-        
-        [System.Windows.Forms.SendKeys]::SendWait("{PGDN}")
-            Start-Sleep -s 10
-            
+    [System.Windows.Forms.SendKeys]::SendWait("{PGDN}")
+    Start-Sleep -s 5      
     &$actionss  -para3 nonlog -para5 "2"
-        
-        [System.Windows.Forms.SendKeys]::SendWait("{PGDN}")
-            Start-Sleep -s 10
-            
+    [System.Windows.Forms.SendKeys]::SendWait("{PGDN}")
+    Start-Sleep -s 5       
     &$actionss  -para3 nonlog -para5 "3"
-
-        [System.Windows.Forms.SendKeys]::SendWait("% ")
-        Start-Sleep -s 2
-        [System.Windows.Forms.SendKeys]::SendWait("c")
-        Start-Sleep -s 2
-
-    ##check results ##
+    (Get-Process -name msinfo32).CloseMainWindow()
 
 }
 
-if(Get-Process -name $appname -ErrorAction SilentlyContinue){
-    (Get-Process -name $appname).CloseMainWindow()
-}
 
 ######### write log  #######
 
