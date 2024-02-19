@@ -118,7 +118,7 @@ Import-Module $mdpath -WarningAction SilentlyContinue -Global
   start-process cmd -WindowStyle Maximized
 
 Start-Sleep -Seconds 5
-$id2= (Get-Process -name $cmdtype|Sort-Object StartTime -ea SilentlyContinue |Select-Object -last 1).id
+$id2= (Get-Process -name cmd|Sort-Object StartTime -ea SilentlyContinue |Select-Object -last 1).id
 #$cmdwindowhd=(Get-Process -name $cmdtype |Sort-Object StartTime -ea SilentlyContinue |Select-Object -last 1).MainWindowHandle 
 
 ### click cmd window ###
@@ -162,7 +162,7 @@ foreach($cmdline in $cmdlines){
     Start-Sleep -Seconds 3
     $cmdcontent=Get-Clipboard
     Start-Sleep -Seconds 5
-    if($cmdcontent -match "racadm>>exit"){
+    if($cmdcontent -match "successfully"){
         $results="OK"
          &$actionss  -para3 nonlog -para5 "sessionclear_ok"
     }
