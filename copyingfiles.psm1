@@ -6,27 +6,14 @@
     $wshell=New-Object -ComObject wscript.shell
     Add-Type -AssemblyName Microsoft.VisualBasic
     Add-Type -AssemblyName System.Windows.Forms
-
     
     $filepath=$para1
     $copytopath=$para2
     $nonlog_flag=$para3
- 
-    if($PSScriptRoot.length -eq 0){
-      $scriptRoot="C:\testing_AI\modules"
-    }
-    else{
-      $scriptRoot=$PSScriptRoot
-    }
 
-    if($filepath -match "192.168.2.249"){
-      do{
-      start-sleep -s 2
-      $testpin= ping 192.168.2.249 /n 3
-      }until( !($testpin -match "unreachable" -or $testpin -match "Request timed out" -or $testpin -match "failed"))
+    $action="copying files to logs folder from $filepath "
 
-
-      function netdisk_connect([string]$webpath,[string]$username,[string]$passwd,[string]$diskid){
+    function netdisk_connect([string]$webpath,[string]$username,[string]$passwd,[string]$diskid){
 
       net use $webpath /delete
       net use $webpath /user:$username $passwd /PERSISTENT:yes
@@ -41,12 +28,34 @@
 
       }
 
-      netdisk_connect -webpath \\192.168.2.249\srvprj\Inventec\Dell -username pctest -passwd pctest -diskid Y
-
-      $filepath= $filepath.replace("\\192.168.2.249\srvprj\Inventec\Dell","Y:")
-
+    if($PSScriptRoot.length -eq 0){
+      $scriptRoot="C:\testing_AI\modules"
+    }
+    else{
+      $scriptRoot=$PSScriptRoot
     }
 
+    if($filepath -match "192.168.2.249"){
+      $checkstart=Get-Date
+      do{
+      start-sleep -s 2
+      $testpin= ping 192.168.2.249 /n 3
+      $checkpassed=(New-TimeSpan -start $checkstart -end (get-date)).TotalSeconds
+      }until( !($testpin -match "unreachable" -or $testpin -match "Request timed out" -or $testpin -match "failed") -or $checkpassed -gt 60)
+
+      if($checkpassed -le 60){
+        netdisk_connect -webpath \\192.168.2.249\srvprj\Inventec\Dell -username pctest -passwd pctest -diskid Y
+        $filepath= $filepath.replace("\\192.168.2.249\srvprj\Inventec\Dell","Y:")
+      }
+
+      if($checkpassed -gt 60){
+        $results="NG"
+        $index="netconnect failed"    
+      }
+    }
+
+
+if($results -ne "NG"){
     $waitc=0
     do{
     start-sleep -s 2
@@ -56,7 +65,6 @@
 
 if ($waitc -le 30 -and $checkfilelink){
 
-$action="copying files to logs folder from $filepath "
 $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
 $tcnumber=((get-content $tcpath).split(","))[0]
 $tcstep=((get-content $tcpath).split(","))[1]
@@ -145,6 +153,8 @@ $index="no define copy from path"
 else{
 $results="NG"
 $index="no defined path is found after waiting 60s"
+
+}
 
 }
 ######### write log #######
