@@ -95,13 +95,12 @@
         $detailbt2.click()
         }
 
-
     $nowtime=get-date
-
+    start-sleep -s 10
     do{
         start-sleep -s 2
         $usenameinp=$driver.FindElement([OpenQA.Selenium.By]::ClassName("cui-start-screen-username"))
-         $timepass= (New-TimeSpan -start $nowtime -end (get-date)).TotalSeconds
+        $timepass= (New-TimeSpan -start $nowtime -end (get-date)).TotalSeconds
 
     }until( $usenameinp.TagName -eq "input"  -or $timepass -gt 120)
 
