@@ -302,12 +302,12 @@ $wshell.SendKeys("~")
 
 ####  check if running ###
 Start-Sleep -Seconds 2
-$checkrun=(get-process -Name "AutoTool").Id
+$checkrun=(get-process -Name "AutoTool" -ErrorAction SilentlyContinue).Id
 if($checkrun){
   Start-Sleep -Seconds 5
-  Get-Process -name  "AutoTool" | Set-WindowState -State  MAXIMIZE
+  Get-Process -name  "AutoTool" -ErrorAction SilentlyContinue | Set-WindowState -State MINIMIZE
+  $checkrun
 }
-$checkrun
 
 }
 
