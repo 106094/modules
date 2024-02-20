@@ -107,16 +107,15 @@
 
     if($usenameinp.TagName -eq "input" ) {
     start-sleep -s 5    
-    $usenameinp.click()
-    start-sleep -s 2
     $usenameinp.SendKeys($idracuser)
-     start-sleep -s 2
+    start-sleep -s 2
     $passwordinp=$driver.FindElement([OpenQA.Selenium.By]::ClassName("cui-start-screen-password"))
+    start-sleep -s 2
     $passwordinp.SendKeys($idracpwd)
      start-sleep -s 2
     $sumitbt=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("button[ng-click='onButtonAction(\'login\')']"))
+    start-sleep -s 2
     $sumitbt.Click()
-
     Start-Sleep -s 5          
 
       try{ $radioButton=$driver.FindElement([OpenQA.Selenium.By]::CssSelector("input[type='radio'][name='pwd_option'][value='1']"))}
@@ -133,7 +132,6 @@
       }
  
      Start-Sleep -s 10
-
 
      #if small screen,check the website control
       $findjudge = $driver.FindElement([OpenQA.Selenium.By]::XPath("//button[@class='navbar-toggle mobileMenu']"))
