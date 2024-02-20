@@ -1,13 +1,13 @@
 ﻿
-function benchmark2 ([string]$para1, [string]$para2, [string]$para3){
+function benchmark2 ([string]$para1, [string]$para2, [string]$para3,[string]$para4){
     
-    Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
-    $wshell=New-Object -com wscript.shell
-      #$shell=New-Object -ComObject shell.application
-      Add-Type -AssemblyName Microsoft.VisualBasic
-       Add-Type -AssemblyName System.Windows.Forms
-        Add-Type -AssemblyName System.Windows.Forms,System.Drawing
-        [void][System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+  Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
+  $wshell=New-Object -com wscript.shell
+    #$shell=New-Object -ComObject shell.application
+    Add-Type -AssemblyName Microsoft.VisualBasic
+     Add-Type -AssemblyName System.Windows.Forms
+      Add-Type -AssemblyName System.Windows.Forms,System.Drawing
+      [void][System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 
 #region functions
 
@@ -16,25 +16,25 @@ using System;
 using System.Runtime.InteropServices;
 
 public class Window {
-    [DllImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+  [DllImport("user32.dll")]
+  [return: MarshalAs(UnmanagedType.Bool)]
+  public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 }
 
 public class Win32 {
-    [DllImport("user32.dll", SetLastError = true)]
-    public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+  [DllImport("user32.dll", SetLastError = true)]
+  public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
-    [DllImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+  [DllImport("user32.dll")]
+  [return: MarshalAs(UnmanagedType.Bool)]
+  public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 }
 
 public struct RECT {
-    public int Left;
-    public int Top;
-    public int Right;
-    public int Bottom;
+  public int Left;
+  public int Top;
+  public int Right;
+  public int Bottom;
 }
 "@
 
@@ -49,22 +49,22 @@ public class Clicker
 [StructLayout(LayoutKind.Sequential)]
 struct INPUT
 { 
-    public int        type; // 0 = INPUT_MOUSE,
-                            // 1 = INPUT_KEYBOARD
-                            // 2 = INPUT_HARDWARE
-    public MOUSEINPUT mi;
+  public int        type; // 0 = INPUT_MOUSE,
+                          // 1 = INPUT_KEYBOARD
+                          // 2 = INPUT_HARDWARE
+  public MOUSEINPUT mi;
 }
 
 //https://msdn.microsoft.com/en-us/library/windows/desktop/ms646273(v=vs.85).aspx
 [StructLayout(LayoutKind.Sequential)]
 struct MOUSEINPUT
 {
-    public int    dx ;
-    public int    dy ;
-    public int    mouseData ;
-    public int    dwFlags;
-    public int    time;
-    public IntPtr dwExtraInfo;
+  public int    dx ;
+  public int    dy ;
+  public int    mouseData ;
+  public int    dwFlags;
+  public int    time;
+  public IntPtr dwExtraInfo;
 }
 
 //This covers most use cases although complex mice may have additional buttons
@@ -89,16 +89,16 @@ extern static uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
 
 public static void LeftClickAtPoint(int x, int y)
 {
-    //Move the mouse
-    INPUT[] input = new INPUT[3];
-    input[0].mi.dx = x*(65535/System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width);
-    input[0].mi.dy = y*(65535/System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height);
-    input[0].mi.dwFlags = MOUSEEVENTF_MOVED | MOUSEEVENTF_ABSOLUTE;
-    //Left mouse button down
-    input[1].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
-    //Left mouse button up
-    input[2].mi.dwFlags = MOUSEEVENTF_LEFTUP;
-    SendInput(3, input, Marshal.SizeOf(input[0]));
+  //Move the mouse
+  INPUT[] input = new INPUT[3];
+  input[0].mi.dx = x*(65535/System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width);
+  input[0].mi.dy = y*(65535/System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height);
+  input[0].mi.dwFlags = MOUSEEVENTF_MOVED | MOUSEEVENTF_ABSOLUTE;
+  //Left mouse button down
+  input[1].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+  //Left mouse button up
+  input[2].mi.dwFlags = MOUSEEVENTF_LEFTUP;
+  SendInput(3, input, Marshal.SizeOf(input[0]));
 }
 }
 '@
@@ -106,209 +106,209 @@ Add-Type -TypeDefinition $cSource -ReferencedAssemblies System.Windows.Forms,Sys
 
 
 Function Set-ScreenResolution { 
- 
+
 <# 
-    .Synopsis 
-        Sets the Screen Resolution of the primary monitor 
-    .Description 
-        Uses Pinvoke and ChangeDisplaySettings Win32API to make the change 
-    .Example 
-        Set-ScreenResolution -Width 1024 -Height 768         
-    #> 
+  .Synopsis 
+      Sets the Screen Resolution of the primary monitor 
+  .Description 
+      Uses Pinvoke and ChangeDisplaySettings Win32API to make the change 
+  .Example 
+      Set-ScreenResolution -Width 1024 -Height 768         
+  #> 
 param ( 
 [Parameter(Mandatory=$true, 
-           Position = 0)] 
+         Position = 0)] 
 [int] 
 $Width, 
- 
+
 [Parameter(Mandatory=$true, 
-           Position = 1)] 
+         Position = 1)] 
 [int] 
 $Height 
 ) 
- 
+
 $pinvokeCode = @" 
- 
+
 using System; 
 using System.Runtime.InteropServices; 
- 
+
 namespace Resolution 
 { 
- 
-    [StructLayout(LayoutKind.Sequential)] 
-    public struct DEVMODE1 
-    { 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] 
-        public string dmDeviceName; 
-        public short dmSpecVersion; 
-        public short dmDriverVersion; 
-        public short dmSize; 
-        public short dmDriverExtra; 
-        public int dmFields; 
- 
-        public short dmOrientation; 
-        public short dmPaperSize; 
-        public short dmPaperLength; 
-        public short dmPaperWidth; 
- 
-        public short dmScale; 
-        public short dmCopies; 
-        public short dmDefaultSource; 
-        public short dmPrintQuality; 
-        public short dmColor; 
-        public short dmDuplex; 
-        public short dmYResolution; 
-        public short dmTTOption; 
-        public short dmCollate; 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] 
-        public string dmFormName; 
-        public short dmLogPixels; 
-        public short dmBitsPerPel; 
-        public int dmPelsWidth; 
-        public int dmPelsHeight; 
- 
-        public int dmDisplayFlags; 
-        public int dmDisplayFrequency; 
- 
-        public int dmICMMethod; 
-        public int dmICMIntent; 
-        public int dmMediaType; 
-        public int dmDitherType; 
-        public int dmReserved1; 
-        public int dmReserved2; 
- 
-        public int dmPanningWidth; 
-        public int dmPanningHeight; 
-    }; 
- 
- 
- 
-    class User_32 
-    { 
-        [DllImport("user32.dll")] 
-        public static extern int EnumDisplaySettings(string deviceName, int modeNum, ref DEVMODE1 devMode); 
-        [DllImport("user32.dll")] 
-        public static extern int ChangeDisplaySettings(ref DEVMODE1 devMode, int flags); 
- 
-        public const int ENUM_CURRENT_SETTINGS = -1; 
-        public const int CDS_UPDATEREGISTRY = 0x01; 
-        public const int CDS_TEST = 0x02; 
-        public const int DISP_CHANGE_SUCCESSFUL = 0; 
-        public const int DISP_CHANGE_RESTART = 1; 
-        public const int DISP_CHANGE_FAILED = -1; 
-    } 
- 
- 
- 
-    public class PrmaryScreenResolution 
-    { 
-        static public string ChangeResolution(int width, int height) 
-        { 
- 
-            DEVMODE1 dm = GetDevMode1(); 
- 
-            if (0 != User_32.EnumDisplaySettings(null, User_32.ENUM_CURRENT_SETTINGS, ref dm)) 
-            { 
- 
-                dm.dmPelsWidth = width; 
-                dm.dmPelsHeight = height; 
- 
-                int iRet = User_32.ChangeDisplaySettings(ref dm, User_32.CDS_TEST); 
- 
-                if (iRet == User_32.DISP_CHANGE_FAILED) 
-                { 
-                    return "Unable To Process Your Request. Sorry For This Inconvenience."; 
-                } 
-                else 
-                { 
-                    iRet = User_32.ChangeDisplaySettings(ref dm, User_32.CDS_UPDATEREGISTRY); 
-                    switch (iRet) 
-                    { 
-                        case User_32.DISP_CHANGE_SUCCESSFUL: 
-                            { 
-                                return "Success"; 
-                            } 
-                        case User_32.DISP_CHANGE_RESTART: 
-                            { 
-                                return "You Need To Reboot For The Change To Happen.\n If You Feel Any Problem After Rebooting Your Machine\nThen Try To Change Resolution In Safe Mode."; 
-                            } 
-                        default: 
-                            { 
-                                return "Failed To Change The Resolution"; 
-                            } 
-                    } 
- 
-                } 
- 
- 
-            } 
-            else 
-            { 
-                return "Failed To Change The Resolution."; 
-            } 
-        } 
- 
-        private static DEVMODE1 GetDevMode1() 
-        { 
-            DEVMODE1 dm = new DEVMODE1(); 
-            dm.dmDeviceName = new String(new char[32]); 
-            dm.dmFormName = new String(new char[32]); 
-            dm.dmSize = (short)Marshal.SizeOf(dm); 
-            return dm; 
-        } 
-    } 
+
+  [StructLayout(LayoutKind.Sequential)] 
+  public struct DEVMODE1 
+  { 
+      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] 
+      public string dmDeviceName; 
+      public short dmSpecVersion; 
+      public short dmDriverVersion; 
+      public short dmSize; 
+      public short dmDriverExtra; 
+      public int dmFields; 
+
+      public short dmOrientation; 
+      public short dmPaperSize; 
+      public short dmPaperLength; 
+      public short dmPaperWidth; 
+
+      public short dmScale; 
+      public short dmCopies; 
+      public short dmDefaultSource; 
+      public short dmPrintQuality; 
+      public short dmColor; 
+      public short dmDuplex; 
+      public short dmYResolution; 
+      public short dmTTOption; 
+      public short dmCollate; 
+      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] 
+      public string dmFormName; 
+      public short dmLogPixels; 
+      public short dmBitsPerPel; 
+      public int dmPelsWidth; 
+      public int dmPelsHeight; 
+
+      public int dmDisplayFlags; 
+      public int dmDisplayFrequency; 
+
+      public int dmICMMethod; 
+      public int dmICMIntent; 
+      public int dmMediaType; 
+      public int dmDitherType; 
+      public int dmReserved1; 
+      public int dmReserved2; 
+
+      public int dmPanningWidth; 
+      public int dmPanningHeight; 
+  }; 
+
+
+
+  class User_32 
+  { 
+      [DllImport("user32.dll")] 
+      public static extern int EnumDisplaySettings(string deviceName, int modeNum, ref DEVMODE1 devMode); 
+      [DllImport("user32.dll")] 
+      public static extern int ChangeDisplaySettings(ref DEVMODE1 devMode, int flags); 
+
+      public const int ENUM_CURRENT_SETTINGS = -1; 
+      public const int CDS_UPDATEREGISTRY = 0x01; 
+      public const int CDS_TEST = 0x02; 
+      public const int DISP_CHANGE_SUCCESSFUL = 0; 
+      public const int DISP_CHANGE_RESTART = 1; 
+      public const int DISP_CHANGE_FAILED = -1; 
+  } 
+
+
+
+  public class PrmaryScreenResolution 
+  { 
+      static public string ChangeResolution(int width, int height) 
+      { 
+
+          DEVMODE1 dm = GetDevMode1(); 
+
+          if (0 != User_32.EnumDisplaySettings(null, User_32.ENUM_CURRENT_SETTINGS, ref dm)) 
+          { 
+
+              dm.dmPelsWidth = width; 
+              dm.dmPelsHeight = height; 
+
+              int iRet = User_32.ChangeDisplaySettings(ref dm, User_32.CDS_TEST); 
+
+              if (iRet == User_32.DISP_CHANGE_FAILED) 
+              { 
+                  return "Unable To Process Your Request. Sorry For This Inconvenience."; 
+              } 
+              else 
+              { 
+                  iRet = User_32.ChangeDisplaySettings(ref dm, User_32.CDS_UPDATEREGISTRY); 
+                  switch (iRet) 
+                  { 
+                      case User_32.DISP_CHANGE_SUCCESSFUL: 
+                          { 
+                              return "Success"; 
+                          } 
+                      case User_32.DISP_CHANGE_RESTART: 
+                          { 
+                              return "You Need To Reboot For The Change To Happen.\n If You Feel Any Problem After Rebooting Your Machine\nThen Try To Change Resolution In Safe Mode."; 
+                          } 
+                      default: 
+                          { 
+                              return "Failed To Change The Resolution"; 
+                          } 
+                  } 
+
+              } 
+
+
+          } 
+          else 
+          { 
+              return "Failed To Change The Resolution."; 
+          } 
+      } 
+
+      private static DEVMODE1 GetDevMode1() 
+      { 
+          DEVMODE1 dm = new DEVMODE1(); 
+          dm.dmDeviceName = new String(new char[32]); 
+          dm.dmFormName = new String(new char[32]); 
+          dm.dmSize = (short)Marshal.SizeOf(dm); 
+          return dm; 
+      } 
+  } 
 } 
- 
+
 "@ 
- 
+
 Add-Type $pinvokeCode -ErrorAction SilentlyContinue 
 [Resolution.PrmaryScreenResolution]::ChangeResolution($width,$height) 
 } 
-      
- Add-Type @"
-  using System;
-  using System.Runtime.InteropServices;
-  public class SFW {
-     [DllImport("user32.dll")]
-     [return: MarshalAs(UnmanagedType.Bool)]
-     public static extern bool SetForegroundWindow(IntPtr hWnd);
-  }
+    
+Add-Type @"
+using System;
+using System.Runtime.InteropServices;
+public class SFW {
+   [DllImport("user32.dll")]
+   [return: MarshalAs(UnmanagedType.Bool)]
+   public static extern bool SetForegroundWindow(IntPtr hWnd);
+}
 "@
 
- $source = @"
+$source = @"
 using System;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 namespace KeySends
 {
-    public class KeySend
-    {
-        [DllImport("user32.dll")]
-        public static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
-        private const int KEYEVENTF_EXTENDEDKEY = 1;
-        private const int KEYEVENTF_KEYUP = 2;
-        public static void KeyDown(Keys vKey)
-        {
-            keybd_event((byte)vKey, 0, KEYEVENTF_EXTENDEDKEY, 0);
-        }
-        public static void KeyUp(Keys vKey)
-        {
-            keybd_event((byte)vKey, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
-        }
-    }
+  public class KeySend
+  {
+      [DllImport("user32.dll")]
+      public static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
+      private const int KEYEVENTF_EXTENDEDKEY = 1;
+      private const int KEYEVENTF_KEYUP = 2;
+      public static void KeyDown(Keys vKey)
+      {
+          keybd_event((byte)vKey, 0, KEYEVENTF_EXTENDEDKEY, 0);
+      }
+      public static void KeyUp(Keys vKey)
+      {
+          keybd_event((byte)vKey, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+      }
+  }
 }
 "@
 
 Add-Type -TypeDefinition $source -ReferencedAssemblies "System.Windows.Forms"
-  $Signature = @"
+$Signature = @"
 [DllImport("user32.dll")]public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
 "@
 
 #$ShowWindowAsync = Add-Type -MemberDefinition $Signature -Name "Win32ShowWindowAsync" -Namespace Win32Functions -PassThru
 
 #endregion
-       
+     
 #$paracheck1=$PSBoundParameters.ContainsKey('para1')
 #$paracheck2=$PSBoundParameters.ContainsKey('para2')
 $paracheck3=$PSBoundParameters.ContainsKey('para3')
@@ -320,6 +320,7 @@ $para3=""
 $bitype=$para1
 $bitconfig=$para2
 $noexit_flag=$para3
+$nonlog_flag=$para4
 
 if($PSScriptRoot.length -eq 0){
 $scriptRoot="C:\testing_AI\modules"
@@ -356,17 +357,17 @@ $action="SPECviewperf13 Benchmark"
 
 ## copy tool ##
 
- function netdisk_connect([string]$webpath,[string]$username,[string]$passwd,[string]$diskid){
+function netdisk_connect([string]$webpath,[string]$username,[string]$passwd,[string]$diskid){
 
 net use $webpath /delete
 net use $webpath /user:$username $passwd /PERSISTENT:yes
- net use $webpath /SAVECRED 
+net use $webpath /SAVECRED 
 
- if($diskid.length -ne 0){
-  $diskpath=$diskid+":"
-  $checkdisk=net use
-   if($checkdisk -match $diskpath){net use $diskpath /delete}
-    net use $diskpath $webpath
+if($diskid.length -ne 0){
+$diskpath=$diskid+":"
+$checkdisk=net use
+ if($checkdisk -match $diskpath){net use $diskpath /delete}
+  net use $diskpath $webpath
 }
 
 }
@@ -376,39 +377,39 @@ netdisk_connect -webpath \\192.168.2.249\srvprj\Inventec\Dell -username pctest -
 $autopath="Y:\Matagorda\07.Tool\_AutoTool"
 $copytopath="C:\testing_AI\modules\BITools\SPECviewperf13"
 
-  if(!(test-path $copytopath)){
- Expand-Archive "$autopath\extra_tools\SPECviewperf13.zip" -DestinationPath $copytopath
-   <#
-   new-item -ItemType directory $copytopath |Out-Null
-   $zipfile="$autopath\extra_tools\SPECviewperf13.zip"
-   $copytopath="C:\testing_AI\modules\BITools\SPECviewperf13"
-    write-host "unzip $zipfile to $copytopath"
-    $shell.NameSpace($copytopath).copyhere($shell.NameSpace($zipfile).Items(),16)
-    #>
-    }
+if(!(test-path $copytopath)){
+Expand-Archive "$autopath\extra_tools\SPECviewperf13.zip" -DestinationPath $copytopath
+ <#
+ new-item -ItemType directory $copytopath |Out-Null
+ $zipfile="$autopath\extra_tools\SPECviewperf13.zip"
+ $copytopath="C:\testing_AI\modules\BITools\SPECviewperf13"
+  write-host "unzip $zipfile to $copytopath"
+  $shell.NameSpace($copytopath).copyhere($shell.NameSpace($zipfile).Items(),16)
+  #>
+  }
 
- $resultss= Set-ScreenResolution -Width 1920 -Height  1080
+$resultss= Set-ScreenResolution -Width 1920 -Height  1080
 
- if( $resultss -match "failed"){
-   $results="NG, Fail to change resolution to 1920*1080"
-   $Index="-"
-   $noexit_flag="noexit"
- }
+if( $resultss -match "failed"){
+ $results="NG, Fail to change resolution to 1920*1080"
+ $Index="-"
+ $noexit_flag="noexit"
+}
 
- else{
+else{
 
- <##
- $displayw=[int64](([System.Windows.Forms.Screen]::AllScreens).Bounds).Width
- $displayh=[int64](([System.Windows.Forms.Screen]::AllScreens).Bounds).Height
- $systemw= [int64](($width.split())[0])
- $systemh=[int64](($height.split())[0])
+<##
+$displayw=[int64](([System.Windows.Forms.Screen]::AllScreens).Bounds).Width
+$displayh=[int64](([System.Windows.Forms.Screen]::AllScreens).Bounds).Height
+$systemw= [int64](($width.split())[0])
+$systemh=[int64](($height.split())[0])
 
- 
+
 $diffw=$displayw- $systemw
 $diffh= $displayh-  $systemh
 
 if(-not($diffw -eq 0 -and $diffh -eq 0)){
- Set-ScreenResolution -Width $systemw -Height  $systemh
+Set-ScreenResolution -Width $systemw -Height  $systemh
 }
 #>
 
@@ -416,15 +417,15 @@ start-sleep -s 5
 
 
 $bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |Where-object{$_.name -match "exe"}).FullName
-   
- get-process nw -ErrorAction SilentlyContinue|stop-process -Force
- get-process viewperf -ErrorAction Silent|stop-process  -Force
+ 
+get-process nw -ErrorAction SilentlyContinue|stop-process -Force
+get-process viewperf -ErrorAction Silent|stop-process  -Force
 
- start-sleep -s 10
+start-sleep -s 10
 
- ## check install and install ###
+## check install and install ###
 
- $installspec13=$false
+$installspec13=$false
 
 (Get-ChildItem "HKLM:Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\")|ForEach-Object{
 $n=$_.name
@@ -438,45 +439,45 @@ $installspec13=$true
 }
 
 if($installspec13 -eq $false){
-  #&$bipath /VERYSILENT 
+#&$bipath /VERYSILENT 
 
- &$bipath /VERYSILENT
+&$bipath /VERYSILENT
 
-   $starttime= (get-date).ToString()
+ $starttime= (get-date).ToString()
 
-    write-host "installing will take about 30 minutes" -nonewline
+  write-host "installing will take about 30 minutes" -nonewline
 
-   set-content $picpath\installtime.txt -value "installing will take about 25+ minutes from $starttime"
+ set-content $picpath\installtime.txt -value "installing will take about 25+ minutes from $starttime"
 
 
-   do{
-    start-sleep -s 10
-       
- $check13=((Get-Process -name SPECgpcViewperf13.0 -ErrorAction SilentlyContinue).Id).count
+ do{
+  start-sleep -s 10
+     
+$check13=((Get-Process -name SPECgpcViewperf13.0 -ErrorAction SilentlyContinue).Id).count
 
- write-host "." -nonewline
+write-host "." -nonewline
 
-   }until($check13 -eq 0 )
+ }until($check13 -eq 0 )
 
-   write-host
+ write-host
 
-     $endtime= (get-date).ToString()
+   $endtime= (get-date).ToString()
 
-      write-host "installing done $endtime" 
+    write-host "installing done $endtime" 
 
-   add-content $picpath\installtime.txt -value "installing done $endtime" 
+ add-content $picpath\installtime.txt -value "installing done $endtime" 
 
-    start-sleep -s 10
+  start-sleep -s 10
 
-   $idrelesaenote=(get-process *|Where-object{$_.MainWindowTitle -match "release_note"}).Id
-   if($idrelesaenote){
-   [Microsoft.VisualBasic.interaction]::AppActivate( $idrelesaenote)|out-null
-    start-sleep -s 2
-    [System.Windows.Forms.SendKeys]::SendWait("%{F4}")
-    start-sleep -s 2
-   }
+ $idrelesaenote=(get-process *|Where-object{$_.MainWindowTitle -match "release_note"}).Id
+ if($idrelesaenote){
+ [Microsoft.VisualBasic.interaction]::AppActivate( $idrelesaenote)|out-null
+  start-sleep -s 2
+  [System.Windows.Forms.SendKeys]::SendWait("%{F4}")
+  start-sleep -s 2
+ }
 
-   }
+ }
 
 
 
@@ -484,18 +485,18 @@ if($installspec13 -eq $false){
 
 if($bitconfig.Length -ne 0){
 $viewsets=$bitconfig.split("+")
- $folders=Get-ChildItem -Directory C:\SPEC\SPECgpc\SPECviewperf13\viewsets\ 
- 
- foreach ($folder in $folders){
- if($folder.Name -notin $viewsets){
- 
- $des="C:\SPEC\SPECgpc\SPECviewperf13\temp\"
- if( -not(test-path $des) ){new-item -ItemType directory $des|out-null}
+$folders=Get-ChildItem -Directory C:\SPEC\SPECgpc\SPECviewperf13\viewsets\ 
+
+foreach ($folder in $folders){
+if($folder.Name -notin $viewsets){
+
+$des="C:\SPEC\SPECgpc\SPECviewperf13\temp\"
+if( -not(test-path $des) ){new-item -ItemType directory $des|out-null}
 Move-Item -Path $folder.fullname -Destination $des  -Force
- }
- }
- }
- ###>
+}
+}
+}
+###>
 
 ### revise 【index.html】 ## 
 
@@ -514,7 +515,7 @@ move-item $setindexb $setindex -Force -ErrorAction SilentlyContinue
 $newhtml=get-content $setindex|ForEach-Object{
 
 if($_ -match "<footer>"){
- " <script>window.setInterval (run_benchmark,20000);</script>"  ###<footer>前加入 <script>window.setInterval (run_benchmark,10000);</script> ->30秒後自動開始
+" <script>window.setInterval (run_benchmark,20000);</script>"  ###<footer>前加入 <script>window.setInterval (run_benchmark,10000);</script> ->30秒後自動開始
 }
 
 $_
@@ -533,8 +534,8 @@ move-item $mgntjsb $mgntjs -Force  -ErrorAction SilentlyContinue
 
 if($bitconfig.Length -ne 0){
 
- $defviewset=($bitconfig.split("+")|ForEach-Object{"'"+$_+"'"}) -join ","    # ['3dsmax-06','catia-05']; 
- 
+$defviewset=($bitconfig.split("+")|ForEach-Object{"'"+$_+"'"}) -join ","    # ['3dsmax-06','catia-05']; 
+
 $oriline="'3dsmax-06','catia-05','creo-02','energy-02','maya-05','medical-02','showcase-02','snx-03','sw-04'"
 }
 
@@ -580,7 +581,7 @@ $newmngmjs2|set-content $mgntjs
 
 ### revise【gwpgRunBenchmark.js】for auto running ###
 
- if(Test-Path $mgntjsb ){
+if(Test-Path $mgntjsb ){
 move-item $mgntrbjsb $mgntrbjs -Force  -ErrorAction SilentlyContinue
 }
 
@@ -608,63 +609,63 @@ set-location "C:\SPEC\SPECgpc\SPECviewperf13\"
 &$runcommand vp13bench
 start-sleep -s 10
 
- ## screenshot for settings at start ###
+## screenshot for settings at start ###
 
 &$actionss  -para3 nonlog -para5 "$action-start"
-    
+  
 $picfile1=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "$action-start" }).FullName
- 
- stop-process -name nw
 
- ## revise index for autostarting
- 
+stop-process -name nw
+
+## revise index for autostarting
+
 move-item $setindex  $setindexb -Force  -ErrorAction SilentlyContinue
 
 $newhtml|set-content $setindex ## wait 2nd time replace
 
 ### start UI & screenshot ###
 start-sleep -s 5
- &$runcommand vp13bench
+&$runcommand vp13bench
 
 ## screenshot for running ###
 
- start-sleep -s 40       
+start-sleep -s 40       
 
 #### check if fail to open##
 
- if( ((get-process -Name nw).Id).count -eq 0 -and ((get-process -Name viewperf).Id).count -eq 0 ){
- 
+if( ((get-process -Name nw).Id).count -eq 0 -and ((get-process -Name viewperf).Id).count -eq 0 ){
+
 #### outlog parameteres ###
 
-  $results="NG"
-       $Index="Fail to open programs"
+$results="NG"
+     $Index="Fail to open programs"
 
- }
+}
 
 else{
 
-    [KeySends.KeySend]::KeyDown("LWin")
-    [KeySends.KeySend]::KeyDown("B")
-    [KeySends.KeySend]::KeyUp("LWin")
-    [KeySends.KeySend]::KeyUp("B")
-    Start-Sleep -s 1
-    [KeySends.KeySend]::KeyDown("LWin")
-    [KeySends.KeySend]::KeyUp("LWin")
-    Start-Sleep -s 1
-    [KeySends.KeySend]::KeyDown("LWin")
-    [KeySends.KeySend]::KeyUp("LWin")
-     Start-Sleep -s 2
+  [KeySends.KeySend]::KeyDown("LWin")
+  [KeySends.KeySend]::KeyDown("B")
+  [KeySends.KeySend]::KeyUp("LWin")
+  [KeySends.KeySend]::KeyUp("B")
+  Start-Sleep -s 1
+  [KeySends.KeySend]::KeyDown("LWin")
+  [KeySends.KeySend]::KeyUp("LWin")
+  Start-Sleep -s 1
+  [KeySends.KeySend]::KeyDown("LWin")
+  [KeySends.KeySend]::KeyUp("LWin")
+   Start-Sleep -s 2
 
- ## screenshot for runnings ###
+## screenshot for runnings ###
 
- &$actionss  -para3 nonlog -para5 "$action-running"
-   
+&$actionss  -para3 nonlog -para5 "$action-running"
+ 
 $picfile2=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "$action-running" }).FullName
 
- start-sleep -s 5
+start-sleep -s 5
 
- &$actionss  -para3 nonlog -para5 "$action-running2"
- 
+&$actionss  -para3 nonlog -para5 "$action-running2"
+
 
 $picfile3=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "$action-running2\b" }).FullName
 ### assign task schedule ####
@@ -686,11 +687,11 @@ Register-ScheduledTask -Action $actionsch -Trigger $trigger -Settings $Stset -Fo
 start-sleep -s 5
 
 #### outlog parameteres ###
-  
+
 $Index=$picfile1+"`n"+$picfile2+"`n"+$picfile3
 $results="chceck screenshots"
-  
-  }
+
+}
 
 }
 
@@ -698,27 +699,27 @@ $results="chceck screenshots"
 
 if($bitype -match "SPECviewperf2020"){
 
-    #check if exe dowloaded form web
-    $flowcheck=(import-csv -path C:\testing_AI\logs\logs_timemap.csv|where-object{$_.tc -match $tcnumber -and $_.program -match "specview_dl"}).results
-    $copyfromserver=$true
-  if($flowcheck -match "ok"){
-    $copyfromserver=$false
-  }
+  #check if exe dowloaded form web
+  $flowcheck=(import-csv -path C:\testing_AI\logs\logs_timemap.csv|where-object{$_.tc -match $tcnumber -and $_.program -match "specview_dl"}).results
+  $copyfromserver=$true
+if($flowcheck -match "ok"){
+  $copyfromserver=$false
+}
 ## copy tool ##
 if($copyfromserver -eq $true){
-    
+  
 
- function netdisk_connect([string]$webpath,[string]$username,[string]$passwd,[string]$diskid){
+function netdisk_connect([string]$webpath,[string]$username,[string]$passwd,[string]$diskid){
 
 net use $webpath /delete
 net use $webpath /user:$username $passwd /PERSISTENT:yes
- net use $webpath /SAVECRED 
+net use $webpath /SAVECRED 
 
- if($diskid.length -ne 0){
-  $diskpath=$diskid+":"
-  $checkdisk=net use
-   if($checkdisk -match $diskpath){net use $diskpath /delete}
-    net use $diskpath $webpath
+if($diskid.length -ne 0){
+$diskpath=$diskid+":"
+$checkdisk=net use
+ if($checkdisk -match $diskpath){net use $diskpath /delete}
+  net use $diskpath $webpath
 }
 
 }
@@ -728,41 +729,41 @@ netdisk_connect -webpath \\192.168.2.249\srvprj\Inventec\Dell -username pctest -
 $autopath="Y:\Matagorda\07.Tool\_AutoTool"
 $copytopath="C:\testing_AI\modules\BITools\SPECviewperf2020"
 
-  if(!(test-path $copytopath)){
- Expand-Archive "$autopath\extra_tools\SPECviewperf2020.zip" -DestinationPath $copytopath
-   <#
-  new-item -ItemType directory $copytopath |Out-Null
-   $zipfile="$autopath\extra_tools\SPECviewperf2020.zip"
-   $copytopath="C:\testing_AI\modules\BITools\SPECviewperf2020"
-   write-host "unzip  $zipfile to $copytopath"
-    $shell.NameSpace($copytopath).copyhere($shell.NameSpace($zipfile).Items(),16)
-    #>
-    }
+if(!(test-path $copytopath)){
+Expand-Archive "$autopath\extra_tools\SPECviewperf2020.zip" -DestinationPath $copytopath
+ <#
+new-item -ItemType directory $copytopath |Out-Null
+ $zipfile="$autopath\extra_tools\SPECviewperf2020.zip"
+ $copytopath="C:\testing_AI\modules\BITools\SPECviewperf2020"
+ write-host "unzip  $zipfile to $copytopath"
+  $shell.NameSpace($copytopath).copyhere($shell.NameSpace($zipfile).Items(),16)
+  #>
+  }
 
 }
 
- $action="SPECviewperf2020 Benchmark"
+$action="SPECviewperf2020 Benchmark"
 
- $resultss= Set-ScreenResolution -Width 1920 -Height  1080
+$resultss= Set-ScreenResolution -Width 1920 -Height  1080
 
- if( $resultss -match "failed"){
-   $results="NG, Fail to change resolution to 1920*1080"
-   $Index="-"
-   $noexit_flag="noexit"
- }
+if( $resultss -match "failed"){
+ $results="NG, Fail to change resolution to 1920*1080"
+ $Index="-"
+ $noexit_flag="noexit"
+}
 
- else{
+else{
 
 $bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |Where-object{$_.name -match "exe"}).FullName
-   
- get-process nw -ErrorAction SilentlyContinue|stop-process -Force
- get-process RunViewperf -ErrorAction Silent|stop-process  -Force
+ 
+get-process nw -ErrorAction SilentlyContinue|stop-process -Force
+get-process RunViewperf -ErrorAction Silent|stop-process  -Force
 
- start-sleep -s 10
+start-sleep -s 10
 
- ## check install and install ###
+## check install and install ###
 
- $installspec2020=$false
+$installspec2020=$false
 
 (Get-ChildItem "HKLM:Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\")|ForEach-Object{
 $n=$_.name
@@ -777,39 +778,39 @@ write-host "SPECviewperf2020 has been installed"
 }
 
 if($installspec2020 -eq $false){
-  #&$bipath /VERYSILENT 
-  $id0=((get-process notepad -ea SilentlyContinue).Id).count
+#&$bipath /VERYSILENT 
+$id0=((get-process notepad -ea SilentlyContinue).Id).count
 
- &$bipath /VERYSILENT
+&$bipath /VERYSILENT
 
-   $starttime= (get-date).ToString()
+ $starttime= (get-date).ToString()
 
-    write-host "installing will take about few minutes" -nonewline
+  write-host "installing will take about few minutes" -nonewline
 
-   set-content $picpath\installtime.txt -value "installing will take about 25+ minutes from $starttime"
-  
-   start-sleep -s 60
+ set-content $picpath\installtime.txt -value "installing will take about 25+ minutes from $starttime"
 
-   do{
-    start-sleep -s 10
-     $id1=((get-process notepad -ea SilentlyContinue).Id).count    
-          $check2020heck2020=((Get-Process -name SPECviewperf2020* -ErrorAction SilentlyContinue).Id).count
+ start-sleep -s 60
 
-           }until($id1 -gt $id0 -or  $check2020heck2020 -eq 0)
+ do{
+  start-sleep -s 10
+   $id1=((get-process notepad -ea SilentlyContinue).Id).count    
+        $check2020heck2020=((Get-Process -name SPECviewperf2020* -ErrorAction SilentlyContinue).Id).count
 
-           Stop-Process -name  notepad -ea SilentlyContinue
+         }until($id1 -gt $id0 -or  $check2020heck2020 -eq 0)
 
-    start-sleep -s 10
+         Stop-Process -name  notepad -ea SilentlyContinue
 
-   $idrelesaenote=(get-process notepad -ea SilentlyContinue|Where-object{$_.MainWindowTitle -match "note"}).Id
-   if( $idrelesaenote){
-   [Microsoft.VisualBasic.interaction]::AppActivate( $idrelesaenote)|out-null
-    start-sleep -s 2
-    [System.Windows.Forms.SendKeys]::SendWait("%{F4}")
-    start-sleep -s 2
-   }
+  start-sleep -s 10
 
-   }
+ $idrelesaenote=(get-process notepad -ea SilentlyContinue|Where-object{$_.MainWindowTitle -match "note"}).Id
+ if( $idrelesaenote){
+ [Microsoft.VisualBasic.interaction]::AppActivate( $idrelesaenote)|out-null
+  start-sleep -s 2
+  [System.Windows.Forms.SendKeys]::SendWait("%{F4}")
+  start-sleep -s 2
+ }
+
+ }
 
 
 ### copy viewsets ##
@@ -820,13 +821,13 @@ write-host "start copying viewsets"
 
 copy-item -path "\\192.168.2.249\srvprj\Inventec\Dell\Matagorda\07.Tool\SPECviewperf\SPECviewperf 2020\downloaded_viewsets\viewsets\" -destination C:\SPEC\SPECgpc\SPECviewperf2020\ -Force -Recurse
 
-     $endtime= (get-date).ToString()
+   $endtime= (get-date).ToString()
 
-      write-host "installing done $endtime" 
+    write-host "installing done $endtime" 
 
-   add-content $picpath\installtime.txt -value "installing done $endtime" 
-      
-    start-sleep -s 10
+ add-content $picpath\installtime.txt -value "installing done $endtime" 
+    
+  start-sleep -s 10
 
 }
 ### revise 【index.html】 ## 
@@ -847,7 +848,7 @@ move-item $setindexb $setindex -Force  -ErrorAction SilentlyContinue
 $newhtml=get-content $setindex|ForEach-Object{
 
 if($_ -match "<footer>"){
- " <script>window.setInterval (run_benchmark,20000);</script>"  ###<footer>前加入 <script>window.setInterval (run_benchmark,10000);</script> ->30秒後自動開始
+" <script>window.setInterval (run_benchmark,20000);</script>"  ###<footer>前加入 <script>window.setInterval (run_benchmark,10000);</script> ->30秒後自動開始
 }
 
 $_
@@ -867,8 +868,8 @@ move-item $mgntjsb $mgntjs -Force  -ErrorAction SilentlyContinue
 ### revise 【gwpgManageBenchmark.js】 1. viewset settings 
 if($bitconfig.Length -ne 0){
 
- $defviewset=($bitconfig.split("+")|ForEach-Object{"'"+$_+"'"}) -join ","    # ['3dsmax-06','catia-05']; 
- 
+$defviewset=($bitconfig.split("+")|ForEach-Object{"'"+$_+"'"}) -join ","    # ['3dsmax-06','catia-05']; 
+
 $oriline="'3dsmax-07','catia-06','creo-03','energy-03','maya-06','medical-03','snx-04','solidworks-07'"
 
 }
@@ -901,7 +902,7 @@ $newmngmjs|set-content $mgntjs
 ###>
 
 ### revise 【gwpgManageBenchmark.js】 2. disable alert ##  【gwpgManageBenchmark.js】//  alert('DPI must be 96 for a submission candidate.');
- 
+
 $newmngmjs2=get-content C:\SPEC\SPECgpc\SPECviewperf2020\vpbench\gwpgManageBenchmark.js|ForEach-Object{
 $oriline="lert('DPI must be 96 for a submission candidate.')"
 if($_ -like "*$oriline*"){
@@ -946,17 +947,17 @@ set-location "C:\SPEC\SPECgpc\SPECviewperf2020\"
 &$runcommand vpbench
 start-sleep -s 10
 
- ## screenshot for settings at start ###
-       
+## screenshot for settings at start ###
+     
 &$actionss  -para3 nonlog -para5 "$action-start"
-   
+ 
 $picfile1=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "$action-start" }).FullName
- 
-  stop-process -name nw
 
- ## revise index for autostarting
+stop-process -name nw
 
- 
+## revise index for autostarting
+
+
 move-item $setindex  $setindexb -Force  -ErrorAction SilentlyContinue
 
 $newhtml|set-content $setindex ## wait 2nd time replace
@@ -967,41 +968,41 @@ start-sleep -s 5
 
 ## screenshot for running ###
 
- start-sleep -s 40       
+start-sleep -s 40       
 #### check if fail to open##
 
- if( ((get-process -Name nw).Id).count -eq 0 -and ((get-process -Name viewperf).Id).count -eq 0 ){
- 
+if( ((get-process -Name nw).Id).count -eq 0 -and ((get-process -Name viewperf).Id).count -eq 0 ){
+
 #### outlog parameteres ###
 
-  $results="NG"
-       $Index="Fail to open programs"
+$results="NG"
+     $Index="Fail to open programs"
 
- }
+}
 
 else{
 
-    [KeySends.KeySend]::KeyDown("LWin")
-    [KeySends.KeySend]::KeyDown("B")
-    [KeySends.KeySend]::KeyUp("LWin")
-    [KeySends.KeySend]::KeyUp("B")
-    Start-Sleep -s 1
-    [KeySends.KeySend]::KeyDown("LWin")
-    [KeySends.KeySend]::KeyUp("LWin")
-    Start-Sleep -s 1
-    [KeySends.KeySend]::KeyDown("LWin")
-    [KeySends.KeySend]::KeyUp("LWin")
-     Start-Sleep -s 2
+  [KeySends.KeySend]::KeyDown("LWin")
+  [KeySends.KeySend]::KeyDown("B")
+  [KeySends.KeySend]::KeyUp("LWin")
+  [KeySends.KeySend]::KeyUp("B")
+  Start-Sleep -s 1
+  [KeySends.KeySend]::KeyDown("LWin")
+  [KeySends.KeySend]::KeyUp("LWin")
+  Start-Sleep -s 1
+  [KeySends.KeySend]::KeyDown("LWin")
+  [KeySends.KeySend]::KeyUp("LWin")
+   Start-Sleep -s 2
 
- ## screenshot for runnings ###
-      
-      
+## screenshot for runnings ###
+    
+    
 &$actionss  -para3 nonlog -para5 "$action-running"
 
- start-sleep -s 5
+start-sleep -s 5
 
- &$actionss  -para3 nonlog -para5 "$action-running2"
-   
+&$actionss  -para3 nonlog -para5 "$action-running2"
+ 
 $picfile2=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "$action-running\b" }).FullName
 
 $picfile3=(Get-ChildItem $picpath |Where-object{$_.name -match ".jpg" -and $_.name -match "$action-running2\b" }).FullName
@@ -1022,44 +1023,44 @@ Register-ScheduledTask -Action $actionsch -Trigger $trigger -Settings $Stset -Fo
 start-sleep -s 5
 
 #### outlog parameteres ###
-  
+
 $Index=$picfile1+"`n"+$picfile2+"`n"+$picfile3
 $results="chceck screenshots"
-  
 
-  }
+
+}
 
 }
 
 }
 
 if($bitype -match "SPECworkstation"){
-   
-  $results="OK"
-  $index="check logs"
+ 
+$results="OK"
+$index="check logs"
 
-    #check if exe dowloaded form web
-    $flowcheck=(import-csv -path C:\testing_AI\logs\logs_timemap.csv|where-object{$_.tc -match $tcnumber -and $_.program -match "specview_dl"}).results
-    $copyfromserver=$true
+  #check if exe dowloaded form web
+  $flowcheck=(import-csv -path C:\testing_AI\logs\logs_timemap.csv|where-object{$_.tc -match $tcnumber -and $_.program -match "specview_dl"}).results
+  $copyfromserver=$true
 
-  if($flowcheck -match "ok"){
-    $copyfromserver=$false
-  }
+if($flowcheck -match "ok"){
+  $copyfromserver=$false
+}
 ## copy tool ##
 if($copyfromserver -eq $true){
-    
+  
 
- function netdisk_connect([string]$webpath,[string]$username,[string]$passwd,[string]$diskid){
+function netdisk_connect([string]$webpath,[string]$username,[string]$passwd,[string]$diskid){
 
 net use $webpath /delete
 net use $webpath /user:$username $passwd /PERSISTENT:yes
- net use $webpath /SAVECRED 
+net use $webpath /SAVECRED 
 
- if($diskid.length -ne 0){
-  $diskpath=$diskid+":"
-  $checkdisk=net use
-   if($checkdisk -match $diskpath){net use $diskpath /delete}
-    net use $diskpath $webpath
+if($diskid.length -ne 0){
+$diskpath=$diskid+":"
+$checkdisk=net use
+ if($checkdisk -match $diskpath){net use $diskpath /delete}
+  net use $diskpath $webpath
 }
 
 }
@@ -1069,41 +1070,41 @@ netdisk_connect -webpath \\192.168.2.249\srvprj\Inventec\Dell -username pctest -
 $autopath="Y:\Matagorda\07.Tool\_AutoTool"
 $copytopath="C:\testing_AI\modules\BITools\SPECviewperf2020"
 
-  if(!(test-path $copytopath)){
- Expand-Archive "$autopath\extra_tools\SPECviewperf2020.zip" -DestinationPath $copytopath
-   <#
-  new-item -ItemType directory $copytopath |Out-Null
-   $zipfile="$autopath\extra_tools\SPECviewperf2020.zip"
-   $copytopath="C:\testing_AI\modules\BITools\SPECviewperf2020"
-   write-host "unzip  $zipfile to $copytopath"
-    $shell.NameSpace($copytopath).copyhere($shell.NameSpace($zipfile).Items(),16)
-    #>
-    }
+if(!(test-path $copytopath)){
+Expand-Archive "$autopath\extra_tools\SPECviewperf2020.zip" -DestinationPath $copytopath
+ <#
+new-item -ItemType directory $copytopath |Out-Null
+ $zipfile="$autopath\extra_tools\SPECviewperf2020.zip"
+ $copytopath="C:\testing_AI\modules\BITools\SPECviewperf2020"
+ write-host "unzip  $zipfile to $copytopath"
+  $shell.NameSpace($copytopath).copyhere($shell.NameSpace($zipfile).Items(),16)
+  #>
+  }
 
 }
 
- $action="SPECworkstation Benchmark"
+$action="SPECworkstation Benchmark"
 
- $resultss= Set-ScreenResolution -Width 1920 -Height  1080
+$resultss= Set-ScreenResolution -Width 1920 -Height  1080
 
- if( $resultss -match "failed"){
-   $results="NG, Fail to change resolution to 1920*1080"
-   $Index="-"
-   $noexit_flag="noexit"
- }
+if( $resultss -match "failed"){
+ $results="NG, Fail to change resolution to 1920*1080"
+ $Index="-"
+ $noexit_flag="noexit"
+}
 
- else{
+else{
 
 $bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |Where-object{$_.name -match "exe"}).FullName
-   
- get-process nw -ErrorAction SilentlyContinue|stop-process -Force
- get-process RunViewperf -ErrorAction Silent|stop-process  -Force
+ 
+get-process nw -ErrorAction SilentlyContinue|stop-process -Force
+get-process RunViewperf -ErrorAction Silent|stop-process  -Force
 
- start-sleep -s 10
+start-sleep -s 10
 
- ## check install and install ###
+## check install and install ###
 
- $installworkstation=$false
+$installworkstation=$false
 
 (Get-ChildItem "HKLM:Software\Microsoft\Windows\CurrentVersion\Uninstall\")|ForEach-Object{
 $n=$_.name
@@ -1118,29 +1119,29 @@ write-host "SPECworkstation has been installed"
 }
 
 if($installworkstation -eq $false){
-  #&$bipath /VERYSILENT 
-  $id0=((get-process notepad -ea SilentlyContinue).Id).count
+#&$bipath /VERYSILENT 
+$id0=((get-process notepad -ea SilentlyContinue).Id).count
 
- &$bipath /VERYSILENT
+&$bipath /VERYSILENT
 
-   $starttime= (get-date).ToString()
+ $starttime= (get-date).ToString()
 
-    write-host "installing will take about few minutes" -nonewline
+  write-host "installing will take about few minutes" -nonewline
 
-   set-content $picpath\installtime.txt -value "installing will take about 25+ minutes from $starttime"
-  
-   start-sleep -s 60
+ set-content $picpath\installtime.txt -value "installing will take about 25+ minutes from $starttime"
 
-    do{
-        start-sleep -s 10  
-        $checkSPECworkstation=((Get-Process -name SPECworkstation* -ErrorAction SilentlyContinue).Id).count
-       }until( $checkSPECworkstation -eq 0)
-       
-    start-sleep -s 10
+ start-sleep -s 60
 
-   }
+  do{
+      start-sleep -s 10  
+      $checkSPECworkstation=((Get-Process -name SPECworkstation* -ErrorAction SilentlyContinue).Id).count
+     }until( $checkSPECworkstation -eq 0)
+     
+  start-sleep -s 10
 
-   
+ }
+
+ 
 ### start UI & screenshot ###
 
 start-sleep -s 5
@@ -1163,38 +1164,38 @@ Start-Sleep -s 3
 [Clicker]::LeftClickAtPoint($clickx, $clicky)
 &$actionss  -para3 nonlog -para5 "start"
 
- $wshell.SendKeys("{tab 6}")
- Start-Sleep -s 1
- $wshell.SendKeys("")
- Start-Sleep -s 1
- $wshell.SendKeys("{tab}")
- Start-Sleep -s 1
- $wshell.SendKeys("")
- Start-Sleep -s 1
- $wshell.SendKeys("{tab}")
- Start-Sleep -s 1
- $wshell.SendKeys("")
- Start-Sleep -s 1
- $wshell.SendKeys("{tab}")
- Start-Sleep -s 1
- $wshell.SendKeys("")
- Start-Sleep -s 1
- $wshell.SendKeys("{tab}")
- Start-Sleep -s 1
- $wshell.SendKeys("")
- Start-Sleep -s 1
- $wshell.SendKeys("{tab}")
- Start-Sleep -s 1
- $wshell.SendKeys("")
- Start-Sleep -s 1
- $wshell.SendKeys("{tab}")
- Start-Sleep -s 1
- $wshell.SendKeys("")
- Start-Sleep -s 2
+$wshell.SendKeys("{tab 6}")
+Start-Sleep -s 1
+$wshell.SendKeys("")
+Start-Sleep -s 1
+$wshell.SendKeys("{tab}")
+Start-Sleep -s 1
+$wshell.SendKeys("")
+Start-Sleep -s 1
+$wshell.SendKeys("{tab}")
+Start-Sleep -s 1
+$wshell.SendKeys("")
+Start-Sleep -s 1
+$wshell.SendKeys("{tab}")
+Start-Sleep -s 1
+$wshell.SendKeys("")
+Start-Sleep -s 1
+$wshell.SendKeys("{tab}")
+Start-Sleep -s 1
+$wshell.SendKeys("")
+Start-Sleep -s 1
+$wshell.SendKeys("{tab}")
+Start-Sleep -s 1
+$wshell.SendKeys("")
+Start-Sleep -s 1
+$wshell.SendKeys("{tab}")
+Start-Sleep -s 1
+$wshell.SendKeys("")
+Start-Sleep -s 2
 [Clicker]::LeftClickAtPoint($clickx2, $clicky2)
- Start-Sleep -s 10
- $checkrunning=get-process -name viewperf -ea SilentlyContinue
- if($checkrunning){
+Start-Sleep -s 10
+$checkrunning=get-process -name viewperf -ea SilentlyContinue
+if($checkrunning){
 &$actionss  -para3 nonlog -para5 "running"
 }
 else{
@@ -1202,7 +1203,7 @@ else{
 $results="NG"
 $index="runbench failed"
 }
-  
+
 
 }
 
@@ -1239,19 +1240,19 @@ $benchzip=$benchname+".zip"
 if ($results -ne "NG"){
 $copytopath="C:\testing_AI\modules\BITools\$bitype"
 
-  if(!(test-path $copytopath)){
+if(!(test-path $copytopath)){
 
-  function netdisk_connect([string]$webpath,[string]$username,[string]$passwd,[string]$diskid){
+function netdisk_connect([string]$webpath,[string]$username,[string]$passwd,[string]$diskid){
 
 net use $webpath /delete
 net use $webpath /user:$username $passwd /PERSISTENT:yes
- net use $webpath /SAVECRED 
+net use $webpath /SAVECRED 
 
- if($diskid.length -ne 0){
-  $diskpath=$diskid+":"
-  $checkdisk=net use
-   if($checkdisk -match $diskpath){net use $diskpath /delete}
-    net use $diskpath $webpath
+if($diskid.length -ne 0){
+$diskpath=$diskid+":"
+$checkdisk=net use
+ if($checkdisk -match $diskpath){net use $diskpath /delete}
+  net use $diskpath $webpath
 }
 
 }
@@ -1262,10 +1263,10 @@ $autopath="Y:\Matagorda\07.Tool\_AutoTool"
 
 write-host "$benchzip unzip to $copytopath"
 
- Expand-Archive "$autopath\extra_tools\$benchzip" -DestinationPath $copytopath
+Expand-Archive "$autopath\extra_tools\$benchzip" -DestinationPath $copytopath
 
-    }
-    
+  }
+  
 start-sleep -s 5
 
 $bipath=(Get-ChildItem "$scriptRoot\BITools\$bitype\" -r -file |Where-object{$_.name -match "Cinebench" -and $_.name -match "exe"}).FullName
@@ -1365,176 +1366,176 @@ Start-Sleep -s 3
 [Clicker]::LeftClickAtPoint($clickx, $clicky)
 start-sleep -s 2
 #region testing if warning
-    $wshell.SendKeys("%t")
+  $wshell.SendKeys("%t")
+  start-sleep -s 2
+    $wshell.SendKeys("~")
     start-sleep -s 2
-      $wshell.SendKeys("~")
-      start-sleep -s 2
-      }
-      
+    }
+    
 #region testing if warning
 
 runbatch32
 
-      $wshell.SendKeys("~")
-      Start-Sleep -s 2
-      $wshell.SendKeys("%{f4}")
-      Start-Sleep -s 2
-      $checkrun=get-process -name batch32 -ea SilentlyContinue
-      if($checkrun){$waringmsg=$true}
-      else{write-host "no warning message"}
+    $wshell.SendKeys("~")
+    Start-Sleep -s 2
+    $wshell.SendKeys("%{f4}")
+    Start-Sleep -s 2
+    $checkrun=get-process -name batch32 -ea SilentlyContinue
+    if($checkrun){$waringmsg=$true}
+    else{write-host "no warning message"}
 
 runbatch32
 
 if($waringmsg){
 write-host "close warning message"
- $wshell.SendKeys("~")
- start-sleep -s 2
+$wshell.SendKeys("~")
+start-sleep -s 2
 }
 
- start-sleep -s 2
- # select disks
- $wshell.SendKeys("{tab}")
- start-sleep -s 1
- $wshell.SendKeys("{tab}")
- start-sleep -s 1
- #$wshell.SendKeys(" ") # not select disk C
- #start-sleep -s 1
- 
- if($down_num -gt 0){
- $down_num=$down_num-1
+start-sleep -s 2
+# select disks
+$wshell.SendKeys("{tab}")
+start-sleep -s 1
+$wshell.SendKeys("{tab}")
+start-sleep -s 1
+#$wshell.SendKeys(" ") # not select disk C
+#start-sleep -s 1
 
- do{ 
- $wshell.SendKeys("{down}") #select other disks
- start-sleep -s 1
- $wshell.SendKeys(" ")
- start-sleep -s 1
- $down_num=$down_num-1
- $down_num
- }until($down_num -le 0)
- }
+if($down_num -gt 0){
+$down_num=$down_num-1
+
+do{ 
+$wshell.SendKeys("{down}") #select other disks
+start-sleep -s 1
+$wshell.SendKeys(" ")
+start-sleep -s 1
+$down_num=$down_num-1
+$down_num
+}until($down_num -le 0)
+}
+
+&$actionss -para3 "nolog" -para5 "disksettings"
+
+$wshell.SendKeys("{tab}")
+start-sleep -s 1
+$wshell.SendKeys("{tab}")
+start-sleep -s 1
+$wshell.SendKeys(" ")
+start-sleep -s 2
+
+#time setting 10 mins
+
+$wshell.SendKeys("%t")
+start-sleep -s 1
+$wshell.SendKeys("t")
+start-sleep -s 1
+$wshell.SendKeys("{tab}")
+start-sleep -s 1
+$wshell.SendKeys("{tab}")
+Set-Clipboard -value "10"
+start-sleep -s 5
+$wshell.SendKeys("^v")
+
+
+&$actionss -para3 "nolog" -para5 "timesettings"
+
+$wshell.SendKeys("{tab}")
+start-sleep -s 1
+$wshell.SendKeys(" ")
+start-sleep -s 2
+
+#run
+$wshell.SendKeys("%t")
+start-sleep -s 1
+$wshell.SendKeys("r")
+start-sleep -s 2
+
+#region check if starting
+
+ $processName = "batch32"
+
+  # Get the Process object for the specific process
+  $process = Get-Process -Name $processName
   
- &$actionss -para3 "nolog" -para5 "disksettings"
-
- $wshell.SendKeys("{tab}")
- start-sleep -s 1
- $wshell.SendKeys("{tab}")
- start-sleep -s 1
- $wshell.SendKeys(" ")
- start-sleep -s 2
-
- #time setting 10 mins
-
- $wshell.SendKeys("%t")
- start-sleep -s 1
- $wshell.SendKeys("t")
- start-sleep -s 1
- $wshell.SendKeys("{tab}")
- start-sleep -s 1
- $wshell.SendKeys("{tab}")
- Set-Clipboard -value "10"
- start-sleep -s 5
- $wshell.SendKeys("^v")
- 
- 
- &$actionss -para3 "nolog" -para5 "timesettings"
-
- $wshell.SendKeys("{tab}")
- start-sleep -s 1
- $wshell.SendKeys(" ")
- start-sleep -s 2
- 
- #run
- $wshell.SendKeys("%t")
- start-sleep -s 1
- $wshell.SendKeys("r")
- start-sleep -s 2
-
- #region check if starting
- 
-   $processName = "batch32"
-
-    # Get the Process object for the specific process
-    $process = Get-Process -Name $processName
-    
-    # Get the Process ID (PID) of the specific process
-    $processId = $process.Id
-    Write-Output "$process id $($processId)" 
-    write-host "atto benchmark start $(get-date)"
-    # Define the performance counters you want to monitor for the specific process
+  # Get the Process ID (PID) of the specific process
+  $processId = $process.Id
+  Write-Output "$process id $($processId)" 
+  write-host "atto benchmark start $(get-date)"
+  # Define the performance counters you want to monitor for the specific process
 
 $counterList = @(
-    "\Process($processName)\IO Read Bytes/sec",
-    "\Process($processName)\IO Write Bytes/sec"
+  "\Process($processName)\IO Read Bytes/sec",
+  "\Process($processName)\IO Write Bytes/sec"
 )
- $countlimit=0
+$countlimit=0
 
- do{
-  
-   $counters = Get-Counter -Counter $counterList
+do{
 
-    $readMBPerSec = $counters.CounterSamples[0].CookedValue / 1MB
-    $writeMBPerSec = $counters.CounterSamples[1].CookedValue / 1MB
+ $counters = Get-Counter -Counter $counterList
 
-    $acceessmb= $readMBPerSec+$writeMBPerSec
+  $readMBPerSec = $counters.CounterSamples[0].CookedValue / 1MB
+  $writeMBPerSec = $counters.CounterSamples[1].CookedValue / 1MB
+
+  $acceessmb= $readMBPerSec+$writeMBPerSec
 
 
-    Write-Host "Process $processName - Disk Read MB/s: $readMBPerSec"
-    Write-Host "Process $processName - Disk Write MB/s: $writeMBPerSec"
+  Write-Host "Process $processName - Disk Read MB/s: $readMBPerSec"
+  Write-Host "Process $processName - Disk Write MB/s: $writeMBPerSec"
 
-    Start-Sleep -Seconds 5  # Adjust the interval as needed
+  Start-Sleep -Seconds 5  # Adjust the interval as needed
 
-    $countlimit++
+  $countlimit++
 
-      }until ($acceessmb -gt 0 -or $countlimit -gt 10)  
+    }until ($acceessmb -gt 0 -or $countlimit -gt 10)  
 
- if($countlimit -gt 10){
-       &$actionss -para3 "nolog" -para5 "running-fail"
-       $results="NG"
-       $index="fail to run Batch32"
-      }
-      
+if($countlimit -gt 10){
+     &$actionss -para3 "nolog" -para5 "running-fail"
+     $results="NG"
+     $index="fail to run Batch32"
+    }
+    
 else{
- &$actionss -para3 "nolog" -para5 "running"
+&$actionss -para3 "nolog" -para5 "running"
 
 
 #endregion
 
- #region check if finish
+#region check if finish
 $acceessmb=1
 # Loop to retrieve and display disk activity for the specific process
 while ($acceessmb -ne 0) {
-    $counters = Get-Counter -Counter $counterList
+  $counters = Get-Counter -Counter $counterList
 
-    $readMBPerSec = $counters.CounterSamples[0].CookedValue / 1MB
-    $writeMBPerSec = $counters.CounterSamples[1].CookedValue / 1MB
+  $readMBPerSec = $counters.CounterSamples[0].CookedValue / 1MB
+  $writeMBPerSec = $counters.CounterSamples[1].CookedValue / 1MB
 
-    $acceessmb= $readMBPerSec+$writeMBPerSec
+  $acceessmb= $readMBPerSec+$writeMBPerSec
 
-    #Write-Host "Process $processName - Disk Read MB/s: $readMBPerSec"
-    #Write-Host "Process $processName - Disk Write MB/s: $writeMBPerSec"
+  #Write-Host "Process $processName - Disk Read MB/s: $readMBPerSec"
+  #Write-Host "Process $processName - Disk Write MB/s: $writeMBPerSec"
 
-    Start-Sleep -Seconds 1  # Adjust the interval as needed
-        
-    $readMBPerSec = $counters.CounterSamples[0].CookedValue / 1MB
-    $writeMBPerSec = $counters.CounterSamples[1].CookedValue / 1MB
+  Start-Sleep -Seconds 1  # Adjust the interval as needed
+      
+  $readMBPerSec = $counters.CounterSamples[0].CookedValue / 1MB
+  $writeMBPerSec = $counters.CounterSamples[1].CookedValue / 1MB
 
-    $acceessmb= $acceessmb+$readMBPerSec+$writeMBPerSec
-    
-    Start-Sleep -Seconds 1  # Adjust the interval as needed
-        
-    $readMBPerSec = $counters.CounterSamples[0].CookedValue / 1MB
-    $writeMBPerSec = $counters.CounterSamples[1].CookedValue / 1MB
+  $acceessmb= $acceessmb+$readMBPerSec+$writeMBPerSec
+  
+  Start-Sleep -Seconds 1  # Adjust the interval as needed
+      
+  $readMBPerSec = $counters.CounterSamples[0].CookedValue / 1MB
+  $writeMBPerSec = $counters.CounterSamples[1].CookedValue / 1MB
 
-    $acceessmb= $acceessmb+$readMBPerSec+$writeMBPerSec
+  $acceessmb= $acceessmb+$readMBPerSec+$writeMBPerSec
 
 }
 
 write-host "end $(get-date)"
 
- &$actionss -para3 "nolog" -para5 "completed"
+&$actionss -para3 "nolog" -para5 "completed"
 #endregion
 
- $Handle = Get-Process batch32| Where-Object { $_.MainWindowTitle -match $env:TITLE } | ForEach-Object { $_.MainWindowHandle }
+$Handle = Get-Process batch32| Where-Object { $_.MainWindowTitle -match $env:TITLE } | ForEach-Object { $_.MainWindowHandle }
 if ( $Handle -is [System.Array] ) { $Handle = $Handle[0] }
 $WindowRect = New-Object RECT
 $GotWindowRect = [Window]::GetWindowRect($Handle, [ref]$WindowRect)
@@ -1545,9 +1546,9 @@ $clicky2=($WindowRect.top+$WindowRect.Bottom)/2
 Start-Sleep -s 2
 [Clicker]::LeftClickAtPoint($clickx2, $clicky2)
 Start-Sleep -s 2
- $wshell.SendKeys("{down 20}")
+$wshell.SendKeys("{down 20}")
 
- &$actionss -para3 "nolog" -para5 "completed2"
+&$actionss -para3 "nolog" -para5 "completed2"
 
 }
 (get-process -name Batch32).CloseMainWindow()
@@ -1557,12 +1558,14 @@ Start-Sleep -s 2
 write-host "$results, $index"
 ######### write log #######
 
+if($nonlog_flag.Length -eq 0){
 Get-Module -name "outlog"|remove-module
 $mdpath=(Get-ChildItem -path "C:\testing_AI\modules\"  -r -file |Where-object{$_.name -match "outlog" -and $_.name -match "psm1"}).fullname
 Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 #write-host "Do $action!"
 outlog $action $results $tcnumber $tcstep $index
+}
 
 start-sleep -s 10
 
@@ -1571,4 +1574,4 @@ exit
 }
 
 }
-    export-modulemember -Function  benchmark2
+  export-modulemember -Function  benchmark2
