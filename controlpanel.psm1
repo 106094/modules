@@ -32,12 +32,19 @@ $action=((get-content $tcpath).split(","))[2]
 
 $picpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
 if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-null}
-
+$results="NG"
+$index="fail to open control panel"
 #$controlpn="Control Panel\Programs\Programs and Features"
 $action=($ctppath.split("\"))[-1]
 
 Start-Process control -Verb Open -WindowStyle Maximized
 start-sleep -s 5
+$checkrunning=Get-Process explorer | Where-Object { $_.MainWindowTitle -like "*control*" }
+if($checkrunning){
+    $results="OK"
+    $index="check screenshots"
+}
+
 $wshell.SendKeys("% ")
 $wshell.SendKeys("x")
 start-sleep -s 2
