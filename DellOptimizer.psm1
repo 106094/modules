@@ -44,7 +44,27 @@ if( (Get-Package -Name "*Dell Optimizer*").version -match "4.2.0.0" ){
     Start-Sleep -s 5
     [System.Windows.Forms.SendKeys]::SendWait("{ENTER}");
 }else{
-    
+    [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
+    Start-Sleep -s 5
+    [System.Windows.Forms.SendKeys]::SendWait("{ENTER}");
+    Start-Sleep -s 5
+    [System.Windows.Forms.SendKeys]::SendWait("{ENTER}");
+    Start-Sleep -s 5
+    [System.Windows.Forms.SendKeys]::SendWait("{ENTER}");
+    Start-Sleep -s 5
+    [System.Windows.Forms.SendKeys]::SendWait("{ENTER}");
+    Start-Sleep -s 5
+    [System.Windows.Forms.SendKeys]::SendWait("{ENTER}");
+    Start-Sleep -s 5
+    [System.Windows.Forms.SendKeys]::SendWait("{ENTER}");
+    Start-Sleep -s 5
+    [System.Windows.Forms.SendKeys]::SendWait("{TAB 6}");
+    Start-Sleep -s 5
+    [System.Windows.Forms.SendKeys]::SendWait(" ");
+    Start-Sleep -s 5
+    [System.Windows.Forms.SendKeys]::SendWait("{TAB 3}");
+    Start-Sleep -s 5
+    [System.Windows.Forms.SendKeys]::SendWait("{ENTER}");
 }
 
     ######### write log #######
