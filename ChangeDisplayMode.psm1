@@ -18,29 +18,32 @@ function ChangeDisplayMode ([string]$para1,[string]$para2){
     $action = "Change Display Mode to $para1"
     $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
     $tcnumber=((get-content $tcpath).split(","))[0]
-    $tcstep=((get-content $tcpath).split(","))[1]
-    
+    $tcstep=((get-content $tcpath).split(","))[1]  
+    $picpath=(Split-Path -Parent $scriptRoot)+"\logs\$($tcnumber)\"
+    if(-not(test-path $picpath)){new-item -ItemType directory -path $picpath |out-null}  
+    $moninfo=$picpath+"$($timenow)_step$($tcstep)_monitorinfo.csv"
+
     $results = "OK"
     $index = "check screenshots"
     
-    $monitors = Get-WmiObject -Class Win32_DesktopMonitor
-    $numberOfMonitors = $monitors.Count
-
-    if($numberOfMonitors -gt 1){
-        $actionss ="screenshot_multiscreen"
-    }
-    if($numberOfMonitors -eq 1){
-        $actionss ="screenshot"
-    }
+    $mtool="C:\testing_AI\modules\MultiMonitorTool\MultiMonitorTool.exe"
+    &$mtool /scomma $moninfo
+    do{
+    Start-Sleep -s 5
+    }until(test-path  $moninfo)
+    Start-Sleep -s 5
     
+    $moninfodata=(import-csv $moninfo).name
+    $numberOfMonitors = $moninfodata.Count
+    $extendedMode = $numberOfMonitors -gt 1
+
+    if ($extendedMode) {
+    
+    $actionss ="screenshot_multiscreen"        
     Get-Module -name $actionss |remove-module
     $mdpath=(Get-ChildItem -path $scriptRoot -r -file |Where-object{$_.name -match "^$actionss\b" -and $_.name -match "psm1"}).fullname
     Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
-    $displaySettings = Get-WmiObject -Namespace root\cimv2 -Class Win32_DesktopMonitor
-    $extendedMode = $displaySettings.Count -gt 1
-
-    if ($extendedMode) {
         &$actionss  -para3 nonlog -para5 "change_display_mode_to_$($para1)_before"
         try {
         displayswitch.exe  /$para1
