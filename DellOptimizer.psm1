@@ -23,6 +23,8 @@ Import-Module $mdpath -WarningAction SilentlyContinue -Global
 
 &$actioncp -para1 "Optimizer" -para3 "nonlog"
 
+Start-Sleep -s 30
+
 if( (Get-Package -Name "*Dell Optimizer*").version -match "4.2.0.0" ){
     [System.Windows.Forms.SendKeys]::SendWait("{TAB}");
     Start-Sleep -s 5
