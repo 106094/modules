@@ -96,14 +96,14 @@
         }
 
     $nowtime=get-date
-    start-sleep -s 10
-    do{
-        start-sleep -s 2
+        do{
+        start-sleep -s 10
         $usenameinp=$driver.FindElement([OpenQA.Selenium.By]::ClassName("cui-start-screen-username"))
         $timepass= (New-TimeSpan -start $nowtime -end (get-date)).TotalSeconds
 
     }until( $usenameinp.TagName -eq "input"  -or $timepass -gt 120)
 
+    start-sleep -s 10
     if($usenameinp.TagName -eq "input" ) {
     start-sleep -s 5    
     $usenameinp.SendKeys($idracuser)
