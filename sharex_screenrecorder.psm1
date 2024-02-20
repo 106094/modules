@@ -2,7 +2,7 @@
 function sharex_screenrecorder ([int64]$para1,[string]$para2,[string]$para3){
     
   Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass -Force;
-  $wshell=New-Object -ComObject wscript.shell
+  #$wshell=New-Object -ComObject wscript.shell
     Add-Type -AssemblyName Microsoft.VisualBasic
     Add-Type -AssemblyName System.Windows.Forms
  
@@ -12,15 +12,13 @@ $paracheck2=$PSBoundParameters.ContainsKey('para2')
 $paracheck3=$PSBoundParameters.ContainsKey('para3')
 
 if( $paracheck -eq $false -or $para1 -eq 0 ){
-#write-host "no defined, setting 1 min after login"
+#write-host "no defined, setting rec for 30s"
 $para1=30
 }
 if( $paracheck2 -eq $false -or $para2.Length -eq 0 ){
-#write-host "no defined, setting 1 min after login"
 $para2=""
 }
 if( $paracheck3 -eq $false -or $para3.Length -eq 0 ){
-#write-host "no defined, setting 1 min after login"
 $para3=""
 }
 
@@ -36,7 +34,7 @@ $indexname=$para2
 $nonlogflag=$para3
 
 
-$action="screenrecoder(shareX)"
+$action="screenrecoder(shareX) $($recordtime) sec"
 
 $tcpath=(Split-Path -Parent $scriptRoot)+"\currentjob\TC.txt"
 $tcnumber=((get-content $tcpath).split(","))[0]
@@ -54,36 +52,38 @@ $results="OK"
 
 #region check file and install
 
-$configpath="$env:userprofile\Documents\ShareX\ApplicationConfig.json"
+#$configpath="$env:userprofile\Documents\ShareX\ApplicationConfig.json"
 $exefilepath="C:\Program Files\ShareX\ffmpeg.exe"
 
-if (!(test-path $configpath) -or (test-path $exefilepath)){
+if (!(test-path $exefilepath)){
 
 $sharexinstallexe="C:\testing_AI\modules\shareX\ShareX-15.0.0-setup.exe"
-
-if(test-path $sharexinstallexe){
-
 &$sharexinstallexe /verysilent
 
 do{
 Start-Sleep -s 5
-$checkrun=get-process -name ShareX -ErrorAction SilentlyContinue
-}until($checkrun)
+$checksetup=get-process -name "ShareX-15.0.0-setup" -ErrorAction SilentlyContinue
+}until(!$checksetup)
 
-Start-Sleep -s 5
-$checkrun.CloseMainWindow()
-Start-Sleep -s 2
+do{
+  Start-Sleep -s 5
+  $checkrun=get-process -name ShareX -ErrorAction SilentlyContinue
+  }until($checkrun)
 
-}
-else{
+Start-Sleep -s 10
+
+if (!(test-path $exefilepath)){
 $results="NG"
-$index="cannot find install exe file"
+$index="install shareX failed"
 }
 
 }
 
 #endregion
 
+Start-Sleep -s 5
+stop-process -name ShareX -ErrorAction SilentlyContinue
+stop-process -name ffmpeg -ErrorAction SilentlyContinue
 
 if($results -ne "NG"){
 #region modify settings json and run
@@ -156,8 +156,6 @@ if(test-path $reclog){
 $results="OK"
 $index="check the recorded mp4 file"
 }
-
-
 
 if(!(Test-Path $reclog)){
 $results="NG"
