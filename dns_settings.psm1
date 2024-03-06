@@ -1,6 +1,4 @@
 ﻿function dns_settings ([string]$para1,[string]$para2){
-  
-  
 
 $paracheck1=$PSBoundParameters.ContainsKey('para1')
 
@@ -32,11 +30,11 @@ $checkline=$getinfo -match "allion.test"
 if($checkline){
 
 $linenu=$getinfo.IndexOf($checkline)
-($getinfo|select -Skip $linenu|select -First 3|select -last 1) -match "\d{1,}\.\d{1,}\.\d{1,}\.\d{1,}" |Out-Null
+($getinfo|Select-Object -Skip $linenu|Select-Object -First 3|Select-Object -last 1) -match "\d{1,}\.\d{1,}\.\d{1,}\.\d{1,}" |Out-Null
 $ipout=$matches[0]
 
 
-Get-NetIPAddress|%{
+Get-NetIPAddress|ForEach-Object{
 
 if($_.IPAddress -match $ipout -and $_.AddressFamily -eq "IPv4"){
 $adtname=$_.InterfaceAlias 
