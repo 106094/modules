@@ -17,5 +17,5 @@ $PSVersionTable.PSVersion
 ### Installation
 To use these modules, clone this repository to your local machine or download the desired .psm1 files directly
 ```powershell
-git clone https://github.com/yourusername/yourrepositoryname.git
+git clone https://github.com/106094/modules/
 ```
