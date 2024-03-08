@@ -5,9 +5,17 @@ These modules are designed as independent pieces of functionality, allowing user
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+Below are instructions to help you get started with using these PowerShell modules in your own projects.
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
-
+The windows system with native PowerShell 5.1
+The method to check powershell version
+```powershell
+$PSVersionTable.PSVersion
+```
+### Installation
+To use these modules, clone this repository to your local machine or download the desired .psm1 files directly
+```powershell
+git clone https://github.com/yourusername/yourrepositoryname.git
+```
