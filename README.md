@@ -19,3 +19,5 @@ To use these modules, clone this repository to your local machine or download th
 ```powershell
 git clone https://github.com/106094/modules/
 ```
+save all the psm files to a folder name [modules] directly
+
